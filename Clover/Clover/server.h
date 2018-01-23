@@ -2,9 +2,14 @@
 #define SERVER_H_
 
 
-int square(const int value)
-{
-	return value * value;
-}
+
+class Server {
+
+public:
+
+	~Server() {};
+	bool returntruth();
+
+};
 
 #endif // !SERVER_H_
