@@ -7,3 +7,4 @@
 
 #include "gtest/gtest.h"
 #include "..\Clover\server.h"
+#include "..\Clover\client.h"

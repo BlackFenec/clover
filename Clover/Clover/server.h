@@ -8,7 +8,7 @@ class Server {
 public:
 
 	~Server() {};
-	bool returntruth();
+	bool Start();
 
 };
 
