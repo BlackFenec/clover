@@ -6,5 +6,6 @@
 #pragma once
 
 #include "gtest/gtest.h"
+#include "gmock\gmock.h"
 #include "..\Clover\server.h"
 #include "..\Clover\client.h"

@@ -1,6 +1,6 @@
 #include "server.h"
 
-bool Server::returntruth()
+bool Server::Start()
 {
 	return true;
 }
