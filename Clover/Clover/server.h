@@ -7,8 +7,8 @@ class Server {
 
 public:
 
-	~Server() {};
-	bool Start();
+	virtual  ~Server() {};
+	virtual bool Start() = 0;
 
 };
 

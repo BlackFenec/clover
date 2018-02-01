@@ -20,5 +20,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Server.cpp" />
+    <ClCompile Include="Client.cpp" />
   </ItemGroup>
 </Project>

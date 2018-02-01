@@ -1,6 +1,8 @@
 #include "pch.h"
+using ::testing::AtLeast;
 
 TEST(ClientSendMessage, TrueIsReturned) {
-	Client * c = new Client();
-	//EXPECT_TRUE(s->returntruth());
+	/*MockClient client;              
+	EXPECT_CALL(client, SendMessage("test")) 
+		.Times(AtLeast(1)); */
 }

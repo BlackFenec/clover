@@ -7,7 +7,7 @@ class Client {
 
 public :
 
-	void SendMessage(std::string message);
+	virtual void SendMessage(std::string message) = 0;
 };
 
 #endif

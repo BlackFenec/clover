@@ -1,6 +1,8 @@
 #include "pch.h"
+using ::testing::AtLeast;
 
 TEST(ServerStart, TrueIsReturned) {
-	Server * s = new Server();
-	EXPECT_TRUE(s->Start());
+	/*MockServer server;
+	EXPECT_CALL(server, Start())
+		.Times(AtLeast(1));*/
 }
