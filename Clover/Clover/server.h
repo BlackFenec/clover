@@ -1,14 +1,9 @@
 #ifndef SERVER_H_
 #define SERVER_H_
 
+#include "IServer.h"
 
-
-class Server {
-
-public:
-
-	virtual  ~Server() {};
-	virtual bool Start() = 0;
+class Server : public IServer{
 
 };
 

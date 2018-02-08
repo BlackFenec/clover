@@ -6,5 +6,6 @@
 #pragma once
 
 #include "gtest/gtest.h"
-#include "MockClient.h"
-#include "MockServer.h"
+#include "MockIClient.h"
+#include "MockIServer.h"
+#include "MockITcpSocket.h"

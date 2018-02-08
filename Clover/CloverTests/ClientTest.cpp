@@ -2,7 +2,7 @@
 using ::testing::AtLeast;
 
 TEST(ClientSendMessage, TrueIsReturned) {
-	/*MockClient client;              
-	EXPECT_CALL(client, SendMessage("test")) 
+	MockITcpSocket socket;         
+	/*EXPECT_CALL(client, SendMessage("test")) 
 		.Times(AtLeast(1)); */
 }

@@ -2,12 +2,9 @@
 #define CLIENT_H_
 
 #include <string>
+#include "IClient.h"
 
-class Client {
-
-public :
-
-	virtual void SendMessage(std::string message) = 0;
+class Client : public IClient{
 };
 
 #endif

@@ -1,6 +1,6 @@
 #include "server.h"
 
-bool Server::Start()
+void IServer::Start()
 {
-	return true;
+	
 }
