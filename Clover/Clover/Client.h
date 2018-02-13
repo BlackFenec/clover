@@ -3,8 +3,22 @@
 
 #include <string>
 #include "IClient.h"
+#include <memory>
 
 class Client : public IClient{
+public:
+	Client(ITcpSocket * s) {
+		this->socket = s;
+	};
+
+	virtual void SendMessage(std::string message) {
+		this->socket->SendMessage(message);
+	}
+
+	~Client()
+	{
+		delete socket;
+	}
 };
 
 #endif

@@ -3,13 +3,16 @@
 
 #include <string>
 #include "ITcpSocket.h"
+#include <memory>
 
 class IClient {
-private:
-	//ITcpSocket socket;
+protected:
+	ITcpSocket * socket;
 
 public:
-	virtual ~IClient() {}
+	virtual ~IClient() {};
+	IClient(){};
+
 	virtual void SendMessage(std::string message) = 0;
 };
 
