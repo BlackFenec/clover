@@ -5,7 +5,7 @@ using ::testing::AtLeast;
 
 TEST(ClientSendMessage, SocketSentMessage) {
 	std::string message = "my message";
-	MockITcpSocket * socket = new MockITcpSocket();
+	std::shared_ptr<MockITcpSocket> socket(new MockITcpSocket());
 	EXPECT_CALL(*socket, SendMessage(message)).Times(1);
 
 	std::unique_ptr<IClient> c(new Client(socket));

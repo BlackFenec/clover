@@ -7,7 +7,7 @@
 
 class IClient {
 protected:
-	ITcpSocket * socket;
+	std::shared_ptr<ITcpSocket> socket;
 
 public:
 	virtual ~IClient() {};

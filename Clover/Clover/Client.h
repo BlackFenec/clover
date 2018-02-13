@@ -7,17 +7,12 @@
 
 class Client : public IClient{
 public:
-	Client(ITcpSocket * s) {
+	Client(std::shared_ptr<ITcpSocket> s) {
 		this->socket = s;
 	};
 
 	virtual void SendMessage(std::string message) {
 		this->socket->SendMessage(message);
-	}
-
-	~Client()
-	{
-		delete socket;
 	}
 };
 
