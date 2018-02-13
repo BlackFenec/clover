@@ -12,7 +12,7 @@ public:
 	};
 
 	virtual void SendMessage(std::string message) {
-		this->socket->SendMessage(message);
+		if (!message.empty()) this->socket->SendMessage(message);
 	}
 };
 
