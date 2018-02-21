@@ -4,7 +4,15 @@
 #include "IServer.h"
 
 class Server : public IServer{
+public :
+	
+	Server(std::shared_ptr<ITcpSocket> s) {
+		this->socket = s;
+	};
 
+	virtual void Start() {
+		
+	}
 };
 
 #endif // !SERVER_H_
