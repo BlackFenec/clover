@@ -12,6 +12,7 @@ public:
 	MOCK_METHOD0(Bind, void());
 	MOCK_METHOD0(Listen, void());
 	MOCK_METHOD0(Accept, void());
+	MOCK_METHOD0(ConnectToServer, void());
 };
 
 #endif // !MOCKITCPSOCKET_H_

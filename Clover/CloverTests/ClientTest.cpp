@@ -39,3 +39,15 @@ TEST(ClientStart, SocketCreationIsDoneWithServerAdressAndPort) {
 	std::unique_ptr<IClient> c(new Client(socket));
 	c->Start();
 }
+
+TEST(ClientStart, SocketConnectWithServer) {
+	std::string serverAdress = "localhost";
+	std::string serverPort = "27015";
+	std::shared_ptr<MockITcpSocket> socket(new MockITcpSocket());
+	EXPECT_CALL(*socket, Initialize()).Times(1);
+	EXPECT_CALL(*socket, Create(serverAdress, serverPort)).Times(1);
+	EXPECT_CALL(*socket, ConnectToServer()).Times(1);
+
+	std::unique_ptr<IClient> c(new Client(socket));
+	c->Start();
+}

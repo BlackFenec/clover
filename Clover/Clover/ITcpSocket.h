@@ -14,6 +14,7 @@ public:
 	virtual void Bind() = 0;
 	virtual void Listen() = 0;
 	virtual void Accept() = 0;
+	virtual void ConnectToServer() = 0;
 };
 
 #endif // !ITCPSOCKET_H_

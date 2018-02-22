@@ -138,6 +138,25 @@ public :
 
 		closesocket(tcpSocket);
 	}
+
+	virtual void ConnectToServer()
+	{
+		struct addrinfo *result = NULL,
+			*ptr = NULL;
+		int iResult = connect(tcpSocket, ptr->ai_addr, (int)ptr->ai_addrlen);
+		if (iResult == SOCKET_ERROR) {
+			closesocket(tcpSocket);
+			tcpSocket = INVALID_SOCKET;
+		}
+
+		freeaddrinfo(result);
+
+		if (tcpSocket == INVALID_SOCKET) {
+			printf("Unable to connect to server!\n");
+			WSACleanup();
+			//TODO : throw
+		}
+	}
 };
 
 #endif // !TCPSOCKET_H_
