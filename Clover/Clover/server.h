@@ -4,6 +4,8 @@
 #include "IServer.h"
 
 class Server : public IServer{
+private:
+	const std::string port = "27015";
 public :
 	
 	Server(std::shared_ptr<ITcpSocket> s) {
@@ -12,6 +14,7 @@ public :
 
 	virtual void Start() {
 		this->socket->Initialize();
+		this->socket->Create(port);
 	}
 };
 

@@ -28,3 +28,14 @@ TEST(ClientStart, SocketInitializationIsDone) {
 	std::unique_ptr<IClient> c(new Client(socket));
 	c->Start();
 }
+
+TEST(ClientStart, SocketCreationIsDoneWithServerAdressAndPort) {
+	std::string serverAdress = "localhost";
+	std::string serverPort = "27015";
+	std::shared_ptr<MockITcpSocket> socket(new MockITcpSocket());
+	EXPECT_CALL(*socket, Initialize()).Times(1);
+	EXPECT_CALL(*socket, Create(serverAdress, serverPort)).Times(1);
+
+	std::unique_ptr<IClient> c(new Client(socket));
+	c->Start();
+}
