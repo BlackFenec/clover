@@ -12,6 +12,7 @@ public:
 	virtual void Create(std::string serverAdress,std::string serverPort) = 0;
 	virtual void Create(std::string port) = 0;
 	virtual void Bind() = 0;
+	virtual void Listen() = 0;
 };
 
 #endif // !ITCPSOCKET_H_

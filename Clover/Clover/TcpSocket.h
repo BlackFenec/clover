@@ -109,6 +109,18 @@ public :
 
 		freeaddrinfo(result);
 	}
+
+	virtual void Listen()
+	{
+		int iResult = listen(tcpSocket, SOMAXCONN);
+		if (iResult == SOCKET_ERROR) {
+			printf("listen failed with error: %d\n", WSAGetLastError());
+			closesocket(tcpSocket);
+			WSACleanup();
+			//TODO : throw
+		}
+
+	}
 };
 
 #endif // !TCPSOCKET_H_
