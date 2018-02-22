@@ -21,6 +21,7 @@
 class TcpSocket : public ITcpSocket{
 private:
 	WSADATA wsaData;
+	SOCKET tcpSocket;
 public :
 	virtual void SendMessage(std::string message)
 	{
@@ -38,7 +39,7 @@ public :
 
 	virtual void Create(std::string serverAdress, std::string serverPort)
 	{
-		SOCKET ConnectSocket = INVALID_SOCKET;
+		tcpSocket = INVALID_SOCKET;
 		struct addrinfo *result = NULL,
 			*ptr = NULL,
 			hints;
@@ -55,8 +56,8 @@ public :
 			//TODO: throw
 		}
 		
-		ConnectSocket = socket(ptr->ai_family, ptr->ai_socktype,ptr->ai_protocol);
-		if (ConnectSocket == INVALID_SOCKET) {
+		tcpSocket = socket(ptr->ai_family, ptr->ai_socktype,ptr->ai_protocol);
+		if (tcpSocket == INVALID_SOCKET) {
 			printf("socket failed with error: %ld\n", WSAGetLastError());
 			WSACleanup();
 			//TODO: throw
@@ -65,7 +66,7 @@ public :
 
 	virtual void Create(std::string port)
 	{
-		SOCKET ListenSocket = INVALID_SOCKET;
+		tcpSocket = INVALID_SOCKET;
 
 		struct addrinfo *result = NULL;
 		struct addrinfo hints;
@@ -85,13 +86,28 @@ public :
 		}
 
 		// Create a SOCKET for connecting to server
-		ListenSocket = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
-		if (ListenSocket == INVALID_SOCKET) {
+		tcpSocket = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
+		if (tcpSocket == INVALID_SOCKET) {
 			printf("socket failed with error: %ld\n", WSAGetLastError());
 			freeaddrinfo(result);
 			WSACleanup();
 			//TODO: throw
 		}
+	}
+
+	virtual void Bind()
+	{
+		struct addrinfo *result = NULL;
+		int iResult = bind(tcpSocket, result->ai_addr, (int)result->ai_addrlen);
+		if (iResult == SOCKET_ERROR) {
+			printf("bind failed with error: %d\n", WSAGetLastError());
+			freeaddrinfo(result);
+			closesocket(tcpSocket);
+			WSACleanup();
+			//TODO : throw
+		}
+
+		freeaddrinfo(result);
 	}
 };
 

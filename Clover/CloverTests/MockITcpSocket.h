@@ -9,6 +9,7 @@ public:
 	MOCK_METHOD0(Initialize, void());
 	MOCK_METHOD2(Create, void(std::string serverAdress,std::string serverPort));
 	MOCK_METHOD1(Create, void(std::string port));
+	MOCK_METHOD0(Bind, void());
 };
 
 #endif // !MOCKITCPSOCKET_H_
