@@ -11,6 +11,7 @@ public:
 	MOCK_METHOD1(Create, void(std::string port));
 	MOCK_METHOD0(Bind, void());
 	MOCK_METHOD0(Listen, void());
+	MOCK_METHOD0(Accept, void());
 };
 
 #endif // !MOCKITCPSOCKET_H_

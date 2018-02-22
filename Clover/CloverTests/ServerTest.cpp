@@ -41,3 +41,15 @@ TEST(ServerStart, SocketStartListening) {
 	std::unique_ptr<IServer> s(new Server(socket));
 	s->Start();
 }
+
+TEST(ServerStart, SocketStartAcceptingConnection) {
+	std::shared_ptr<MockITcpSocket> socket(new MockITcpSocket());
+	EXPECT_CALL(*socket, Initialize()).Times(1);
+	EXPECT_CALL(*socket, Create("27015")).Times(1);
+	EXPECT_CALL(*socket, Bind()).Times(1);
+	EXPECT_CALL(*socket, Listen()).Times(1);
+	EXPECT_CALL(*socket, Accept()).Times(1);
+
+	std::unique_ptr<IServer> s(new Server(socket));
+	s->Start();
+}

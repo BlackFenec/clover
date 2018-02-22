@@ -22,6 +22,7 @@ class TcpSocket : public ITcpSocket{
 private:
 	WSADATA wsaData;
 	SOCKET tcpSocket;
+	SOCKET clientSocket;
 public :
 	virtual void SendMessage(std::string message)
 	{
@@ -120,6 +121,22 @@ public :
 			//TODO : throw
 		}
 
+	}
+
+	virtual void Accept()
+	{
+		clientSocket = INVALID_SOCKET;
+
+		// Accept a client socket
+		clientSocket = accept(tcpSocket, NULL, NULL);
+		if (clientSocket == INVALID_SOCKET) {
+			printf("accept failed: %d\n", WSAGetLastError());
+			closesocket(tcpSocket);
+			WSACleanup();
+			//TODO : throw
+		}
+
+		closesocket(tcpSocket);
 	}
 };
 

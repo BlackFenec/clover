@@ -17,6 +17,7 @@ public :
 		this->socket->Create(port);
 		this->socket->Bind();
 		this->socket->Listen();
+		this->socket->Accept();
 	}
 };
 
