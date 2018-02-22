@@ -14,6 +14,10 @@ public:
 	virtual void SendMessage(std::string message) {
 		if (!message.empty()) this->socket->SendMessage(message);
 	}
+
+	virtual void Start() {
+		this->socket->Initialize();
+	}
 };
 
 #endif

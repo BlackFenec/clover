@@ -11,7 +11,7 @@ public :
 	};
 
 	virtual void Start() {
-		
+		this->socket->Initialize();
 	}
 };
 
