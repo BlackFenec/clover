@@ -53,3 +53,34 @@ TEST(ServerStart, SocketStartAcceptingConnection) {
 	std::unique_ptr<IServer> s(new Server(socket));
 	s->Start();
 }
+
+TEST(ServerClose, SocketIsClose) {
+	std::string serverAdress = "localhost";
+	std::string serverPort = "27015";
+	std::shared_ptr<MockITcpSocket> socket(new MockITcpSocket());
+	EXPECT_CALL(*socket, CloseClient()).Times(1);
+	EXPECT_CALL(*socket, Close()).Times(1);
+
+	std::unique_ptr<IServer> s(new Server(socket));
+	s->Close();
+}
+
+TEST(ServerClose, ClientSocketIsClose) {
+	std::string serverAdress = "localhost";
+	std::string serverPort = "27015";
+	std::shared_ptr<MockITcpSocket> socket(new MockITcpSocket());
+	EXPECT_CALL(*socket, CloseClient()).Times(1);
+
+	std::unique_ptr<IServer> s(new Server(socket));
+	s->Close();
+}
+
+TEST(ServerCloseClient, ClientSocketIsClose) {
+	std::string serverAdress = "localhost";
+	std::string serverPort = "27015";
+	std::shared_ptr<MockITcpSocket> socket(new MockITcpSocket());
+	EXPECT_CALL(*socket, CloseClient()).Times(1);
+
+	std::unique_ptr<IServer> s(new Server(socket));
+	s->CloseClient();
+}

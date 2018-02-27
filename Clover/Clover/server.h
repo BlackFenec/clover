@@ -19,6 +19,15 @@ public :
 		this->socket->Listen();
 		this->socket->Accept();
 	}
+
+	virtual void Close() {
+		this->socket->CloseClient();
+		this->socket->Close();
+	}
+
+	virtual void CloseClient() {
+		this->socket->CloseClient();
+	}
 };
 
 #endif // !SERVER_H_

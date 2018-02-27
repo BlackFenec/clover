@@ -24,6 +24,11 @@ public:
 		this->socket->Create(serverAdress,serverPort);
 		this->socket->ConnectToServer();
 	}
+
+	virtual void Close()
+	{
+		this->socket->Close();
+	}
 };
 
 #endif

@@ -4,6 +4,8 @@
 #include <string>
 #include "ITcpSocket.h"
 
+#define DEFAULT_BUFLEN 512
+
 #undef UNICODE
 
 #define WIN32_LEAN_AND_MEAN
@@ -26,7 +28,21 @@ private:
 public :
 	virtual void SendMessage(std::string message)
 	{
+		int recvbuflen = DEFAULT_BUFLEN;
+		char recvbuf[DEFAULT_BUFLEN];
 
+		int iResult;
+
+		// Send an initial buffer
+		iResult = send(tcpSocket, message.c_str(), (int)strlen(message.c_str()), 0);
+		if (iResult == SOCKET_ERROR) {
+			printf("send failed: %d\n", WSAGetLastError());
+			closesocket(tcpSocket);
+			WSACleanup();
+			//TODO : throw
+		}
+
+		printf("Bytes Sent: %ld\n", iResult);
 	}
 
 	virtual void Initialize()
@@ -156,6 +172,28 @@ public :
 			WSACleanup();
 			//TODO : throw
 		}
+	}
+
+	virtual void Close()
+	{
+		int iResult = shutdown(tcpSocket, SD_SEND);
+		if (iResult == SOCKET_ERROR) {
+			printf("shutdown failed: %d\n", WSAGetLastError());			
+		}
+
+		closesocket(tcpSocket);
+		WSACleanup();
+	}
+
+	virtual void CloseClient()
+	{
+		int iResult = shutdown(clientSocket, SD_SEND);
+		if (iResult == SOCKET_ERROR) {
+			printf("shutdown failed: %d\n", WSAGetLastError());
+		}
+
+		closesocket(clientSocket);
+		WSACleanup();
 	}
 };
 

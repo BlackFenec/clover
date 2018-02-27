@@ -13,6 +13,8 @@ public:
 	MOCK_METHOD0(Listen, void());
 	MOCK_METHOD0(Accept, void());
 	MOCK_METHOD0(ConnectToServer, void());
+	MOCK_METHOD0(Close, void());
+	MOCK_METHOD0(CloseClient, void());
 };
 
 #endif // !MOCKITCPSOCKET_H_

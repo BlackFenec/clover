@@ -15,6 +15,8 @@ public:
 	virtual void Listen() = 0;
 	virtual void Accept() = 0;
 	virtual void ConnectToServer() = 0;
+	virtual void Close() = 0;
+	virtual void CloseClient() = 0;
 };
 
 #endif // !ITCPSOCKET_H_

@@ -12,6 +12,8 @@ public:
 	virtual ~IServer() {};
 	IServer() {};
 	virtual void Start() = 0;
+	virtual void Close() = 0;
+	virtual void CloseClient() = 0;
 
 };
 

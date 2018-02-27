@@ -51,3 +51,13 @@ TEST(ClientStart, SocketConnectWithServer) {
 	std::unique_ptr<IClient> c(new Client(socket));
 	c->Start();
 }
+
+TEST(ClientClose, SocketIsClose) {
+	std::string serverAdress = "localhost";
+	std::string serverPort = "27015";
+	std::shared_ptr<MockITcpSocket> socket(new MockITcpSocket());
+	EXPECT_CALL(*socket, Close()).Times(1);
+
+	std::unique_ptr<IClient> c(new Client(socket));
+	c->Close();
+}
