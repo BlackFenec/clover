@@ -15,6 +15,7 @@ public:
 	MOCK_METHOD0(ConnectToServer, void());
 	MOCK_METHOD0(Close, void());
 	MOCK_METHOD0(CloseClient, void());
+	MOCK_METHOD0(ReceiveMessage, std::string());
 };
 
 #endif // !MOCKITCPSOCKET_H_

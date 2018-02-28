@@ -15,8 +15,14 @@ public:
 		this->socket = s;
 	};
 
-	virtual void SendMessage(std::string message) {
-		if (!message.empty()) this->socket->SendMessage(message);
+	virtual std::string SendMessage(std::string message) {
+		std::string response;
+		if (!message.empty())
+		{
+			this->socket->SendMessage(message);
+			response = this->socket->ReceiveMessage();
+		}
+		return response;
 	}
 
 	virtual void Start() {

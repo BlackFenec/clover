@@ -13,7 +13,7 @@ public:
 	virtual ~IClient() {};
 	IClient(){};
 
-	virtual void SendMessage(std::string message) = 0;
+	virtual std::string SendMessage(std::string message) = 0;
 	virtual void Start() = 0;
 	virtual void Close() = 0;
 };

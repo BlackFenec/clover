@@ -17,6 +17,7 @@ public:
 	virtual void ConnectToServer() = 0;
 	virtual void Close() = 0;
 	virtual void CloseClient() = 0;
+	virtual std::string ReceiveMessage() = 0;
 };
 
 #endif // !ITCPSOCKET_H_

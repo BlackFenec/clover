@@ -2,6 +2,7 @@
 #include "..\Clover\Client.h"
 #include <memory>
 using ::testing::AtLeast;
+using ::testing::Return;
 
 TEST(ClientSendMessage, ValidMessageIsSentToSocket) {
 	std::string message = "my message";
@@ -18,7 +19,18 @@ TEST(ClientSendMessage, EmptyMessageIsNotSentToSocket) {
 	EXPECT_CALL(*socket, SendMessage(message)).Times(0);
 
 	std::unique_ptr<IClient> c(new Client(socket));
-	c->SendMessage(message);
+	std::string response = c->SendMessage(message);
+}
+
+TEST(ClientSendMessage, SocketReceiveResponse) {
+	std::string message = "my message";
+	std::shared_ptr<MockITcpSocket> socket(new MockITcpSocket());
+	EXPECT_CALL(*socket, SendMessage(message)).Times(1);
+	EXPECT_CALL(*socket, ReceiveMessage()).Times(1).WillOnce(Return(message));
+
+	std::unique_ptr<IClient> c(new Client(socket));
+	std::string response = c->SendMessage(message);
+	ASSERT_EQ(response, message);
 }
 
 TEST(ClientStart, SocketInitializationIsDone) {
