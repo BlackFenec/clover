@@ -6,7 +6,7 @@
 class MockIClient : public IClient {
 public:
 
-	MOCK_METHOD1(SendMessage, std::string(std::string message));
+	MOCK_METHOD1(Send, std::string(std::string message));
 	MOCK_METHOD0(Start, void());
 };
 

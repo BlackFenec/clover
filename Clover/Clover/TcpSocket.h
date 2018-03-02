@@ -26,7 +26,7 @@ private:
 	SOCKET tcpSocket;
 	SOCKET clientSocket;
 public :
-	virtual void SendMessage(std::string message)
+	virtual void Send(std::string message)
 	{
 		int recvbuflen = DEFAULT_BUFLEN;
 		char recvbuf[DEFAULT_BUFLEN];
@@ -194,6 +194,24 @@ public :
 
 		closesocket(clientSocket);
 		WSACleanup();
+	}
+	
+	virtual std::string Receive()
+	{
+		int recvbuflen = DEFAULT_BUFLEN;
+		char recvbuf[DEFAULT_BUFLEN];
+		int iResult;
+
+		do {
+			iResult = recv(tcpSocket, recvbuf, recvbuflen, 0);
+			if (iResult > 0)
+				printf("Bytes received: %d\n", iResult);
+			else if (iResult == 0)
+				printf("Connection closed\n");
+			else
+				printf("recv failed: %d\n", WSAGetLastError());
+		} while (iResult > 0);
+		return recvbuf;
 	}
 };
 
