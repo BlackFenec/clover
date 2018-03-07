@@ -25,6 +25,8 @@ private:
 	WSADATA wsaData;
 	SOCKET tcpSocket;
 	SOCKET clientSocket;
+	struct addrinfo *result;
+	struct addrinfo *ptr;
 public :
 	virtual void Send(std::string message)
 	{
@@ -43,6 +45,31 @@ public :
 		}
 
 		printf("Bytes Sent: %ld\n", iResult);
+
+		iResult = shutdown(tcpSocket, SD_SEND);
+		if (iResult == SOCKET_ERROR) {
+			printf("shutdown failed with error: %d\n", WSAGetLastError());
+			closesocket(tcpSocket);
+			WSACleanup();
+			//return 1;
+		}
+
+		// Receive until the peer closes the connection
+		do {
+
+			iResult = recv(tcpSocket, recvbuf, recvbuflen, 0);
+			if (iResult > 0)
+				printf("Bytes received: %d\n", iResult);
+			else if (iResult == 0)
+				printf("Connection closed\n");
+			else
+				printf("recv failed with error: %d\n", WSAGetLastError());
+
+		} while (iResult > 0);
+
+		// cleanup
+		closesocket(tcpSocket);
+		WSACleanup();
 	}
 
 	virtual void Initialize()
@@ -57,9 +84,9 @@ public :
 	virtual void Create(std::string serverAdress, std::string serverPort)
 	{
 		tcpSocket = INVALID_SOCKET;
-		struct addrinfo *result = NULL,
-			*ptr = NULL,
-			hints;
+		struct addrinfo hints;
+		ptr = NULL;
+		result = NULL;
 
 		ZeroMemory(&hints, sizeof(hints));
 		hints.ai_family = AF_UNSPEC;
@@ -72,20 +99,13 @@ public :
 			WSACleanup();
 			//TODO: throw
 		}
-		
-		tcpSocket = socket(ptr->ai_family, ptr->ai_socktype,ptr->ai_protocol);
-		if (tcpSocket == INVALID_SOCKET) {
-			printf("socket failed with error: %ld\n", WSAGetLastError());
-			WSACleanup();
-			//TODO: throw
-		}
 	}
 
 	virtual void Create(std::string port)
 	{
 		tcpSocket = INVALID_SOCKET;
 
-		struct addrinfo *result = NULL;
+		result = NULL;
 		struct addrinfo hints;
 
 		ZeroMemory(&hints, sizeof(hints));
@@ -114,7 +134,6 @@ public :
 
 	virtual void Bind()
 	{
-		struct addrinfo *result = NULL;
 		int iResult = bind(tcpSocket, result->ai_addr, (int)result->ai_addrlen);
 		if (iResult == SOCKET_ERROR) {
 			printf("bind failed with error: %d\n", WSAGetLastError());
@@ -141,6 +160,8 @@ public :
 
 	virtual void Accept()
 	{
+		char recvbuf[DEFAULT_BUFLEN];
+		int recvbuflen = DEFAULT_BUFLEN;
 		clientSocket = INVALID_SOCKET;
 
 		// Accept a client socket
@@ -153,16 +174,69 @@ public :
 		}
 
 		closesocket(tcpSocket);
+		int iResult;
+		// Receive until the peer shuts down the connection
+		do {
+
+			iResult = recv(clientSocket, recvbuf, recvbuflen, 0);
+			if (iResult > 0) {
+				printf("Bytes received: %d\n", iResult);
+
+				// Echo the buffer back to the sender
+				int iSendResult = send(clientSocket, recvbuf, iResult, 0);
+				if (iSendResult == SOCKET_ERROR) {
+					printf("send failed with error: %d\n", WSAGetLastError());
+					closesocket(clientSocket);
+					WSACleanup();
+					//return 1;
+				}
+				printf("Bytes sent: %d\n", iSendResult);
+			}
+			else if (iResult == 0)
+				printf("Connection closing...\n");
+			else {
+				printf("recv failed with error: %d\n", WSAGetLastError());
+				closesocket(clientSocket);
+				WSACleanup();
+				//return 1;
+			}
+
+		} while (iResult > 0);
+
+		// shutdown the connection since we're done
+		iResult = shutdown(clientSocket, SD_SEND);
+		if (iResult == SOCKET_ERROR) {
+			printf("shutdown failed with error: %d\n", WSAGetLastError());
+			closesocket(clientSocket);
+			WSACleanup();
+			//return 1;
+		}
+
+		// cleanup
+		closesocket(clientSocket);
+		WSACleanup();
 	}
 
 	virtual void ConnectToServer()
 	{
-		struct addrinfo *result = NULL,
-			*ptr = NULL;
-		int iResult = connect(tcpSocket, ptr->ai_addr, (int)ptr->ai_addrlen);
-		if (iResult == SOCKET_ERROR) {
-			closesocket(tcpSocket);
-			tcpSocket = INVALID_SOCKET;
+		int iResult;
+		for (ptr = result; ptr != NULL; ptr = ptr->ai_next) {
+
+			tcpSocket = socket(ptr->ai_family, ptr->ai_socktype,
+				ptr->ai_protocol);
+			if (tcpSocket == INVALID_SOCKET) {
+				printf("socket failed with error: %ld\n", WSAGetLastError());
+				WSACleanup();
+				//TODO : throw
+			}
+
+			iResult = connect(tcpSocket, ptr->ai_addr, (int)ptr->ai_addrlen);
+			if (iResult == SOCKET_ERROR) {
+				closesocket(tcpSocket);
+				tcpSocket = INVALID_SOCKET;
+				continue;
+			}
+			break;
 		}
 
 		freeaddrinfo(result);

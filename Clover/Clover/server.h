@@ -18,6 +18,8 @@ public :
 		this->socket->Bind();
 		this->socket->Listen();
 		this->socket->Accept();
+		//std::string response = this->socket->Receive();
+		//this->socket->Send("Echo " + response);
 	}
 
 	virtual void Close() {
