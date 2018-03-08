@@ -5,7 +5,8 @@
 #include "ITcpSocket.h"
 #include <memory>
 
-class IClient {
+class IClient 
+{
 protected:
 	std::shared_ptr<ITcpSocket> socket;
 

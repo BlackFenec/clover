@@ -40,7 +40,8 @@ private:
 		hints.ai_flags = aiFlags;
 
 		int iResult = getaddrinfo(serverAddress, serverPort, &hints, &result);
-		if (iResult != 0) {
+		if (iResult != 0) 
+		{
 			printf("getaddrinfo failed with error: %d\n", iResult);
 			WSACleanup();
 		}
@@ -49,7 +50,6 @@ private:
 public :
 	virtual void Send(std::string message)
 	{
-		//TODO Clean up
 		int recvbuflen = DEFAULT_BUFLEN;
 		char recvbuf[DEFAULT_BUFLEN];
 
@@ -64,20 +64,6 @@ public :
 		printf("Bytes Sent: %ld\n", iResult);
 
 		this->Shutdown();
-
-		do {
-
-			iResult = recv(tcpSocket, recvbuf, recvbuflen, 0);
-			if (iResult > 0)
-				printf("Bytes received: %d\n", iResult);
-			else if (iResult == 0)
-				printf("Connection closed\n");
-			else
-				printf("recv failed with error: %d\n", WSAGetLastError());
-
-		} while (iResult > 0);
-
-		this->Close();
 	}
 
 	virtual void Initialize()
@@ -224,7 +210,6 @@ public :
 	
 	virtual std::string Receive()
 	{
-		//TODO : Cleanup
 		int recvbuflen = DEFAULT_BUFLEN;
 		char recvbuf[DEFAULT_BUFLEN];
 		int iResult;
@@ -238,6 +223,7 @@ public :
 			else
 				printf("recv failed: %d\n", WSAGetLastError());
 		} while (iResult > 0);
+
 		return recvbuf;
 	}
 

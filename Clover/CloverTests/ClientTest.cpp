@@ -22,10 +22,21 @@ TEST(ClientSendMessage, EmptyMessageIsNotSentToSocket) {
 	std::string response = c->Send(message);
 }
 
+TEST(ClientSendMessage, SocketIsClose) {
+	std::string message = "my message";
+	std::shared_ptr<MockITcpSocket> socket(new MockITcpSocket());
+	EXPECT_CALL(*socket, Send(message)).Times(1);
+	EXPECT_CALL(*socket, Close()).Times(1);
+
+	std::unique_ptr<IClient> c(new Client(socket));
+	std::string response = c->Send(message);
+}
+
 TEST(ClientSendMessage, SocketReceiveResponse) {
 	std::string message = "my message";
 	std::shared_ptr<MockITcpSocket> socket(new MockITcpSocket());
 	EXPECT_CALL(*socket, Send(message)).Times(1);
+	EXPECT_CALL(*socket, Close()).Times(1);
 	EXPECT_CALL(*socket, Receive()).Times(1).WillOnce(Return(message));
 
 	std::unique_ptr<IClient> c(new Client(socket));
