@@ -14,7 +14,7 @@ public :
 
 	virtual void Start() {
 		this->socket->Initialize();
-		this->socket->Create(port);
+		this->socket->CreateServer(port);
 		this->socket->Bind();
 		this->socket->Listen();
 		this->socket->Accept();

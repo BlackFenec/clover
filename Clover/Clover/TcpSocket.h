@@ -26,35 +26,45 @@ private:
 	SOCKET tcpSocket;
 	SOCKET clientSocket;
 	struct addrinfo *result;
-	struct addrinfo *ptr;
+
+	void Create(int aiFamily, int aiFlags, const char * serverAddress, const char * serverPort)
+	{
+		tcpSocket = INVALID_SOCKET;
+		struct addrinfo hints;
+		result = NULL;
+
+		ZeroMemory(&hints, sizeof(hints));
+		hints.ai_family = aiFamily;
+		hints.ai_socktype = SOCK_STREAM;
+		hints.ai_protocol = IPPROTO_TCP;
+		hints.ai_flags = aiFlags;
+
+		int iResult = getaddrinfo(serverAddress, serverPort, &hints, &result);
+		if (iResult != 0) {
+			printf("getaddrinfo failed with error: %d\n", iResult);
+			WSACleanup();
+		}
+	}
+
 public :
 	virtual void Send(std::string message)
 	{
+		//TODO Clean up
 		int recvbuflen = DEFAULT_BUFLEN;
 		char recvbuf[DEFAULT_BUFLEN];
 
-		int iResult;
-
-		// Send an initial buffer
-		iResult = send(tcpSocket, message.c_str(), (int)strlen(message.c_str()), 0);
-		if (iResult == SOCKET_ERROR) {
+		int iResult = send(tcpSocket, message.c_str(), (int)strlen(message.c_str()), 0);
+		if (iResult == SOCKET_ERROR) 
+		{
 			printf("send failed: %d\n", WSAGetLastError());
 			closesocket(tcpSocket);
 			WSACleanup();
-			//TODO : throw
 		}
 
 		printf("Bytes Sent: %ld\n", iResult);
 
-		iResult = shutdown(tcpSocket, SD_SEND);
-		if (iResult == SOCKET_ERROR) {
-			printf("shutdown failed with error: %d\n", WSAGetLastError());
-			closesocket(tcpSocket);
-			WSACleanup();
-			//return 1;
-		}
+		this->Shutdown();
 
-		// Receive until the peer closes the connection
 		do {
 
 			iResult = recv(tcpSocket, recvbuf, recvbuflen, 0);
@@ -67,99 +77,60 @@ public :
 
 		} while (iResult > 0);
 
-		// cleanup
-		closesocket(tcpSocket);
-		WSACleanup();
+		this->Close();
 	}
 
 	virtual void Initialize()
 	{
 		int iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
-		if (iResult != 0) {
+		if (iResult != 0) 
+		{
 			printf("WSAStartup failed with error: %d\n", iResult);
-			//TODO : throw exception
 		}
 	}
 
-	virtual void Create(std::string serverAdress, std::string serverPort)
+	virtual void CreateClient(std::string serverAddress, std::string serverPort)
 	{
-		tcpSocket = INVALID_SOCKET;
-		struct addrinfo hints;
-		ptr = NULL;
-		result = NULL;
-
-		ZeroMemory(&hints, sizeof(hints));
-		hints.ai_family = AF_UNSPEC;
-		hints.ai_socktype = SOCK_STREAM;
-		hints.ai_protocol = IPPROTO_TCP;
-
-		int iResult = getaddrinfo(serverAdress.c_str(), serverPort.c_str(), &hints, &result);
-		if (iResult != 0) {
-			printf("getaddrinfo failed with error: %d\n", iResult);
-			WSACleanup();
-			//TODO: throw
-		}
+		this->Create(AF_UNSPEC,NULL,serverAddress.c_str(), serverPort.c_str());
 	}
 
-	virtual void Create(std::string port)
+	virtual void CreateServer(std::string port)
 	{
-		tcpSocket = INVALID_SOCKET;
+		this->Create(AF_INET, AI_PASSIVE,NULL, port.c_str());
 
-		result = NULL;
-		struct addrinfo hints;
-
-		ZeroMemory(&hints, sizeof(hints));
-		hints.ai_family = AF_INET;
-		hints.ai_socktype = SOCK_STREAM;
-		hints.ai_protocol = IPPROTO_TCP;
-		hints.ai_flags = AI_PASSIVE;
-
-		// Resolve the server address and port
-		int iResult = getaddrinfo(NULL, port.c_str(), &hints, &result);
-		if (iResult != 0) {
-			printf("getaddrinfo failed with error: %d\n", iResult);
-			WSACleanup();
-			//TODO: throw
-		}
-
-		// Create a SOCKET for connecting to server
 		tcpSocket = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
-		if (tcpSocket == INVALID_SOCKET) {
+		if (tcpSocket == INVALID_SOCKET) 
+		{
 			printf("socket failed with error: %ld\n", WSAGetLastError());
 			freeaddrinfo(result);
 			WSACleanup();
-			//TODO: throw
 		}
 	}
 
 	virtual void Bind()
 	{
-		int iResult = bind(tcpSocket, result->ai_addr, (int)result->ai_addrlen);
-		if (iResult == SOCKET_ERROR) {
+		if (SOCKET_ERROR == bind(tcpSocket, result->ai_addr, (int)result->ai_addrlen)) 
+		{
 			printf("bind failed with error: %d\n", WSAGetLastError());
 			freeaddrinfo(result);
-			closesocket(tcpSocket);
-			WSACleanup();
-			//TODO : throw
+			this->Close();
 		}
-
 		freeaddrinfo(result);
 	}
 
 	virtual void Listen()
 	{
-		int iResult = listen(tcpSocket, SOMAXCONN);
-		if (iResult == SOCKET_ERROR) {
+		if (SOCKET_ERROR == listen(tcpSocket, SOMAXCONN))
+		{
 			printf("listen failed with error: %d\n", WSAGetLastError());
-			closesocket(tcpSocket);
-			WSACleanup();
-			//TODO : throw
+			this->Close();
 		}
 
 	}
 
 	virtual void Accept()
 	{
+		//TODO : cleanup
 		char recvbuf[DEFAULT_BUFLEN];
 		int recvbuflen = DEFAULT_BUFLEN;
 		clientSocket = INVALID_SOCKET;
@@ -170,10 +141,10 @@ public :
 			printf("accept failed: %d\n", WSAGetLastError());
 			closesocket(tcpSocket);
 			WSACleanup();
-			//TODO : throw
 		}
 
 		closesocket(tcpSocket);
+
 		int iResult;
 		// Receive until the peer shuts down the connection
 		do {
@@ -204,34 +175,25 @@ public :
 		} while (iResult > 0);
 
 		// shutdown the connection since we're done
-		iResult = shutdown(clientSocket, SD_SEND);
-		if (iResult == SOCKET_ERROR) {
-			printf("shutdown failed with error: %d\n", WSAGetLastError());
-			closesocket(clientSocket);
-			WSACleanup();
-			//return 1;
-		}
+		this->ShutdownClient();
 
 		// cleanup
-		closesocket(clientSocket);
-		WSACleanup();
+		this->CloseClient();
 	}
 
 	virtual void ConnectToServer()
 	{
-		int iResult;
-		for (ptr = result; ptr != NULL; ptr = ptr->ai_next) {
-
-			tcpSocket = socket(ptr->ai_family, ptr->ai_socktype,
-				ptr->ai_protocol);
-			if (tcpSocket == INVALID_SOCKET) {
+		for (struct addrinfo * ptr = result; ptr != NULL; ptr = ptr->ai_next) 
+		{
+			tcpSocket = socket(ptr->ai_family, ptr->ai_socktype,ptr->ai_protocol);
+			if (tcpSocket == INVALID_SOCKET) 
+			{
 				printf("socket failed with error: %ld\n", WSAGetLastError());
 				WSACleanup();
-				//TODO : throw
 			}
 
-			iResult = connect(tcpSocket, ptr->ai_addr, (int)ptr->ai_addrlen);
-			if (iResult == SOCKET_ERROR) {
+			if (SOCKET_ERROR == connect(tcpSocket, ptr->ai_addr, (int)ptr->ai_addrlen)) 
+			{
 				closesocket(tcpSocket);
 				tcpSocket = INVALID_SOCKET;
 				continue;
@@ -241,37 +203,28 @@ public :
 
 		freeaddrinfo(result);
 
-		if (tcpSocket == INVALID_SOCKET) {
+		if (tcpSocket == INVALID_SOCKET) 
+		{
 			printf("Unable to connect to server!\n");
 			WSACleanup();
-			//TODO : throw
 		}
 	}
 
 	virtual void Close()
 	{
-		int iResult = shutdown(tcpSocket, SD_SEND);
-		if (iResult == SOCKET_ERROR) {
-			printf("shutdown failed: %d\n", WSAGetLastError());			
-		}
-
 		closesocket(tcpSocket);
 		WSACleanup();
 	}
 
 	virtual void CloseClient()
 	{
-		int iResult = shutdown(clientSocket, SD_SEND);
-		if (iResult == SOCKET_ERROR) {
-			printf("shutdown failed: %d\n", WSAGetLastError());
-		}
-
 		closesocket(clientSocket);
 		WSACleanup();
 	}
 	
 	virtual std::string Receive()
 	{
+		//TODO : Cleanup
 		int recvbuflen = DEFAULT_BUFLEN;
 		char recvbuf[DEFAULT_BUFLEN];
 		int iResult;
@@ -286,6 +239,22 @@ public :
 				printf("recv failed: %d\n", WSAGetLastError());
 		} while (iResult > 0);
 		return recvbuf;
+	}
+
+	virtual void ShutdownClient()
+	{
+		if (SOCKET_ERROR == shutdown(clientSocket, SD_SEND))
+		{
+			printf("shutdown failed: %d\n", WSAGetLastError());
+		}
+	}
+
+	virtual void Shutdown()
+	{
+		if (SOCKET_ERROR == shutdown(tcpSocket, SD_SEND)) 
+		{
+			printf("shutdown failed: %d\n", WSAGetLastError());
+		}
 	}
 };
 

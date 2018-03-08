@@ -27,7 +27,7 @@ public:
 
 	virtual void Start() {
 		this->socket->Initialize();
-		this->socket->Create(serverAdress,serverPort);
+		this->socket->CreateClient(serverAdress,serverPort);
 		this->socket->ConnectToServer();
 	}
 
