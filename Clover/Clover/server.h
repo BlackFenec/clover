@@ -18,17 +18,14 @@ public :
 		this->socket->Bind();
 		this->socket->Listen();
 		this->socket->Accept();
-		//std::string response = this->socket->Receive();
-		//this->socket->Send("Echo " + response);
+		std::string response = this->socket->ReceiveFromClient();
+		this->socket->Send("Echo " + response);
+		this->socket->ShutdownClient();
+		this->socket->CloseClient();
 	}
 
 	virtual void Close() {
-		this->socket->CloseClient();
 		this->socket->Close();
-	}
-
-	virtual void CloseClient() {
-		this->socket->CloseClient();
 	}
 };
 

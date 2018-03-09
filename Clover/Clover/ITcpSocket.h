@@ -8,6 +8,7 @@ class ITcpSocket
 public:
 	virtual ~ITcpSocket() {}
 	virtual void Send(std::string message) = 0;
+	virtual void SendToClient(std::string message) = 0;
 	virtual void Initialize() = 0;
 	virtual void CreateClient(std::string serverAdress,std::string serverPort) = 0;
 	virtual void CreateServer(std::string port) = 0;
@@ -18,6 +19,7 @@ public:
 	virtual void Close() = 0;
 	virtual void CloseClient() = 0;
 	virtual std::string Receive() = 0;
+	virtual std::string ReceiveFromClient() = 0;
 	virtual void ShutdownClient() = 0;
 	virtual void Shutdown() = 0;
 };

@@ -47,23 +47,49 @@ private:
 		}
 	}
 
-public :
-	virtual void Send(std::string message)
+	std::string Receive(SOCKET socket)
+	{
+		char recvbuf[DEFAULT_BUFLEN];
+		int iResult;
+
+		do {
+			iResult = recv(socket, recvbuf, DEFAULT_BUFLEN, 0);
+			if (iResult > 0)
+				printf("Bytes received: %d\n", iResult);
+			else if (iResult == 0)
+				printf("Connection closed\n");
+			else
+				printf("recv failed: %d\n", WSAGetLastError());
+		} while (iResult > 0);
+
+		return recvbuf;
+	}
+
+	void Send(std::string message, SOCKET socket)
 	{
 		int recvbuflen = DEFAULT_BUFLEN;
 		char recvbuf[DEFAULT_BUFLEN];
 
-		int iResult = send(tcpSocket, message.c_str(), (int)strlen(message.c_str()), 0);
-		if (iResult == SOCKET_ERROR) 
+		int iResult = send(socket, message.c_str(), (int)strlen(message.c_str()), 0);
+		if (iResult == SOCKET_ERROR)
 		{
 			printf("send failed: %d\n", WSAGetLastError());
-			closesocket(tcpSocket);
+			closesocket(socket);
 			WSACleanup();
 		}
 
 		printf("Bytes Sent: %ld\n", iResult);
+	}
 
-		this->Shutdown();
+public :
+	virtual void Send(std::string message)
+	{
+		this->Send(message, tcpSocket);
+	}
+
+	virtual void SendToClient(std::string message)
+	{
+		this->Send(message, clientSocket);
 	}
 
 	virtual void Initialize()
@@ -116,12 +142,8 @@ public :
 
 	virtual void Accept()
 	{
-		//TODO : cleanup
-		char recvbuf[DEFAULT_BUFLEN];
-		int recvbuflen = DEFAULT_BUFLEN;
 		clientSocket = INVALID_SOCKET;
 
-		// Accept a client socket
 		clientSocket = accept(tcpSocket, NULL, NULL);
 		if (clientSocket == INVALID_SOCKET) {
 			printf("accept failed: %d\n", WSAGetLastError());
@@ -130,41 +152,6 @@ public :
 		}
 
 		closesocket(tcpSocket);
-
-		int iResult;
-		// Receive until the peer shuts down the connection
-		do {
-
-			iResult = recv(clientSocket, recvbuf, recvbuflen, 0);
-			if (iResult > 0) {
-				printf("Bytes received: %d\n", iResult);
-
-				// Echo the buffer back to the sender
-				int iSendResult = send(clientSocket, recvbuf, iResult, 0);
-				if (iSendResult == SOCKET_ERROR) {
-					printf("send failed with error: %d\n", WSAGetLastError());
-					closesocket(clientSocket);
-					WSACleanup();
-					//return 1;
-				}
-				printf("Bytes sent: %d\n", iSendResult);
-			}
-			else if (iResult == 0)
-				printf("Connection closing...\n");
-			else {
-				printf("recv failed with error: %d\n", WSAGetLastError());
-				closesocket(clientSocket);
-				WSACleanup();
-				//return 1;
-			}
-
-		} while (iResult > 0);
-
-		// shutdown the connection since we're done
-		this->ShutdownClient();
-
-		// cleanup
-		this->CloseClient();
 	}
 
 	virtual void ConnectToServer()
@@ -210,21 +197,12 @@ public :
 	
 	virtual std::string Receive()
 	{
-		int recvbuflen = DEFAULT_BUFLEN;
-		char recvbuf[DEFAULT_BUFLEN];
-		int iResult;
+		return this->Receive(tcpSocket);
+	}
 
-		do {
-			iResult = recv(tcpSocket, recvbuf, recvbuflen, 0);
-			if (iResult > 0)
-				printf("Bytes received: %d\n", iResult);
-			else if (iResult == 0)
-				printf("Connection closed\n");
-			else
-				printf("recv failed: %d\n", WSAGetLastError());
-		} while (iResult > 0);
-
-		return recvbuf;
+	virtual std::string ReceiveFromClient()
+	{
+		return this->Receive(clientSocket);
 	}
 
 	virtual void ShutdownClient()

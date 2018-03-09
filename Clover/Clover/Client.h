@@ -24,6 +24,7 @@ public:
 		if (!message.empty())
 		{
 			this->socket->Send(message);
+			this->socket->Shutdown();
 			response = this->socket->Receive();
 			this->socket->Close();
 		}
@@ -35,11 +36,6 @@ public:
 		this->socket->Initialize();
 		this->socket->CreateClient(serverAdress,serverPort);
 		this->socket->ConnectToServer();
-	}
-
-	virtual void Close()
-	{
-		this->socket->Close();
 	}
 };
 

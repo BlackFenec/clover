@@ -16,7 +16,6 @@ public:
 
 	virtual std::string Send(std::string message) = 0;
 	virtual void Start() = 0;
-	virtual void Close() = 0;
 };
 
 #endif
