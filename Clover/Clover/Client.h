@@ -1,7 +1,6 @@
 #ifndef CLIENT_H_
 #define CLIENT_H_
 
-#include <string>
 #include "IClient.h"
 #include <memory>
 
@@ -9,13 +8,14 @@ class Client : public IClient
 {
 private:
 
-	const std::string serverAdress = "localhost";
-	const std::string serverPort = "27015";
+	const std::string k_ServerAddress = "localhost";
+	const std::string k_ServerPort = "27015";
 
 public:
+
 	Client(std::shared_ptr<ITcpSocket> s) 
 	{
-		this->socket = s;
+		this->m_Socket = s;
 	};
 
 	virtual std::string Send(std::string message) 
@@ -23,19 +23,19 @@ public:
 		std::string response;
 		if (!message.empty())
 		{
-			this->socket->Send(message);
-			this->socket->Shutdown();
-			response = this->socket->Receive();
-			this->socket->Close();
+			this->m_Socket->Send(message);
+			this->m_Socket->Shutdown();
+			response = this->m_Socket->Receive();
+			this->m_Socket->Close();
 		}
 		return response;
 	}
 
 	virtual void Start() 
 	{
-		this->socket->Initialize();
-		this->socket->CreateClient(serverAdress,serverPort);
-		this->socket->ConnectToServer();
+		this->m_Socket->Initialize();
+		this->m_Socket->CreateClient(k_ServerAddress, k_ServerPort);
+		this->m_Socket->ConnectToServer();
 	}
 };
 

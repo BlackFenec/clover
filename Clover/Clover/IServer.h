@@ -1,18 +1,20 @@
 #ifndef ISERVER_H_
 #define ISERVER_H_
 
-#include <memory>
 #include "ITcpSocket.h"
+#include <memory>
 
-class IServer {
+class IServer 
+{
 protected:
-	std::shared_ptr<ITcpSocket> socket;
-public:
+	std::shared_ptr<ITcpSocket> m_Socket;
 
-	virtual ~IServer() {};
+public:
 	IServer() {};
-	virtual void Start() = 0;
+	virtual ~IServer() {};
+
 	virtual void Close() = 0;
+	virtual void Start() = 0;
 };
 
 #endif // !ISERVER_H_

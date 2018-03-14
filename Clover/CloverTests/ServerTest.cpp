@@ -1,26 +1,39 @@
 #include "pch.h"
 #include "..\Clover\Server.h"
 #include <memory>
+
 using ::testing::AtLeast;
 using ::testing::Return;
 
-TEST(ServerStart, SocketInitializationIsDone) {
+TEST(ServerClose, SocketIsClose) 
+{
 	std::shared_ptr<MockITcpSocket> socket(new MockITcpSocket());
-	EXPECT_CALL(*socket, Initialize());
+	EXPECT_CALL(*socket, Close());
+
+	std::unique_ptr<IServer> s(new Server(socket));
+	s->Close();
+}
+
+TEST(ServerStart, ClientIsCloseAfterShutdown) 
+{
+	std::shared_ptr<MockITcpSocket> socket(new MockITcpSocket());
+	EXPECT_CALL(*socket, CloseClient());
 
 	std::unique_ptr<IServer> s(new Server(socket));
 	s->Start();
 }
 
-TEST(ServerStart, SocketCreationIsDoneWithPort) {
+TEST(ServerStart, ClientIsShutdownAfterSendingBackMessage)
+{
 	std::shared_ptr<MockITcpSocket> socket(new MockITcpSocket());
-	EXPECT_CALL(*socket, CreateServer("27015"));
+	EXPECT_CALL(*socket, ShutdownClient());
 
 	std::unique_ptr<IServer> s(new Server(socket));
 	s->Start();
 }
 
-TEST(ServerStart, SocketBindIsDone) {
+TEST(ServerStart, SocketBindIsDone) 
+{
 	std::shared_ptr<MockITcpSocket> socket(new MockITcpSocket());
 	EXPECT_CALL(*socket, Bind());
 
@@ -28,23 +41,8 @@ TEST(ServerStart, SocketBindIsDone) {
 	s->Start();
 }
 
-TEST(ServerStart, SocketStartListening) {
-	std::shared_ptr<MockITcpSocket> socket(new MockITcpSocket());
-	EXPECT_CALL(*socket, Listen());
-
-	std::unique_ptr<IServer> s(new Server(socket));
-	s->Start();
-}
-
-TEST(ServerStart, SocketStartAcceptingConnection) {
-	std::shared_ptr<MockITcpSocket> socket(new MockITcpSocket());
-	EXPECT_CALL(*socket, Accept());
-
-	std::unique_ptr<IServer> s(new Server(socket));
-	s->Start();
-}
-
-TEST(ServerStart, MessageIsReceivedFromClientWhenConnectionAccepted) {
+TEST(ServerStart, MessageIsReceivedFromClientWhenConnectionAccepted) 
+{
 	std::shared_ptr<MockITcpSocket> socket(new MockITcpSocket());
 	EXPECT_CALL(*socket, ReceiveFromClient());
 
@@ -52,7 +50,8 @@ TEST(ServerStart, MessageIsReceivedFromClientWhenConnectionAccepted) {
 	s->Start();
 }
 
-TEST(ServerStart, MessageReceivedFromClientIsSentBack) {
+TEST(ServerStart, MessageReceivedFromClientIsSentBack) 
+{
 	std::string message = "my message";
 	std::shared_ptr<MockITcpSocket> socket(new MockITcpSocket());
 	ON_CALL(*socket, ReceiveFromClient()).WillByDefault(Return(message));
@@ -62,26 +61,38 @@ TEST(ServerStart, MessageReceivedFromClientIsSentBack) {
 	s->Start();
 }
 
-TEST(ServerStart, ClientIsShutdownAfterSendingBackMessage) {
+TEST(ServerStart, SocketCreationIsDoneWithPort) 
+{
 	std::shared_ptr<MockITcpSocket> socket(new MockITcpSocket());
-	EXPECT_CALL(*socket, ShutdownClient());
+	EXPECT_CALL(*socket, CreateServer("27015"));
 
 	std::unique_ptr<IServer> s(new Server(socket));
 	s->Start();
 }
 
-TEST(ServerStart, ClientIsCloseAfterShutdown) {
+TEST(ServerStart, SocketInitializationIsDone) 
+{
 	std::shared_ptr<MockITcpSocket> socket(new MockITcpSocket());
-	EXPECT_CALL(*socket, CloseClient());
+	EXPECT_CALL(*socket, Initialize());
 
 	std::unique_ptr<IServer> s(new Server(socket));
 	s->Start();
 }
 
-TEST(ServerClose, SocketIsClose) {
+TEST(ServerStart, SocketStartAcceptingConnection) 
+{
 	std::shared_ptr<MockITcpSocket> socket(new MockITcpSocket());
-	EXPECT_CALL(*socket, Close());
+	EXPECT_CALL(*socket, Accept());
 
 	std::unique_ptr<IServer> s(new Server(socket));
-	s->Close();
+	s->Start();
+}
+
+TEST(ServerStart, SocketStartListening) 
+{
+	std::shared_ptr<MockITcpSocket> socket(new MockITcpSocket());
+	EXPECT_CALL(*socket, Listen());
+
+	std::unique_ptr<IServer> s(new Server(socket));
+	s->Start();
 }

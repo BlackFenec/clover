@@ -3,11 +3,12 @@
 #include "gmock\gmock.h"
 #include "..\Clover\IServer.h"
 
-class MockIServer : public IServer {
+class MockIServer : public IServer 
+{
 public:
 
-	MOCK_METHOD0(Start, void());
 	MOCK_METHOD0(Close, void());
+	MOCK_METHOD0(Start, void());
 };
 
 #endif // !MOCKISERVER_H_

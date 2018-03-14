@@ -3,7 +3,8 @@
 #include "gmock\gmock.h"
 #include "..\Clover\IClient.h"
 
-class MockIClient : public IClient {
+class MockIClient : public IClient 
+{
 public:
 
 	MOCK_METHOD1(Send, std::string(std::string message));
