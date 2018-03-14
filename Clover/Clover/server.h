@@ -19,7 +19,7 @@ public :
 		this->socket->Listen();
 		this->socket->Accept();
 		std::string response = this->socket->ReceiveFromClient();
-		this->socket->Send("Echo " + response);
+		this->socket->SendToClient(response);
 		this->socket->ShutdownClient();
 		this->socket->CloseClient();
 	}

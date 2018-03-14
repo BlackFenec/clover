@@ -51,18 +51,22 @@ private:
 	{
 		char recvbuf[DEFAULT_BUFLEN];
 		int iResult;
+		std::string response = "";
 
 		do {
 			iResult = recv(socket, recvbuf, DEFAULT_BUFLEN, 0);
 			if (iResult > 0)
+			{
+				response += std::string(recvbuf, iResult);
 				printf("Bytes received: %d\n", iResult);
+			}
 			else if (iResult == 0)
 				printf("Connection closed\n");
 			else
 				printf("recv failed: %d\n", WSAGetLastError());
 		} while (iResult > 0);
 
-		return recvbuf;
+		return response;
 	}
 
 	void Send(std::string message, SOCKET socket)

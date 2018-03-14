@@ -7,7 +7,7 @@ using ::testing::Return;
 TEST(ClientSendMessage, ValidMessageIsSentToSocket) {
 	std::string message = "my message";
 	std::shared_ptr<MockITcpSocket> socket(new MockITcpSocket());
-	EXPECT_CALL(*socket, Send(message)).Times(1);
+	EXPECT_CALL(*socket, Send(message));
 
 	std::unique_ptr<IClient> c(new Client(socket));
 	c->Send(message);
@@ -24,7 +24,7 @@ TEST(ClientSendMessage, EmptyMessageIsNotSentToSocket) {
 
 TEST(ClientSendMessage, SocketIsClose) {
 	std::shared_ptr<MockITcpSocket> socket(new MockITcpSocket());
-	EXPECT_CALL(*socket, Close()).Times(1);
+	EXPECT_CALL(*socket, Close());
 
 	std::unique_ptr<IClient> c(new Client(socket));
 	std::string response = c->Send("my message");
@@ -32,7 +32,7 @@ TEST(ClientSendMessage, SocketIsClose) {
 
 TEST(ClientSendMessage, SocketIsShutdown) {
 	std::shared_ptr<MockITcpSocket> socket(new MockITcpSocket());
-	EXPECT_CALL(*socket, Shutdown()).Times(1);
+	EXPECT_CALL(*socket, Shutdown());
 
 	std::unique_ptr<IClient> c(new Client(socket));
 	std::string response = c->Send("my message");
@@ -41,7 +41,7 @@ TEST(ClientSendMessage, SocketIsShutdown) {
 TEST(ClientSendMessage, SocketReceiveResponse) {
 	std::string message = "my message";
 	std::shared_ptr<MockITcpSocket> socket(new MockITcpSocket());
-	EXPECT_CALL(*socket, Receive()).Times(1).WillOnce(Return(message));
+	EXPECT_CALL(*socket, Receive()).WillOnce(Return(message));
 
 	std::unique_ptr<IClient> c(new Client(socket));
 	std::string response = c->Send(message);
@@ -50,7 +50,7 @@ TEST(ClientSendMessage, SocketReceiveResponse) {
 
 TEST(ClientStart, SocketInitializationIsDone) {
 	std::shared_ptr<MockITcpSocket> socket(new MockITcpSocket());
-	EXPECT_CALL(*socket, Initialize()).Times(1);
+	EXPECT_CALL(*socket, Initialize());
 
 	std::unique_ptr<IClient> c(new Client(socket));
 	c->Start();
@@ -58,7 +58,7 @@ TEST(ClientStart, SocketInitializationIsDone) {
 
 TEST(ClientStart, SocketCreationIsDoneWithServerAdressAndPort) {
 	std::shared_ptr<MockITcpSocket> socket(new MockITcpSocket());
-	EXPECT_CALL(*socket, CreateClient("localhost", "27015")).Times(1);
+	EXPECT_CALL(*socket, CreateClient("localhost", "27015"));
 
 	std::unique_ptr<IClient> c(new Client(socket));
 	c->Start();
@@ -66,7 +66,7 @@ TEST(ClientStart, SocketCreationIsDoneWithServerAdressAndPort) {
 
 TEST(ClientStart, SocketConnectWithServer) {
 	std::shared_ptr<MockITcpSocket> socket(new MockITcpSocket());
-	EXPECT_CALL(*socket, ConnectToServer()).Times(1);
+	EXPECT_CALL(*socket, ConnectToServer());
 
 	std::unique_ptr<IClient> c(new Client(socket));
 	c->Start();
