@@ -2,16 +2,31 @@
 #define SERVER_H_
 
 #include "IServer.h"
+#include <queue>
+#include <winsock2.h>
+#include <thread>
 
 class Server : public IServer
 {
 private:
 	const std::string k_Port = "27015";
+	std::vector<std::thread*> m_Clients;
+
+	void ProcessClient(std::shared_ptr<SOCKET> client)
+	{
+		std::string response = this->m_Socket->ReceiveFromClient(client);
+		this->m_Socket->SendToClient(response, client);
+		this->m_Socket->ShutdownClient(client);
+		this->m_Socket->CloseClient(client);
+	}
 
 public :
 	
-	Server(std::shared_ptr<ITcpSocket> s) {
+	Server(std::shared_ptr<ITcpSocket> s) : Server(s,false){};
+
+	Server(std::shared_ptr<ITcpSocket> s, bool isClosing) {
 		this->m_Socket = s;
+		this->m_IsClosing = isClosing;
 	};
 
 	virtual void Close() {
@@ -23,11 +38,15 @@ public :
 		this->m_Socket->CreateServer(k_Port);
 		this->m_Socket->Bind();
 		this->m_Socket->Listen();
-		this->m_Socket->Accept();
-		std::string response = this->m_Socket->ReceiveFromClient();
-		this->m_Socket->SendToClient(response);
-		this->m_Socket->ShutdownClient();
-		this->m_Socket->CloseClient();
+		do
+		{
+			m_Clients.push_back(new std::thread(&Server::ProcessClient, this, this->m_Socket->Accept()));
+		} while (!m_IsClosing);
+
+		for (std::vector<std::thread*>::iterator it = m_Clients.begin(); it != m_Clients.end(); it++)
+			(*it)->join();
+
+		this->Close();
 	}
 };
 
