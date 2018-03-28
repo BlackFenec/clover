@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 2.8)
 set(PROJECT_NAME clover)
 project(${PROJECT_NAME})
 
-set(CMAKE_CXX_FLAGS "-g -Wall")
+set(CMAKE_CXX_FLAGS "/D_SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING")
 set(COMMON_INCLUDES ${PROJECT_SOURCE_DIR}/include)
 include_directories(${COMMON_INCLUDES})
 file(GLOB SRC_FILES ${PROJECT_SOURCE_DIR}/src/*.cpp)
@@ -16,14 +16,18 @@ add_library(clover_lib ${SRC_FILES})
 option(BUILD_TESTS "Build all tests." OFF)
 
 if (BUILD_TESTS)
-  add_subdirectory(librairies/gtest-1.8.0)
+  add_subdirectory(libraries/gtest-1.8.0)
   enable_testing()
 
+  set( gtest_force_shared_crt ON CACHE BOOL "Always use msvcrt.dll" FORCE)
+
   include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
+  include_directories(${gmock_SOURCE_DIR}/include ${gmock_SOURCE_DIR})
 
   add_executable(runUnitTests ${TEST_SRC_FILES})
 
   target_link_libraries(runUnitTests gtest gtest_main)
+  target_link_libraries(runUnitTests gmock gmock_main)
   target_link_libraries(runUnitTests clover_lib)
 
   add_test(UnitTests runUnitTests)

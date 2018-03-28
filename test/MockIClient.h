@@ -1,7 +1,7 @@
 #ifndef MOCKICLIENT_H_
 #define MOCKICLIENT_H_
-#include "gmock\gmock.h"
-#include "..\Clover\IClient.h"
+#include "gmock/gmock.h"
+#include "../include/IClient.h"
 
 class MockIClient : public IClient 
 {

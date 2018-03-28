@@ -1,7 +1,7 @@
 #include "gtest/gtest.h"
-#include "include/MockIServer.h"
-#include "include/MockITcpSocket.h"
-#include "include/Server.h"
+#include "MockIServer.h"
+#include "MockITcpSocket.h"
+#include "../include/Server.h"
 #include <memory>
 
 using ::testing::AtLeast;
