@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 2.8.2)
 
 set(PROJECT_NAME clover)
 project(${PROJECT_NAME})
@@ -16,30 +16,32 @@ add_library(clover_lib ${SRC_FILES})
 option(BUILD_TESTS "Build all tests." OFF)
 
 if (BUILD_TESTS)
-  add_subdirectory(libraries/gtest-1.8.0)
-  enable_testing()
+	add_subdirectory(libraries/gtest-1.8.0)
+	enable_testing()
 
-  set( gtest_force_shared_crt ON CACHE BOOL "Always use msvcrt.dll" FORCE)
+	set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 
-  include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
-  include_directories(${gmock_SOURCE_DIR}/include ${gmock_SOURCE_DIR})
+	if (CMAKE_VERSION VERSION_LESS 2.8.11)
+		include_directories(BEFORE SYSTEM "${gtest_SOURCE_DIR}/include" "${gmock_SOURCE_DIR}/include")
+	else()
+		target_include_directories(gmock_main SYSTEM BEFORE INTERFACE "${gtest_SOURCE_DIR}/include" "${gmock_SOURCE_DIR}/include")
+	endif()
 
-  add_executable(runUnitTests ${TEST_SRC_FILES})
+	add_executable(ctest ${TEST_SRC_FILES})
 
-  target_link_libraries(runUnitTests gtest gtest_main)
-  target_link_libraries(runUnitTests gmock gmock_main)
-  target_link_libraries(runUnitTests clover_lib)
+	target_link_libraries(ctest gmock_main)
+	target_link_libraries(ctest clover_lib)
 
-  add_test(UnitTests runUnitTests)
+	add_test(UnitTests ctest)
 
-  set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/.travis/cmake)
+	set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/.travis/cmake)
 
-  if (CMAKE_BUILD_TYPE STREQUAL "Coverage")
-    include(CodeCoverage)
-    setup_target_for_coverage(${PROJECT_NAME}_coverage runUnitTests coverage)
+	if (CMAKE_BUILD_TYPE STREQUAL "Coverage")
+		include(CodeCoverage)
+		setup_target_for_coverage(${PROJECT_NAME}_coverage runUnitTests coverage)
 
-    SET(CMAKE_CXX_FLAGS "-g -O0 -fprofile-arcs -ftest-coverage")
-    SET(CMAKE_C_FLAGS "-g -O0 -fprofile-arcs -ftest-coverage")
-  endif()
+		SET(CMAKE_CXX_FLAGS "-g -O0 -fprofile-arcs -ftest-coverage")
+		SET(CMAKE_C_FLAGS "-g -O0 -fprofile-arcs -ftest-coverage")
+	endif()
 
 endif()
