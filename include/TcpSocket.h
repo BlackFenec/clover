@@ -89,17 +89,7 @@ public :
 		std::shared_ptr<SOCKET> m_ClientSocket(new SOCKET());
 		*m_ClientSocket = INVALID_SOCKET;
 
-		u_long iMode = 0;
-		int iResult = ioctlsocket(*m_TcpSocket, FIONBIO, &iMode);
-		if (iResult != NO_ERROR)
-			printf("ioctlsocket failed with error: %ld\n", WSAGetLastError());
-
-		*m_ClientSocket = accept(*m_TcpSocket, NULL, NULL);
-		if (*m_ClientSocket == INVALID_SOCKET) {
-			//printf("accept failed: %d\n", WSAGetLastError());
-			closesocket(*m_TcpSocket);
-			WSACleanup();
-		}
+		while(*m_ClientSocket == INVALID_SOCKET) *m_ClientSocket = accept(*m_TcpSocket, NULL, NULL);
 		
 		return m_ClientSocket;
 	}
