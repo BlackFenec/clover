@@ -53,11 +53,11 @@ TEST(ServerTest, WhenServerStartThenClientIsShutdownAfterSendingBackMessage)
 
 TEST(ServerTest, WhenServerStartThenSocketBindIsDone)
 {
-	/*std::shared_ptr<MockITcpSocket> socket(new MockITcpSocket());
+	std::shared_ptr<MockITcpSocket> socket(new MockITcpSocket());
 	EXPECT_CALL(*socket, Bind());
 
 	std::unique_ptr<IServer> s(new Server(socket,true));
-	s->Start();*/
+	s->Start();
 }
 
 TEST(ServerTest, WhenServerStartThenMessageIsReceivedFromClientWhenConnectionAccepted)
@@ -88,45 +88,45 @@ TEST(ServerTest, WhenServerStartThenMessageReceivedFromClientIsSentBack)
 
 TEST(ServerTest, WhenServerStartThenSocketCreationIsDoneWithPort)
 {
-	/*std::shared_ptr<MockITcpSocket> socket(new MockITcpSocket());
+	std::shared_ptr<MockITcpSocket> socket(new MockITcpSocket());
 	EXPECT_CALL(*socket, CreateServer("27015"));
 
 	std::unique_ptr<IServer> s(new Server(socket,true));
-	s->Start();*/
+	s->Start();
 }
 
 TEST(ServerTest, WhenServerStartThenSocketInitializationIsDone)
 {
-	/*std::shared_ptr<MockITcpSocket> socket(new MockITcpSocket());
+	std::shared_ptr<MockITcpSocket> socket(new MockITcpSocket());
 	EXPECT_CALL(*socket, Initialize());
 
 	std::unique_ptr<IServer> s(new Server(socket,true));
-	s->Start();*/
+	s->Start();
 }
 
 TEST(ServerTest, WhenServerStartThenSocketIsClose)
 {
-	/*std::shared_ptr<MockITcpSocket> socket(new MockITcpSocket());
+	std::shared_ptr<MockITcpSocket> socket(new MockITcpSocket());
 	EXPECT_CALL(*socket, Close());
 
 	std::unique_ptr<IServer> s(new Server(socket, true));
-	s->Start();*/
+	s->Start();
 }
 
 TEST(ServerTest, WhenServerStartThenSocketStartAcceptingConnection)
 {
-	/*std::shared_ptr<MockITcpSocket> socket(new MockITcpSocket());
+	std::shared_ptr<MockITcpSocket> socket(new MockITcpSocket());
 	EXPECT_CALL(*socket, Accept());
 
 	std::unique_ptr<IServer> s(new Server(socket,true));
-	s->Start();*/
+	s->Start();
 }
 
 TEST(ServerTest, WhenServerStartThenSocketStartListening)
 {
-	/*std::shared_ptr<MockITcpSocket> socket(new MockITcpSocket());
+	std::shared_ptr<MockITcpSocket> socket(new MockITcpSocket());
 	EXPECT_CALL(*socket, Listen());
 
 	std::unique_ptr<IServer> s(new Server(socket,true));
-	s->Start();*/
+	s->Start();
 }

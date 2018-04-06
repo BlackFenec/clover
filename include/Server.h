@@ -16,8 +16,6 @@ private:
 	{
 		std::string response = this->m_Socket->ReceiveFromClient(client);
 		this->m_Socket->SendToClient(response, client);
-		//this->m_Socket->ShutdownClient(client);
-		//this->m_Socket->CloseClient(client);
 	}
 
 public :

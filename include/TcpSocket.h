@@ -13,6 +13,7 @@
 #include <ws2tcpip.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <thread>
 
 #pragma comment (lib, "Ws2_32.lib")
 
@@ -89,7 +90,10 @@ public :
 		std::shared_ptr<SOCKET> m_ClientSocket(new SOCKET());
 		*m_ClientSocket = INVALID_SOCKET;
 
-		while(*m_ClientSocket == INVALID_SOCKET) *m_ClientSocket = accept(*m_TcpSocket, NULL, NULL);
+		while (*m_ClientSocket == INVALID_SOCKET) {
+			std::this_thread::sleep_for(std::chrono::seconds(1));
+			*m_ClientSocket = accept(*m_TcpSocket, NULL, NULL);
+		}
 		
 		return m_ClientSocket;
 	}
