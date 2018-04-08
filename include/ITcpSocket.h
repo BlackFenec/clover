@@ -2,7 +2,11 @@
 #define ITCPSOCKET_H_
 
 #include <string>
-#include <winsock2.h>
+#ifdef _WIN32
+	#include <winsock2.h>
+#else
+	typedef unsigned int SOCKET;
+#endif
 #include <memory>
 
 class ITcpSocket

@@ -3,7 +3,6 @@
 
 #include "IServer.h"
 #include <queue>
-#include <winsock2.h>
 #include <thread>
 
 class Server : public IServer

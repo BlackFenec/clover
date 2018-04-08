@@ -2,20 +2,28 @@
 #define TCPSOCKET_H_
 
 #include "ITcpSocket.h"
-#include <string>
 
-#undef UNICODE
-
-#define WIN32_LEAN_AND_MEAN
-
-#include <windows.h>
-#include <winsock2.h>
-#include <ws2tcpip.h>
+#ifdef _WIN32
+	#undef UNICODE
+	#define WIN32_LEAN_AND_MEAN
+	#include <windows.h>
+	#include <winsock2.h>
+	#include <ws2tcpip.h>
+	#include <string>
+	#pragma comment (lib, "Ws2_32.lib")
+#else
+	#include <sys/socket.h>
+	#include <arpa/inet.h>
+	#include <netdb.h>
+	#include <unistd.h>
+	#include <cstring>
+	const int INVALID_SOCKET = -1;
+	const int SOCKET_ERROR = -1;
+#endif
 #include <stdlib.h>
 #include <stdio.h>
 #include <thread>
 
-#pragma comment (lib, "Ws2_32.lib")
 
 class TcpSocket : public ITcpSocket
 {
@@ -25,6 +33,22 @@ private:
 	std::shared_ptr<SOCKET> m_TcpSocket;
 	struct addrinfo* m_Result;
 
+	void Cleanup()
+	{
+		#ifdef _WIN32
+			Cleanup();
+		#endif
+	}
+
+	void CloseSocket(std::shared_ptr<SOCKET> socket)
+	{
+		#ifdef _WIN32
+			closesocket(*socket);
+		#else
+			close(*socket);
+		#endif
+	}
+
 	void Create(int aiFamily, int aiFlags, const char * serverAddress, const char * serverPort)
 	{
 		m_TcpSocket = std::make_shared<SOCKET>();
@@ -32,7 +56,11 @@ private:
 		struct addrinfo hints;
 		m_Result = NULL;
 
-		ZeroMemory(&hints, sizeof(hints));
+		#ifdef _WIN32
+			ZeroMemory(&hints, sizeof(hints));
+		#else
+			memset(&hints,0,sizeof(hints));
+		#endif
 		hints.ai_family = aiFamily;
 		hints.ai_socktype = SOCK_STREAM;
 		hints.ai_protocol = IPPROTO_TCP;
@@ -41,8 +69,7 @@ private:
 		int result = getaddrinfo(serverAddress, serverPort, &hints, &m_Result);
 		if (result != 0)
 		{
-			printf("getaddrinfo failed with error: %d\n", result);
-			WSACleanup();
+			Cleanup();
 		}
 	}
 
@@ -57,12 +84,7 @@ private:
 			if (result > 0)
 			{
 				response += std::string(receivedBuffer, result);
-				printf("Bytes received: %d\n", result);
 			}
-			else if (result == 0)
-				printf("Connection closed\n");
-			/*else
-				printf("recv failed: %d\n", WSAGetLastError());*/
 		} while (result > 0);
 
 		return response;
@@ -75,12 +97,18 @@ private:
 		int result = send(*socket, message.c_str(), (int)strlen(message.c_str()), 0);
 		if (result == SOCKET_ERROR)
 		{
-			//printf("send failed: %d\n", WSAGetLastError());
-			closesocket(*socket);
-			WSACleanup();
+			CloseSocket(socket);
+			Cleanup();
 		}
+	}
 
-		//printf("Bytes Sent: %ld\n", result);
+	void Shutdown(std::shared_ptr<SOCKET> socket)
+	{
+		#ifdef _WIN32
+			shutdown(*socket, SD_BOTH);
+		#else
+			shutdown(*socket, SHUT_RDWR);
+		#endif
 	}
 
 public :
@@ -102,7 +130,6 @@ public :
 	{
 		if (SOCKET_ERROR == bind(*m_TcpSocket, m_Result->ai_addr, (int)m_Result->ai_addrlen))
 		{
-			printf("bind failed with error: %d\n", WSAGetLastError());
 			freeaddrinfo(m_Result);
 			this->Close();
 		}
@@ -111,14 +138,14 @@ public :
 
 	virtual void Close()
 	{
-		closesocket(*m_TcpSocket);
-		WSACleanup();
+		CloseSocket(m_TcpSocket);
+		Cleanup();
 	}
 
 	virtual void CloseClient(std::shared_ptr<SOCKET> client)
 	{
-		closesocket(*client);
-		WSACleanup();
+		CloseSocket(client);
+		Cleanup();
 	}
 
 	virtual void ConnectToServer()
@@ -128,13 +155,12 @@ public :
 			*m_TcpSocket = socket(ptr->ai_family, ptr->ai_socktype, ptr->ai_protocol);
 			if (*m_TcpSocket == INVALID_SOCKET)
 			{
-				printf("socket failed with error: %ld\n", WSAGetLastError());
-				WSACleanup();
+				Cleanup();
 			}
 
 			if (SOCKET_ERROR == connect(*m_TcpSocket, ptr->ai_addr, (int)ptr->ai_addrlen))
 			{
-				closesocket(*m_TcpSocket);
+				CloseSocket(m_TcpSocket);
 				*m_TcpSocket = INVALID_SOCKET;
 				continue;
 			}
@@ -145,8 +171,7 @@ public :
 
 		if (*m_TcpSocket == INVALID_SOCKET)
 		{
-			printf("Unable to connect to server!\n");
-			WSACleanup();
+			Cleanup();
 		}
 	}
 
@@ -162,28 +187,24 @@ public :
 		*m_TcpSocket = socket(m_Result->ai_family, m_Result->ai_socktype, m_Result->ai_protocol);
 		if (*m_TcpSocket == INVALID_SOCKET)
 		{
-			printf("socket failed with error: %ld\n", WSAGetLastError());
 			freeaddrinfo(m_Result);
-			WSACleanup();
+			Cleanup();
 		}
 			
 	}
 
 	virtual void Initialize()
 	{
-		WSADATA wsaData;
-		int iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
-		if (iResult != 0)
-		{
-			printf("WSAStartup failed with error: %d\n", iResult);
-		}
+		#ifdef _WIN32
+			WSADATA wsaData;
+			WSAStartup(MAKEWORD(2, 2), &wsaData);
+		#endif
 	}
 
 	virtual void Listen()
 	{
 		if (SOCKET_ERROR == listen(*m_TcpSocket, SOMAXCONN))
 		{
-			printf("listen failed with error: %d\n", WSAGetLastError());
 			this->Close();
 		}
 	}
@@ -210,18 +231,12 @@ public :
 
 	virtual void Shutdown()
 	{
-		if (SOCKET_ERROR == shutdown(*m_TcpSocket, SD_SEND))
-		{
-			printf("shutdown failed: %d\n", WSAGetLastError());
-		}
+		Shutdown(m_TcpSocket);
 	}
 
 	virtual void ShutdownClient(std::shared_ptr<SOCKET> client)
 	{
-		if (SOCKET_ERROR == shutdown(*client, SD_SEND))
-		{
-			printf("shutdown failed: %d\n", WSAGetLastError());
-		}
+		Shutdown(client);
 	}
 };
 

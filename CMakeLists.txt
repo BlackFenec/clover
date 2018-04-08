@@ -3,7 +3,6 @@ cmake_minimum_required(VERSION 2.8.2)
 set(PROJECT_NAME clover)
 project(${PROJECT_NAME})
 
-set(CMAKE_CXX_FLAGS "/D_SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING")
 set(COMMON_INCLUDES ${PROJECT_SOURCE_DIR}/include)
 include_directories(${COMMON_INCLUDES})
 file(GLOB SRC_FILES ${PROJECT_SOURCE_DIR}/src/*.cpp)
