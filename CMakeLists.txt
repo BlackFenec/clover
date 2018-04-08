@@ -3,6 +3,12 @@ cmake_minimum_required(VERSION 2.8.2)
 set(PROJECT_NAME clover)
 project(${PROJECT_NAME})
 
+if (MSVC AND (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 19.11))
+  # VS 2017 : Disable warnings from from gtest code, using deprecated code related to TR1 
+  add_definitions(-D_SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING)
+  message("Add flag to disable warings from gtest -  _SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING")
+endif()
+
 set(COMMON_INCLUDES ${PROJECT_SOURCE_DIR}/include)
 include_directories(${COMMON_INCLUDES})
 file(GLOB SRC_FILES ${PROJECT_SOURCE_DIR}/src/*.cpp)
