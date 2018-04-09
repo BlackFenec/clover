@@ -10,6 +10,8 @@ protected:
 	std::shared_ptr<ITcpSocket> m_Socket;
 	bool m_IsClosing;
 
+	virtual void ProcessClient(std::shared_ptr<SOCKET> client) = 0;
+
 public:
 	IServer() {};
 	virtual ~IServer() {};

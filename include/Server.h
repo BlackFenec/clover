@@ -11,7 +11,8 @@ private:
 	const std::string k_Port = "27015";
 	std::vector<std::thread*> m_Clients;
 
-	void ProcessClient(std::shared_ptr<SOCKET> client)
+protected:
+	virtual void ProcessClient(std::shared_ptr<SOCKET> client)
 	{
 		std::string response = this->m_Socket->ReceiveFromClient(client);
 		this->m_Socket->SendToClient(response, client);
