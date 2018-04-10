@@ -7,11 +7,11 @@
 
 class Server : public IServer
 {
-private:
+protected:
 	const std::string k_Port = "27015";
 	std::vector<std::thread*> m_Clients;
 
-protected:
+
 	virtual void ProcessClient(std::shared_ptr<SOCKET> client)
 	{
 		std::string response = this->m_Socket->ReceiveFromClient(client);
@@ -26,6 +26,8 @@ public :
 		this->m_Socket = s;
 		this->m_IsClosing = isClosing;
 	};
+
+	virtual ~Server() {};
 
 	virtual void Close() {
 		this->m_Socket->Close();

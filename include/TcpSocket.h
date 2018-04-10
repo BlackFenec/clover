@@ -36,7 +36,7 @@ private:
 	void Cleanup()
 	{
 		#ifdef _WIN32
-			Cleanup();
+			WSACleanup();
 		#endif
 	}
 
