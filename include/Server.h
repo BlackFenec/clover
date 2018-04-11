@@ -2,21 +2,17 @@
 #define SERVER_H_
 
 #include "IServer.h"
+#include "ClientServer.h"
+#include "Server.h"
 #include <queue>
 #include <thread>
 
 class Server : public IServer
 {
-protected:
+private:
 	const std::string k_Port = "27015";
-	std::vector<std::thread*> m_Clients;
-
-
-	virtual void ProcessClient(std::shared_ptr<SOCKET> client)
-	{
-		std::string response = this->m_Socket->ReceiveFromClient(client);
-		this->m_Socket->SendToClient(response, client);
-	}
+	std::vector<std::thread*> m_ClientThreads;
+	std::vector<std::shared_ptr<IClientServer>> m_Clients;
 
 public :
 	
@@ -33,6 +29,22 @@ public :
 		this->m_Socket->Close();
 	}
 
+
+	virtual void ProcessClient(std::shared_ptr<IClientServer> client)
+	{
+		
+		while (true)//TODO CDA : Implement closing check
+		{
+			std::string response = client->ReceiveMessage();
+			//TODO queue messages to all clients
+			client->SendMessages();
+			std::this_thread::sleep_for(std::chrono::seconds(1));
+		}
+		//
+		//this->m_Socket->SendToClient(response, client);
+	}
+
+
 	virtual void Start() {
 		this->m_Socket->Initialize();
 		this->m_Socket->CreateServer(k_Port);
@@ -40,10 +52,16 @@ public :
 		this->m_Socket->Listen();
 		do
 		{
-			m_Clients.push_back(new std::thread(&Server::ProcessClient, this, this->m_Socket->Accept()));
+			std::shared_ptr<SOCKET> client = this->m_Socket->Accept();
+			if (client != nullptr)
+			{
+				std::shared_ptr<IClientServer> newClient(new ClientServer(client));
+				m_Clients.push_back(newClient);
+				m_ClientThreads.push_back(new std::thread(&Server::ProcessClient, this, newClient));
+			}
 		} while (!m_IsClosing);
 
-		for (std::vector<std::thread*>::iterator it = m_Clients.begin(); it != m_Clients.end(); it++)
+		for (std::vector<std::thread*>::iterator it = m_ClientThreads.begin(); it != m_ClientThreads.end(); it++)
 			(*it)->join();
 
 		this->Close();

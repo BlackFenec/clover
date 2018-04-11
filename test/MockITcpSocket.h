@@ -17,9 +17,9 @@ public:
 	MOCK_METHOD0(Initialize, void());
 	MOCK_METHOD0(Listen, void());
 	MOCK_METHOD0(Receive, std::string());
-	MOCK_METHOD1(ReceiveFromClient, std::string(std::shared_ptr<SOCKET> client));
+	MOCK_METHOD1(ReceiveFrom, std::string(std::shared_ptr<SOCKET> client));
 	MOCK_METHOD1(Send, void(std::string message));
-	MOCK_METHOD2(SendToClient, void(std::string message, std::shared_ptr<SOCKET> client));
+	MOCK_METHOD2(SendTo, void(std::string message, std::shared_ptr<SOCKET> client));
 	MOCK_METHOD0(Shutdown, void());
 	MOCK_METHOD1(ShutdownClient, void(std::shared_ptr<SOCKET> client));
 };

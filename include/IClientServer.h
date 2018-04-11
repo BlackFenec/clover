@@ -1,0 +1,23 @@
+#ifndef ICLIENTSERVER_H_
+#define ICLIENTSERVER_H_
+
+#include "ITcpSocket.h"
+#include <memory>
+#include <queue>
+
+class IClientServer
+{
+protected:
+	std::queue<std::string> m_Messages;
+	std::shared_ptr<SOCKET> m_Socket;
+
+public:
+	IClientServer() {};
+	virtual ~IClientServer() {};
+
+	virtual void QueueMessage(std::string message) = 0;
+	virtual std::string ReceiveMessage() = 0;
+	virtual void SendMessages() = 0;
+};
+
+#endif //!ICLIENTSERVER_H_

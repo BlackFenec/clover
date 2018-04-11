@@ -29,18 +29,18 @@ class TcpSocket : public ITcpSocket
 {
 private:
 
-	const int k_DefaultBufferLength = 512;
+	static const int k_DefaultBufferLength = 512;
 	std::shared_ptr<SOCKET> m_TcpSocket;
 	struct addrinfo* m_Result;
 
-	void Cleanup()
+	static void Cleanup()
 	{
 		#ifdef _WIN32
 			WSACleanup();
 		#endif
 	}
 
-	void CloseSocket(std::shared_ptr<SOCKET> socket)
+	static void CloseSocket(std::shared_ptr<SOCKET> socket)
 	{
 		#ifdef _WIN32
 			closesocket(*socket);
@@ -73,7 +73,7 @@ private:
 		}
 	}
 
-	std::string Receive(std::shared_ptr<SOCKET> socket)
+	static std::string Receive(std::shared_ptr<SOCKET> socket)
 	{
 		char * receivedBuffer = new char[k_DefaultBufferLength];
 		int result;
@@ -90,7 +90,7 @@ private:
 		return response;
 	}
 
-	void Send(std::string message, std::shared_ptr<SOCKET> socket)
+	static void Send(std::string message, std::shared_ptr<SOCKET> socket)
 	{
 		char * receivedBuffer = new char[k_DefaultBufferLength];
 
@@ -214,9 +214,9 @@ public :
 		return this->Receive(m_TcpSocket);
 	}
 
-	virtual std::string ReceiveFromClient(std::shared_ptr<SOCKET> client)
+	static std::string ReceiveFrom(std::shared_ptr<SOCKET> client)
 	{
-		return this->Receive(client);
+		return Receive(client);
 	}
 
 	virtual void Send(std::string message)
@@ -224,9 +224,9 @@ public :
 		this->Send(message, m_TcpSocket);
 	}
 
-	virtual void SendToClient(std::string message, std::shared_ptr<SOCKET> client)
+	static void SendTo(std::string message, std::shared_ptr<SOCKET> client)
 	{
-		this->Send(message, client);
+		Send(message, client);
 	}
 
 	virtual void Shutdown()

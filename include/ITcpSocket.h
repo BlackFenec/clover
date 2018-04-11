@@ -25,9 +25,9 @@ public:
 	virtual void Initialize() = 0;
 	virtual void Listen() = 0;
 	virtual std::string Receive() = 0;
-	virtual std::string ReceiveFromClient(std::shared_ptr<SOCKET> client) = 0;
+	virtual std::string ReceiveFrom(std::shared_ptr<SOCKET> client) = 0;
 	virtual void Send(std::string message) = 0;
-	virtual void SendToClient(std::string message, std::shared_ptr<SOCKET> client) = 0;
+	virtual void SendTo(std::string message, std::shared_ptr<SOCKET> client) = 0;
 	virtual void Shutdown() = 0;
 	virtual void ShutdownClient(std::shared_ptr<SOCKET> client) = 0;
 };

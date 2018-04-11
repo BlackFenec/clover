@@ -66,7 +66,7 @@ TEST(ServerTest, WhenServerStartThenMessageIsReceivedFromClientWhenConnectionAcc
 	std::shared_ptr<SOCKET> client = nullptr;
 
 	ON_CALL(*socket, Accept()).WillByDefault(Return(client));
-	EXPECT_CALL(*socket, ReceiveFromClient(client));
+	EXPECT_CALL(*socket, ReceiveFrom(client));
 
 	std::unique_ptr<IServer> s(new Server(socket,true));
 	s->Start();
@@ -79,8 +79,8 @@ TEST(ServerTest, WhenServerStartThenMessageReceivedFromClientIsSentBack)
 	std::shared_ptr<MockITcpSocket> socket(new MockITcpSocket());
 
 	ON_CALL(*socket, Accept()).WillByDefault(Return(client));
-	ON_CALL(*socket, ReceiveFromClient(client)).WillByDefault(Return(message));
-	EXPECT_CALL(*socket, SendToClient(message, client));
+	ON_CALL(*socket, ReceiveFrom(client)).WillByDefault(Return(message));
+	EXPECT_CALL(*socket, SendTo(message, client));
 
 	std::unique_ptr<IServer> s(new Server(socket,true));
 	s->Start();
