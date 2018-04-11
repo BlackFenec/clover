@@ -118,7 +118,8 @@ public :
 		std::shared_ptr<SOCKET> m_ClientSocket(new SOCKET());
 		*m_ClientSocket = INVALID_SOCKET;
 
-		while (*m_ClientSocket == INVALID_SOCKET) {
+		while (*m_ClientSocket == INVALID_SOCKET) 
+		{
 			std::this_thread::sleep_for(std::chrono::seconds(1));
 			*m_ClientSocket = accept(*m_TcpSocket, NULL, NULL);
 		}

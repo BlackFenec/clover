@@ -18,7 +18,8 @@ public :
 	
 	Server(std::shared_ptr<ITcpSocket> s) : Server(s,false){};
 
-	Server(std::shared_ptr<ITcpSocket> s, bool isClosing) {
+	Server(std::shared_ptr<ITcpSocket> s, bool isClosing) 
+	{
 		this->m_Socket = s;
 		this->m_IsClosing = isClosing;
 	};
@@ -33,19 +34,21 @@ public :
 	virtual void ProcessClient(std::shared_ptr<IClientServer> client)
 	{
 		
-		while (true)//TODO CDA : Implement closing check
+		while (true)//TODO : Implement closing check
 		{
 			std::string response = client->ReceiveMessage();
-			//TODO queue messages to all clients
+			for (std::vector<std::shared_ptr<IClientServer>>::iterator it = this->m_Clients.begin(); it != this->m_Clients.end(); ++it)
+				if ((*it) != client) (*it)->QueueMessage(response);
+
 			client->SendMessages();
 			std::this_thread::sleep_for(std::chrono::seconds(1));
 		}
-		//
-		//this->m_Socket->SendToClient(response, client);
+		//TODO close client
 	}
 
 
-	virtual void Start() {
+	virtual void Start() 
+	{
 		this->m_Socket->Initialize();
 		this->m_Socket->CreateServer(k_Port);
 		this->m_Socket->Bind();
@@ -62,7 +65,10 @@ public :
 		} while (!m_IsClosing);
 
 		for (std::vector<std::thread*>::iterator it = m_ClientThreads.begin(); it != m_ClientThreads.end(); it++)
+		{
+			//TODO Set client to close
 			(*it)->join();
+		}
 
 		this->Close();
 	}
