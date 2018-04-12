@@ -4,6 +4,7 @@
 #include "IServer.h"
 #include "ClientServer.h"
 #include "Server.h"
+#include <map>
 #include <queue>
 #include <thread>
 
@@ -11,8 +12,7 @@ class Server : public IServer
 {
 private:
 	const std::string k_Port = "27015";
-	std::vector<std::thread*> m_ClientThreads;
-	std::vector<std::shared_ptr<IClientServer>> m_Clients;
+	std::map<std::shared_ptr<IClientServer>,std::thread*> m_Clients;
 
 public :
 	
@@ -26,26 +26,29 @@ public :
 
 	virtual ~Server() {};
 
-	virtual void Close() {
+	virtual void Close() 
+	{
 		this->m_Socket->Close();
 	}
 
-
 	virtual void ProcessClient(std::shared_ptr<IClientServer> client)
-	{
-		
-		while (true)//TODO : Implement closing check
+	{		
+		while (client->IsClosing())
 		{
 			std::string response = client->ReceiveMessage();
-			for (std::vector<std::shared_ptr<IClientServer>>::iterator it = this->m_Clients.begin(); it != this->m_Clients.end(); ++it)
-				if ((*it) != client) (*it)->QueueMessage(response);
+			for (std::map<std::shared_ptr<IClientServer>, std::thread*>::iterator it = this->m_Clients.begin(); it != this->m_Clients.end(); ++it)
+			{
+				if (it->first != client) 
+					(*it->first).QueueMessage(response);
+			}
+				
 
 			client->SendMessages();
 			std::this_thread::sleep_for(std::chrono::seconds(1));
 		}
-		//TODO close client
+		client->Shutdown();
+		client->Close();
 	}
-
 
 	virtual void Start() 
 	{
@@ -59,15 +62,14 @@ public :
 			if (client != nullptr)
 			{
 				std::shared_ptr<IClientServer> newClient(new ClientServer(client));
-				m_Clients.push_back(newClient);
-				m_ClientThreads.push_back(new std::thread(&Server::ProcessClient, this, newClient));
+				m_Clients.insert(std::pair<std::shared_ptr<IClientServer>, std::thread*>(newClient, new std::thread(&Server::ProcessClient, this, newClient)));
 			}
 		} while (!m_IsClosing);
 
-		for (std::vector<std::thread*>::iterator it = m_ClientThreads.begin(); it != m_ClientThreads.end(); it++)
+		for (std::map<std::shared_ptr<IClientServer>, std::thread*>::iterator it = m_Clients.begin(); it != m_Clients.end(); it++)
 		{
-			//TODO Set client to close
-			(*it)->join();
+			(*it->first).SetClosingState(true);
+			(*it->second).join();
 		}
 
 		this->Close();

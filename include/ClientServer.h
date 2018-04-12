@@ -15,9 +15,27 @@ public:
 	ClientServer(std::shared_ptr<SOCKET> s)
 	{
 		this->m_Socket = s;
+		this->m_IsClosing = false;
 	};
 
 	virtual ~ClientServer() {};
+
+	virtual void Close()
+	{
+		TcpSocket::Close(this->m_Socket);
+	}
+
+	virtual bool IsClosing()
+	{
+		return this->m_IsClosing;
+	}
+
+	virtual void QueueMessage(std::string message)
+	{
+		m_UseMessages.lock();
+		this->m_Messages.push(message);
+		m_UseMessages.lock();
+	}
 
 	virtual std::string ReceiveMessage()
 	{
@@ -40,11 +58,14 @@ public:
 		m_UseMessages.unlock();
 	}
 
-	virtual void QueueMessage(std::string message)
+	virtual void SetClosingState(bool isClosing)
 	{
-		m_UseMessages.lock();
-		this->m_Messages.push(message);
-		m_UseMessages.lock();
+		this->m_IsClosing = isClosing;
+	}
+
+	virtual void Shutdown()
+	{
+		TcpSocket::ShutdownSocket(this->m_Socket);
 	}
 };
 

@@ -102,7 +102,7 @@ private:
 		}
 	}
 
-	void Shutdown(std::shared_ptr<SOCKET> socket)
+	static void Shutdown(std::shared_ptr<SOCKET> socket)
 	{
 		#ifdef _WIN32
 			shutdown(*socket, SD_BOTH);
@@ -143,9 +143,9 @@ public :
 		Cleanup();
 	}
 
-	virtual void CloseClient(std::shared_ptr<SOCKET> client)
+	static void Close(std::shared_ptr<SOCKET> socket)
 	{
-		CloseSocket(client);
+		CloseSocket(socket);
 		Cleanup();
 	}
 
@@ -235,9 +235,9 @@ public :
 		Shutdown(m_TcpSocket);
 	}
 
-	virtual void ShutdownClient(std::shared_ptr<SOCKET> client)
+	static void ShutdownSocket(std::shared_ptr<SOCKET> socket)
 	{
-		Shutdown(client);
+		Shutdown(socket);
 	}
 };
 
