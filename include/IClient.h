@@ -1,6 +1,7 @@
 #ifndef ICLIENT_H_
 #define ICLIENT_H_
 
+#include "IClientServer.h"
 #include "ITcpSocket.h"
 #include <memory>
 
@@ -13,7 +14,8 @@ public:
 	IClient() {};
 	virtual ~IClient() {};
 
-	virtual std::string Send(std::string message) = 0;
+	virtual void ProcessClient(std::shared_ptr<IClientServer> client) = 0;
+	virtual void Send(std::string message) = 0;
 	virtual void Start() = 0;
 };
 

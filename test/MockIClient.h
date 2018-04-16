@@ -7,7 +7,8 @@ class MockIClient : public IClient
 {
 public:
 
-	MOCK_METHOD1(Send, std::string(std::string message));
+	MOCK_METHOD1(ProcessClient, void(std::shared_ptr<IClientServer>));
+	MOCK_METHOD1(Send, void(std::string message));
 	MOCK_METHOD0(Start, void());
 };
 

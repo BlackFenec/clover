@@ -149,7 +149,7 @@ public :
 		Cleanup();
 	}
 
-	virtual void ConnectToServer()
+	virtual std::shared_ptr<SOCKET> ConnectToServer()
 	{
 		for (struct addrinfo * ptr = m_Result; ptr != NULL; ptr = ptr->ai_next)
 		{
@@ -174,6 +174,7 @@ public :
 		{
 			Cleanup();
 		}
+		return m_TcpSocket;
 	}
 
 	virtual void CreateClient(std::string serverAddress, std::string serverPort)
