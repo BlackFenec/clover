@@ -34,7 +34,7 @@ public:
 	{
 		m_UseMessages.lock();
 		this->m_Messages.push(message);
-		m_UseMessages.lock();
+		m_UseMessages.unlock();
 	}
 
 	virtual std::string ReceiveMessage()

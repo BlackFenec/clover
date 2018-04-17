@@ -12,14 +12,14 @@ class Client : public IClient
 private:
 
 	std::shared_ptr<IClientServer> m_Client;
-	std::shared_ptr<std::ofstream> m_Output;
+	std::shared_ptr<std::ostream> m_Output;
 	const std::string k_ServerAddress = "localhost";
 	const std::string k_ServerPort = "27015";
 	std::thread * m_SocketProcessing;
 
 public:
 
-	Client(std::shared_ptr<ITcpSocket> s, std::shared_ptr<std::ofstream> output) 
+	Client(std::shared_ptr<ITcpSocket> s, std::shared_ptr<std::ostream> output) 
 	{
 		this->m_Output = output;
 		this->m_Socket = s;
@@ -27,10 +27,11 @@ public:
 
 	virtual void ProcessClient(std::shared_ptr<IClientServer> client)
 	{
-		while (client->IsClosing())
+		while (!client->IsClosing())
 		{
 			std::string response = client->ReceiveMessage();
 			*this->m_Output << response << std::endl;
+			printf("going to send");
 			client->SendMessages();
 			std::this_thread::sleep_for(std::chrono::seconds(1));
 		}
