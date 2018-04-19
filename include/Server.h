@@ -38,7 +38,7 @@ public :
 			std::string response = client->ReceiveMessage();
 			for (std::map<std::shared_ptr<IClientServer>, std::thread*>::iterator it = this->m_Clients.begin(); it != this->m_Clients.end(); ++it)
 			{
-				printf("queueing");
+				printf("queueing %s", response.c_str());
 				if (it->first != client) 
 					(*it->first).QueueMessage(response);
 			}
