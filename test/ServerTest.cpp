@@ -1,4 +1,5 @@
 #include "gtest/gtest.h"
+#include "MockIClientServer.h"
 #include "MockIServer.h"
 #include "MockITcpSocket.h"
 #include "../include/Server.h"
@@ -26,6 +27,50 @@ TEST(ServerTest, WhenCloseThenSocketIsClose)
 
 	std::unique_ptr<IServer> s(new Server(socket, true));
 	s->Close();
+}
+
+TEST(ServerTest, WhenProcessClientThenClientMessageIsReceived)
+{
+	std::shared_ptr<MockITcpSocket> socket(new NiceMock<MockITcpSocket>());
+	std::shared_ptr<MockIClientServer> clientServer(new NiceMock<MockIClientServer>());
+	ON_CALL(*clientServer, IsClosing()).WillByDefault(Return(true));
+	EXPECT_CALL(*clientServer, ReceiveMessage());
+
+	std::unique_ptr<IServer> s(new Server(socket, true));
+	s->ProcessClient(clientServer);
+}
+
+TEST(ServerTest, WhenProcessClientThenMessagesAreSentToClient)
+{
+	std::shared_ptr<MockITcpSocket> socket(new NiceMock<MockITcpSocket>());
+	std::shared_ptr<MockIClientServer> clientServer(new NiceMock<MockIClientServer>());
+	ON_CALL(*clientServer, IsClosing()).WillByDefault(Return(true));
+	EXPECT_CALL(*clientServer, SendMessages());
+
+	std::unique_ptr<IServer> s(new Server(socket, true));
+	s->ProcessClient(clientServer);
+}
+
+TEST(ServerTest, WhenProcessClientAndClientIsClosingThenClientIsShutdown)
+{
+	std::shared_ptr<MockITcpSocket> socket(new NiceMock<MockITcpSocket>());
+	std::shared_ptr<MockIClientServer> clientServer(new NiceMock<MockIClientServer>());
+	ON_CALL(*clientServer, IsClosing()).WillByDefault(Return(true));
+	EXPECT_CALL(*clientServer, Shutdown());
+
+	std::unique_ptr<IServer> s(new Server(socket, true));
+	s->ProcessClient(clientServer);
+}
+
+TEST(ServerTest, WhenProcessClientAndClientIsClosingThenClientIsClose)
+{
+	std::shared_ptr<MockITcpSocket> socket(new NiceMock<MockITcpSocket>());
+	std::shared_ptr<MockIClientServer> clientServer(new NiceMock<MockIClientServer>());
+	ON_CALL(*clientServer, IsClosing()).WillByDefault(Return(true));
+	EXPECT_CALL(*clientServer, Close());
+
+	std::unique_ptr<IServer> s(new Server(socket, true));
+	s->ProcessClient(clientServer);
 }
 
 TEST(ServerTest, WhenRunThenSocketBindingIsDone)

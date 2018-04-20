@@ -33,7 +33,7 @@ public :
 
 	virtual void ProcessClient(std::shared_ptr<IClientServer> client)
 	{		
-		while (!client->IsClosing())
+		do 
 		{
 			std::string response = client->ReceiveMessage();
 			for (std::map<std::shared_ptr<IClientServer>, std::thread*>::iterator it = this->m_Clients.begin(); it != this->m_Clients.end(); ++it)
@@ -42,11 +42,10 @@ public :
 				if (it->first != client) 
 					(*it->first).QueueMessage(response);
 			}
-				
-
+			
 			client->SendMessages();
 			std::this_thread::sleep_for(std::chrono::seconds(1));
-		}
+		} while (!client->IsClosing());
 		client->Shutdown();
 		client->Close();
 	}
