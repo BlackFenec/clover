@@ -9,7 +9,7 @@ public:
 
 	MOCK_METHOD0(Close, void());
 	MOCK_METHOD1(ProcessClient, void(std::shared_ptr<IClientServer>));
-	MOCK_METHOD0(Start, void());
+	MOCK_METHOD0(Run, void());
 };
 
 #endif // !MOCKISERVER_H_

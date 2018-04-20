@@ -51,7 +51,7 @@ public :
 		client->Close();
 	}
 
-	virtual void Start() 
+	virtual void Run() 
 	{
 		this->m_Socket->Initialize();
 		this->m_Socket->CreateServer(k_Port);

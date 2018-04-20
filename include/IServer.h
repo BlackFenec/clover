@@ -17,7 +17,7 @@ public:
 
 	virtual void Close() = 0;
 	virtual void ProcessClient(std::shared_ptr<IClientServer> client) = 0;
-	virtual void Start() = 0;
+	virtual void Run() = 0;
 };
 
 #endif // !ISERVER_H_
