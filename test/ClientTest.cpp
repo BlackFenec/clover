@@ -46,6 +46,67 @@ TEST(ClientTest, WhenSendThenMessageIsQueue)
 	c->Send(message);
 }
 
+TEST(ClientTest, WhenSendThenSocketInitializationIsDone)
+{
+	std::shared_ptr<MockITcpSocket> socket(new NiceMock<MockITcpSocket>());
+	std::shared_ptr<std::ostream> output(&std::cout, [](void*) {});
+	std::unique_ptr<IClient> c(new Client(socket, output));
+
+	ON_CALL(*socket, ConnectToServer()).WillByDefault(Return(nullptr));
+	EXPECT_CALL(*socket, Initialize());
+
+	try
+	{
+		c->Send("mymessage");
+	}
+	catch (std::exception ex)
+	{}
+}
+
+TEST(ClientTest, WhenSendThenSocketCreationIsDoneWithServerAdressAndPort)
+{
+	std::shared_ptr<MockITcpSocket> socket(new NiceMock<MockITcpSocket>());
+	std::shared_ptr<std::ostream> output(&std::cout, [](void*) {});
+	std::unique_ptr<IClient> c(new Client(socket, output));
+
+	ON_CALL(*socket, ConnectToServer()).WillByDefault(Return(nullptr));
+	EXPECT_CALL(*socket, CreateClient("localhost", "27016"));
+
+	try
+	{
+		c->Send("mymessage");
+	}
+	catch (std::exception ex)
+	{}
+}
+
+TEST(ClientTest, WhenSendThenSocketConnectWithServer)
+{
+	std::shared_ptr<MockITcpSocket> socket(new NiceMock<MockITcpSocket>());
+	std::shared_ptr<std::ostream> output(&std::cout, [](void*) {});
+	std::unique_ptr<IClient> c(new Client(socket, output));
+
+	EXPECT_CALL(*socket, ConnectToServer()).WillOnce(Return(nullptr));
+
+	try
+	{
+		c->Send("mymessage");
+	}
+	catch (std::exception ex)
+	{}
+}
+
+TEST(ClientTest, WhenSendThenSocketIsntConnectWithServer)
+{
+	std::shared_ptr<MockITcpSocket> socket(new NiceMock<MockITcpSocket>());
+	std::shared_ptr<std::ostream> output(&std::cout, [](void*) {});
+	std::unique_ptr<IClient> c(new Client(socket, output));
+
+	ON_CALL(*socket, ConnectToServer()).WillByDefault(Return(nullptr));
+
+	ASSERT_THROW(c->Send("mymessage"); , std::exception);
+}
+
 TEST(ClientTest, WhenSendThenMessagesAreSend)
 {
 	std::shared_ptr<MockITcpSocket> socket(new NiceMock<MockITcpSocket>());

@@ -13,8 +13,20 @@ private:
 
 	std::shared_ptr<std::ostream> m_Output;
 	const std::string k_ServerAddress = "localhost";
-	const std::string k_ServerPort = "27015";
+	const std::string k_ServerReceivingPort = "27015";
+	const std::string k_ServerSendPort = "27016";
 	std::thread * m_SocketProcessing;
+
+	void SetUpClient()
+	{
+		this->m_Socket->Initialize();
+		this->m_Socket->CreateClient(k_ServerAddress, k_ServerSendPort);
+		std::shared_ptr<SOCKET> client = this->m_Socket->ConnectToServer();
+		if (client == nullptr) throw std::exception("no socket available");
+
+		std::shared_ptr<IClientServer> newSendingClient(new ClientServer(client));
+		this->m_Client = newSendingClient;
+	}
 
 public:
 
@@ -44,6 +56,7 @@ public:
 
 	virtual void Send(std::string message) 
 	{
+		if (this->m_Client == nullptr) this->SetUpClient();
 		this->m_Client->QueueMessage(message);
 		this->m_Client->SendMessages();
 	}
@@ -56,14 +69,12 @@ public:
 	virtual void Start() 
 	{
 		this->m_Socket->Initialize();
-		this->m_Socket->CreateClient(k_ServerAddress, k_ServerPort);
+		this->m_Socket->CreateClient(k_ServerAddress, k_ServerReceivingPort);
 		std::shared_ptr<SOCKET> client = this->m_Socket->ConnectToServer();
 		if (client == nullptr) throw std::exception("no socket available");
 
-		std::shared_ptr<IClientServer> newClient(new ClientServer(client));
-		this->m_Client = newClient;
-		this->m_SocketProcessing = new std::thread(&Client::ProcessClient, this, this->m_Client);
-
+		std::shared_ptr<IClientServer> newReceivingClient(new ClientServer(client));
+		this->m_SocketProcessing = new std::thread(&Client::ProcessClient, this, newReceivingClient);		
 	}
 };
 
