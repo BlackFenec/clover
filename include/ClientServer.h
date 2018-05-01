@@ -51,7 +51,7 @@ public:
 		m_UseMessages.lock();
 		while (!this->m_Messages.empty())
 		{
-			m_UseSocket.lock(); //TODO : problematic for client because same socket for listening and sending
+			m_UseSocket.lock();
 			TcpSocket::SendTo(m_Messages.front(), this->m_Socket);
 			m_UseSocket.unlock();
 		}

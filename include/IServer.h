@@ -16,7 +16,8 @@ public:
 	virtual ~IServer() {};
 
 	virtual void Close() = 0;
-	virtual void ProcessClient(std::shared_ptr<IClientServer> client) = 0;
+	virtual void ProcessReceivingClient(std::shared_ptr<IClientServer> client) = 0;
+	virtual void ProcessSendingClient(std::shared_ptr<IClientServer> client) = 0;
 	virtual void Run() = 0;
 };
 

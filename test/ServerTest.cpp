@@ -29,7 +29,7 @@ TEST(ServerTest, WhenCloseThenSocketIsClose)
 	s->Close();
 }
 
-TEST(ServerTest, WhenProcessClientThenClientMessageIsReceived)
+TEST(ServerTest, WhenProcessSendingClientThenClientMessageIsReceived)
 {
 	std::shared_ptr<MockITcpSocket> socket(new NiceMock<MockITcpSocket>());
 	std::shared_ptr<MockIClientServer> clientServer(new NiceMock<MockIClientServer>());
@@ -37,10 +37,10 @@ TEST(ServerTest, WhenProcessClientThenClientMessageIsReceived)
 	EXPECT_CALL(*clientServer, ReceiveMessage());
 
 	std::unique_ptr<IServer> s(new Server(socket, true));
-	s->ProcessClient(clientServer);
+	s->ProcessSendingClient(clientServer);
 }
 
-TEST(ServerTest, WhenProcessClientThenMessagesAreSentToClient)
+TEST(ServerTest, WhenProcessReceivingClientThenMessagesAreSentToClient)
 {
 	std::shared_ptr<MockITcpSocket> socket(new NiceMock<MockITcpSocket>());
 	std::shared_ptr<MockIClientServer> clientServer(new NiceMock<MockIClientServer>());
@@ -48,10 +48,10 @@ TEST(ServerTest, WhenProcessClientThenMessagesAreSentToClient)
 	EXPECT_CALL(*clientServer, SendMessages());
 
 	std::unique_ptr<IServer> s(new Server(socket, true));
-	s->ProcessClient(clientServer);
+	s->ProcessReceivingClient(clientServer);
 }
 
-TEST(ServerTest, WhenProcessClientAndClientIsClosingThenClientIsShutdown)
+TEST(ServerTest, WhenProcessReceivingClientAndClientIsClosingThenClientIsShutdown)
 {
 	std::shared_ptr<MockITcpSocket> socket(new NiceMock<MockITcpSocket>());
 	std::shared_ptr<MockIClientServer> clientServer(new NiceMock<MockIClientServer>());
@@ -59,10 +59,10 @@ TEST(ServerTest, WhenProcessClientAndClientIsClosingThenClientIsShutdown)
 	EXPECT_CALL(*clientServer, Shutdown());
 
 	std::unique_ptr<IServer> s(new Server(socket, true));
-	s->ProcessClient(clientServer);
+	s->ProcessReceivingClient(clientServer);
 }
 
-TEST(ServerTest, WhenProcessClientAndClientIsClosingThenClientIsClose)
+TEST(ServerTest, WhenProcessReceivingClientAndClientIsClosingThenClientIsClose)
 {
 	std::shared_ptr<MockITcpSocket> socket(new NiceMock<MockITcpSocket>());
 	std::shared_ptr<MockIClientServer> clientServer(new NiceMock<MockIClientServer>());
@@ -70,64 +70,87 @@ TEST(ServerTest, WhenProcessClientAndClientIsClosingThenClientIsClose)
 	EXPECT_CALL(*clientServer, Close());
 
 	std::unique_ptr<IServer> s(new Server(socket, true));
-	s->ProcessClient(clientServer);
+	s->ProcessReceivingClient(clientServer);
 }
 
-TEST(ServerTest, WhenRunThenSocketBindingIsDone)
+TEST(ServerTest, WhenProcessSendingClientAndClientIsClosingThenClientIsShutdown)
+{
+	std::shared_ptr<MockITcpSocket> socket(new NiceMock<MockITcpSocket>());
+	std::shared_ptr<MockIClientServer> clientServer(new NiceMock<MockIClientServer>());
+	ON_CALL(*clientServer, IsClosing()).WillByDefault(Return(true));
+	EXPECT_CALL(*clientServer, Shutdown());
+
+	std::unique_ptr<IServer> s(new Server(socket, true));
+	s->ProcessSendingClient(clientServer);
+}
+
+TEST(ServerTest, WhenProcessSendingClientAndClientIsClosingThenClientIsClose)
+{
+	std::shared_ptr<MockITcpSocket> socket(new NiceMock<MockITcpSocket>());
+	std::shared_ptr<MockIClientServer> clientServer(new NiceMock<MockIClientServer>());
+	ON_CALL(*clientServer, IsClosing()).WillByDefault(Return(true));
+	EXPECT_CALL(*clientServer, Close());
+
+	std::unique_ptr<IServer> s(new Server(socket, true));
+	s->ProcessSendingClient(clientServer);
+}
+
+TEST(ServerTest, WhenRunThenSocketBindingIsDoneTwice)
 {
 	std::shared_ptr<MockITcpSocket> socket(new NiceMock<MockITcpSocket>());
 	ON_CALL(*socket, Accept()).WillByDefault(Return(nullptr));
-	EXPECT_CALL(*socket, Bind());
+	EXPECT_CALL(*socket, Bind()).Times(2);
 
 	std::unique_ptr<IServer> s(new Server(socket, true));
 	s->Run();
 }
 
-TEST(ServerTest, WhenRunThenServerCreationIsDoneWithPort)
+TEST(ServerTest, WhenRunThenServerCreationIsDoneWithReceivingAndSendingPort)
 {
 	std::shared_ptr<MockITcpSocket> socket(new NiceMock<MockITcpSocket>());
 	ON_CALL(*socket, Accept()).WillByDefault(Return(nullptr));
 	EXPECT_CALL(*socket, CreateServer("27015"));
+	EXPECT_CALL(*socket, CreateServer("27016"));
 
 	std::unique_ptr<IServer> s(new Server(socket, true));
 	s->Run();
 }
 
-TEST(ServerTest, WhenRunThenSocketInitializationIsDone)
+TEST(ServerTest, WhenRunThenSocketInitializationIsDoneTwice)
 {
 	std::shared_ptr<MockITcpSocket> socket(new NiceMock<MockITcpSocket>());
 	ON_CALL(*socket, Accept()).WillByDefault(Return(nullptr));
-	EXPECT_CALL(*socket, Initialize());
+	EXPECT_CALL(*socket, Initialize()).Times(2);
 
 	std::unique_ptr<IServer> s(new Server(socket, true));
 	s->Run();
 }
 
-TEST(ServerTest, WhenRunAndIsClosingThenSocketIsClose)
+TEST(ServerTest, WhenRunAndIsClosingThenSocketIsClosedTwice)
 {
 	std::shared_ptr<MockITcpSocket> socket(new NiceMock<MockITcpSocket>());
 	ON_CALL(*socket, Accept()).WillByDefault(Return(nullptr));
-	EXPECT_CALL(*socket, Close());
+	EXPECT_CALL(*socket, Close()).Times(2);
 
 	std::unique_ptr<IServer> s(new Server(socket, true));
 	s->Run();
 }
 
-TEST(ServerTest, WhenRunThenSocketRunAcceptingConnection)
+TEST(ServerTest, WhenRunThenSocketStartAcceptingConnectionTwice)
 {
 	std::shared_ptr<MockITcpSocket> socket(new NiceMock<MockITcpSocket>());
 	ON_CALL(*socket, Accept()).WillByDefault(Return(nullptr));
-	EXPECT_CALL(*socket, Accept());
+	EXPECT_CALL(*socket, Accept()).Times(2);
 
 	std::unique_ptr<IServer> s(new Server(socket,true));
 	s->Run();
 }
 
-TEST(ServerTest, WhenRunThenSocketRunListening)
+TEST(ServerTest, WhenRunThenSocketStartListeningTwice)
 {
 	std::shared_ptr<MockITcpSocket> socket(new NiceMock<MockITcpSocket>());
 	ON_CALL(*socket, Accept()).WillByDefault(Return(nullptr));
-	EXPECT_CALL(*socket, Listen());
+	EXPECT_CALL(*socket, Listen()).Times(2);
 
 	std::unique_ptr<IServer> s(new Server(socket, true));
 	s->Run();
