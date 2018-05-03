@@ -8,7 +8,8 @@
 class IServer 
 {
 protected:
-	std::shared_ptr<ITcpSocket> m_Socket;
+	std::shared_ptr<ITcpSocket> m_ReceivingSocket;
+	std::shared_ptr<ITcpSocket> m_SendingSocket;
 	bool m_IsClosing;
 
 public:

@@ -18,11 +18,12 @@ private:
 
 public :
 	
-	Server(std::shared_ptr<ITcpSocket> s) : Server(s,false){};
+	Server(std::shared_ptr<ITcpSocket> receivingSocket, std::shared_ptr<ITcpSocket> sendingSocket) : Server(receivingSocket,sendingSocket,false){};
 
-	Server(std::shared_ptr<ITcpSocket> s, bool isClosing) 
+	Server(std::shared_ptr<ITcpSocket> receivingSocket, std::shared_ptr<ITcpSocket> sendingSocket, bool isClosing)
 	{
-		this->m_Socket = s;
+		this->m_ReceivingSocket = receivingSocket;
+		this->m_SendingSocket = sendingSocket;
 		this->m_IsClosing = isClosing;
 	};
 
@@ -30,7 +31,8 @@ public :
 
 	virtual void Close() 
 	{
-		this->m_Socket->Close();
+		this->m_ReceivingSocket->Close();
+		this->m_SendingSocket->Close();
 	}
 
 	virtual void ProcessReceivingClient(std::shared_ptr<IClientServer> client)
@@ -60,13 +62,13 @@ public :
 
 	void ListenSendingSockets()
 	{
-		this->m_Socket->Initialize();
-		this->m_Socket->CreateServer(k_ServerSendPort);
-		this->m_Socket->Bind();
-		this->m_Socket->Listen();
+		this->m_SendingSocket->Initialize();
+		this->m_SendingSocket->CreateServer(k_ServerSendPort);
+		this->m_SendingSocket->Bind();
+		this->m_SendingSocket->Listen();
 		do
 		{
-			std::shared_ptr<SOCKET> client = this->m_Socket->Accept();
+			std::shared_ptr<SOCKET> client = this->m_SendingSocket->Accept();
 			if (client != nullptr)
 			{
 				std::shared_ptr<IClientServer> newClient(new ClientServer(client));
@@ -85,13 +87,13 @@ public :
 	virtual void Run() 
 	{
 		new std::thread(&Server::ListenSendingSockets, this);
-		this->m_Socket->Initialize();
-		this->m_Socket->CreateServer(k_ServerReceivingPort);
-		this->m_Socket->Bind();
-		this->m_Socket->Listen();
+		this->m_ReceivingSocket->Initialize();
+		this->m_ReceivingSocket->CreateServer(k_ServerReceivingPort);
+		this->m_ReceivingSocket->Bind();
+		this->m_ReceivingSocket->Listen();
 		do
 		{
-			std::shared_ptr<SOCKET> client = this->m_Socket->Accept();
+			std::shared_ptr<SOCKET> client = this->m_ReceivingSocket->Accept();
 			if (client != nullptr)
 			{
 				std::shared_ptr<IClientServer> newClient(new ClientServer(client));
