@@ -9,185 +9,160 @@ using ::testing::AtLeast;
 using ::testing::NiceMock;
 using ::testing::Return;
 
-class ClientTest : public ::testing::Test {
+class ClientTest : public ::testing::Test 
+{
 protected:
+
+	std::unique_ptr<IClient> m_Client;
+	std::shared_ptr<MockIClientServer> m_ClientServer;
+	std::shared_ptr<std::ostream> m_Output;
+	std::shared_ptr<MockITcpSocket> m_Socket;
+
 	ClientTest() {}
 
 	virtual ~ClientTest() {}
 
-	virtual void SetUp(){}
+	virtual void SetUp()
+	{
+		std::shared_ptr<MockIClientServer> clientServer(new NiceMock<MockIClientServer>());
+		m_ClientServer = clientServer;
 
-	virtual void TearDown(){}
+		std::shared_ptr<MockITcpSocket> socket(new NiceMock<MockITcpSocket>());
+		m_Socket = socket;
+
+		std::shared_ptr<std::ostream> output(&std::cout, [](void*) {});
+		m_Output = output;
+
+		m_Client = std::make_unique<Client>(m_Socket, m_Output);
+	}
+
+	virtual void TearDown()
+	{
+		m_Client = nullptr;
+		m_ClientServer = nullptr;
+		m_Socket = nullptr;
+		m_Output = nullptr;
+	}
 };
 
-TEST(ClientTest, WhenGetClientServerThenClientServerIsGet)
+TEST_F(ClientTest, WhenGetClientServerThenClientServerIsGet)
 {
-	std::shared_ptr<MockITcpSocket> socket(new NiceMock<MockITcpSocket>());
-	std::shared_ptr<MockIClientServer> clientServer(new NiceMock<MockIClientServer>());
-	std::shared_ptr<std::ostream> output(&std::cout, [](void*) {});
-	std::unique_ptr<IClient> c(new Client(socket, output));
+	m_Client->SetClientServer(m_ClientServer);
 
-	c->SetClientServer(clientServer);
-
-	ASSERT_EQ(clientServer, c->GetClientServer());
+	ASSERT_EQ(m_ClientServer, m_Client->GetClientServer());
 }
 
-TEST(ClientTest, WhenSendThenMessageIsQueue)
+TEST_F(ClientTest, WhenSendThenMessageIsQueue)
 {
-	std::shared_ptr<MockITcpSocket> socket(new NiceMock<MockITcpSocket>());
-	std::shared_ptr<MockIClientServer> clientServer(new NiceMock<MockIClientServer>());
-	std::shared_ptr<std::ostream> output(&std::cout, [](void*) {});
-	std::unique_ptr<IClient> c(new Client(socket, output));
 	std::string message = "mymessage";
-	c->SetClientServer(clientServer);
+	m_Client->SetClientServer(m_ClientServer);
 
-	EXPECT_CALL(*clientServer, QueueMessage(message));
+	EXPECT_CALL(*m_ClientServer, QueueMessage(message));
 
-	c->Send(message);
+	m_Client->Send(message);
 }
 
-TEST(ClientTest, WhenSendThenSocketInitializationIsDone)
+TEST_F(ClientTest, WhenSendThenSocketInitializationIsDone)
 {
-	std::shared_ptr<MockITcpSocket> socket(new NiceMock<MockITcpSocket>());
-	std::shared_ptr<std::ostream> output(&std::cout, [](void*) {});
-	std::unique_ptr<IClient> c(new Client(socket, output));
-
-	ON_CALL(*socket, ConnectToServer()).WillByDefault(Return(nullptr));
-	EXPECT_CALL(*socket, Initialize());
+	ON_CALL(*m_Socket, ConnectToServer()).WillByDefault(Return(nullptr));
+	EXPECT_CALL(*m_Socket, Initialize());
 
 	try
 	{
-		c->Send("mymessage");
+		m_Client->Send("mymessage");
 	}
 	catch (std::exception ex)
 	{}
 }
 
-TEST(ClientTest, WhenSendThenSocketCreationIsDoneWithServerAdressAndPort)
+TEST_F(ClientTest, WhenSendThenSocketCreationIsDoneWithServerAdressAndPort)
 {
-	std::shared_ptr<MockITcpSocket> socket(new NiceMock<MockITcpSocket>());
-	std::shared_ptr<std::ostream> output(&std::cout, [](void*) {});
-	std::unique_ptr<IClient> c(new Client(socket, output));
-
-	ON_CALL(*socket, ConnectToServer()).WillByDefault(Return(nullptr));
-	EXPECT_CALL(*socket, CreateClient("localhost", "27016"));
+	ON_CALL(*m_Socket, ConnectToServer()).WillByDefault(Return(nullptr));
+	EXPECT_CALL(*m_Socket, CreateClient("localhost", "27016"));
 
 	try
 	{
-		c->Send("mymessage");
+		m_Client->Send("mymessage");
 	}
 	catch (std::exception ex)
 	{}
 }
 
-TEST(ClientTest, WhenSendThenSocketConnectWithServer)
+TEST_F(ClientTest, WhenSendThenSocketConnectWithServer)
 {
-	std::shared_ptr<MockITcpSocket> socket(new NiceMock<MockITcpSocket>());
-	std::shared_ptr<std::ostream> output(&std::cout, [](void*) {});
-	std::unique_ptr<IClient> c(new Client(socket, output));
-
-	EXPECT_CALL(*socket, ConnectToServer()).WillOnce(Return(nullptr));
+	EXPECT_CALL(*m_Socket, ConnectToServer()).WillOnce(Return(nullptr));
 
 	try
 	{
-		c->Send("mymessage");
+		m_Client->Send("mymessage");
 	}
 	catch (std::exception ex)
 	{}
 }
 
-TEST(ClientTest, WhenSendThenSocketIsntConnectWithServer)
+TEST_F(ClientTest, WhenSendThenSocketIsntConnectWithServer)
 {
-	std::shared_ptr<MockITcpSocket> socket(new NiceMock<MockITcpSocket>());
-	std::shared_ptr<std::ostream> output(&std::cout, [](void*) {});
-	std::unique_ptr<IClient> c(new Client(socket, output));
+	ON_CALL(*m_Socket, ConnectToServer()).WillByDefault(Return(nullptr));
 
-	ON_CALL(*socket, ConnectToServer()).WillByDefault(Return(nullptr));
-
-	ASSERT_THROW(c->Send("mymessage"); , std::exception);
+	ASSERT_THROW(m_Client->Send("mymessage"); , std::exception);
 }
 
-TEST(ClientTest, WhenSendThenMessagesAreSend)
+TEST_F(ClientTest, WhenSendThenMessagesAreSend)
 {
-	std::shared_ptr<MockITcpSocket> socket(new NiceMock<MockITcpSocket>());
-	std::shared_ptr<MockIClientServer> clientServer(new NiceMock<MockIClientServer>());
-	std::shared_ptr<std::ostream> output(&std::cout, [](void*) {});
-	std::unique_ptr<IClient> c(new Client(socket, output));
-	c->SetClientServer(clientServer);
+	m_Client->SetClientServer(m_ClientServer);
 
-	EXPECT_CALL(*clientServer, SendMessages());
+	EXPECT_CALL(*m_ClientServer, SendMessages());
 
-	c->Send("mymessage");
+	m_Client->Send("mymessage");
 }
 
-TEST(ClientTest, WhenSetClientServerThenClientServerIsSet)
+TEST_F(ClientTest, WhenSetClientServerThenClientServerIsSet)
 {
-	std::shared_ptr<MockITcpSocket> socket(new NiceMock<MockITcpSocket>());
-	std::shared_ptr<MockIClientServer> clientServer(new NiceMock<MockIClientServer>());
-	std::shared_ptr<std::ostream> output(&std::cout, [](void*) {});
-	std::unique_ptr<IClient> c(new Client(socket, output));
+	m_Client->SetClientServer(m_ClientServer);
 
-	c->SetClientServer(clientServer);
-
-	ASSERT_EQ(clientServer, c->GetClientServer());
+	ASSERT_EQ(m_ClientServer, m_Client->GetClientServer());
 }
 
-TEST(ClientTest, WhenStartThenSocketIsntConnectWithServer)
+TEST_F(ClientTest, WhenStartThenSocketIsntConnectWithServer)
 {
-	std::shared_ptr<MockITcpSocket> socket(new NiceMock<MockITcpSocket>());
-	std::shared_ptr<std::ostream> output(&std::cout, [](void*) {});
-	ON_CALL(*socket, ConnectToServer()).WillByDefault(Return(nullptr));
+	ON_CALL(*m_Socket, ConnectToServer()).WillByDefault(Return(nullptr));
 
-	std::unique_ptr<IClient> c(new Client(socket, output));
-
-	ASSERT_THROW(c->Start(), std::exception);
+	ASSERT_THROW(m_Client->Start(), std::exception);
 }
 
-TEST(ClientTest, WhenStartThenSocketConnectWithServer)
+TEST_F(ClientTest, WhenStartThenSocketConnectWithServer)
 {
-	std::shared_ptr<MockITcpSocket> socket(new NiceMock<MockITcpSocket>());
-	std::shared_ptr<std::ostream> output(&std::cout, [](void*) {});
-	EXPECT_CALL(*socket, ConnectToServer()).WillOnce(Return(nullptr));
-
-	std::unique_ptr<IClient> c(new Client(socket, output));
+	EXPECT_CALL(*m_Socket, ConnectToServer()).WillOnce(Return(nullptr));
 
 	try
 	{
-		c->Start();
+		m_Client->Start();
 	}
 	catch (std::exception ex)
 	{}
 }
 
-TEST(ClientTest, WhenStartThenSocketCreationIsDoneWithServerAdressAndPort)
+TEST_F(ClientTest, WhenStartThenSocketCreationIsDoneWithServerAdressAndPort)
 {
-	std::shared_ptr<MockITcpSocket> socket(new NiceMock<MockITcpSocket>());
-	std::shared_ptr<std::ostream> output(&std::cout, [](void*) {});
+	ON_CALL(*m_Socket, ConnectToServer()).WillByDefault(Return(nullptr));
+	EXPECT_CALL(*m_Socket, CreateClient("localhost", "27015"));
 
-	ON_CALL(*socket, ConnectToServer()).WillByDefault(Return(nullptr));
-	EXPECT_CALL(*socket, CreateClient("localhost", "27015"));
-
-	std::unique_ptr<IClient> c(new Client(socket, output));
 	try
 	{
-		c->Start();
+		m_Client->Start();
 	}
 	catch (std::exception ex)
 	{}
 }
 
-TEST(ClientTest, WhenStartThenSocketInitializationIsDone)
+TEST_F(ClientTest, WhenStartThenSocketInitializationIsDone)
 {
-	std::shared_ptr<MockITcpSocket> socket(new NiceMock<MockITcpSocket>());
-	std::shared_ptr<std::ostream> output(&std::cout, [](void*) {});
+	ON_CALL(*m_Socket, ConnectToServer()).WillByDefault(Return(nullptr));
+	EXPECT_CALL(*m_Socket, Initialize());
 
-	ON_CALL(*socket, ConnectToServer()).WillByDefault(Return(nullptr));
-	EXPECT_CALL(*socket, Initialize());
-
-	std::unique_ptr<IClient> c(new Client(socket, output));
 	try
 	{
-		c->Start();
+		m_Client->Start();
 	}
 	catch (std::exception ex)
 	{}
