@@ -68,7 +68,7 @@ public :
 		this->m_SendingSocket->Listen();
 		do
 		{
-			std::shared_ptr<SOCKET> client = this->m_SendingSocket->Accept();
+			std::shared_ptr<SOCKET> client = nullptr;//this->m_SendingSocket->Accept();
 			if (client != nullptr)
 			{
 				std::shared_ptr<IClientServer> newClient(new ClientServer(client));
@@ -81,7 +81,6 @@ public :
 			(*it->first).SetClosingState(true);
 			(*it->second).join();
 		}
-		this->Close();
 	}
 
 	virtual void Run() 
@@ -93,7 +92,7 @@ public :
 		this->m_ReceivingSocket->Listen();
 		do
 		{
-			std::shared_ptr<SOCKET> client = this->m_ReceivingSocket->Accept();
+			std::shared_ptr<SOCKET> client =  this->m_ReceivingSocket->Accept();
 			if (client != nullptr)
 			{
 				std::shared_ptr<IClientServer> newClient(new ClientServer(client));

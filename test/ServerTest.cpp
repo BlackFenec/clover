@@ -9,228 +9,189 @@ using ::testing::AtLeast;
 using ::testing::NiceMock;
 using ::testing::Return;
 
-class ServerTest : public ::testing::Test {
+class ServerTest : public ::testing::Test 
+{
 protected:
+
+	std::shared_ptr<MockIClientServer> m_ClientServer;
+	std::shared_ptr<MockITcpSocket> m_ReceivingSocket;
+	std::shared_ptr<MockITcpSocket> m_SendingSocket;
+	std::unique_ptr<IServer> m_Server;
+
 	ServerTest() {}
 
 	virtual ~ServerTest() {}
 
-	virtual void SetUp() {}
+	virtual void SetUp() 
+	{
+		std::shared_ptr<MockIClientServer> clientServer(new NiceMock<MockIClientServer>());
+		m_ClientServer = clientServer;
 
-	virtual void TearDown() {}
+		std::shared_ptr<MockITcpSocket> receivingSocket(new NiceMock<MockITcpSocket>());
+		m_ReceivingSocket = receivingSocket;
+
+		std::shared_ptr<MockITcpSocket> sendingSocket(new NiceMock<MockITcpSocket>());
+		m_SendingSocket = sendingSocket;
+
+		m_Server = std::make_unique<Server>(m_ReceivingSocket, m_SendingSocket, true);
+	}
+
+	virtual void TearDown() 
+	{
+		m_ClientServer = nullptr;
+		m_ReceivingSocket = nullptr;
+		m_SendingSocket = nullptr;
+		m_Server = nullptr;
+	}
 };
 
-TEST(ServerTest, WhenCloseThenSocketIsClose)
+TEST_F(ServerTest, WhenCloseThenSocketIsClose)
 {
-	std::shared_ptr<MockITcpSocket> receivingSocket(new NiceMock<MockITcpSocket>());
-	std::shared_ptr<MockITcpSocket> sendingSocket(new NiceMock<MockITcpSocket>());
-	EXPECT_CALL(*receivingSocket, Close());
-	EXPECT_CALL(*sendingSocket, Close());
-
-	std::unique_ptr<IServer> s(new Server(receivingSocket, sendingSocket, true));
-	s->Close();
+	EXPECT_CALL(*m_ReceivingSocket, Close());
+	EXPECT_CALL(*m_SendingSocket, Close());
+	m_Server->Close();
 }
 
-TEST(ServerTest, WhenProcessSendingClientThenClientMessageIsReceived)
+TEST_F(ServerTest, WhenProcessSendingClientThenClientMessageIsReceived)
 {
-	std::shared_ptr<MockITcpSocket> receivingSocket(new NiceMock<MockITcpSocket>());
-	std::shared_ptr<MockITcpSocket> sendingSocket(new NiceMock<MockITcpSocket>());
-	std::shared_ptr<MockIClientServer> clientServer(new NiceMock<MockIClientServer>());
-	ON_CALL(*clientServer, IsClosing()).WillByDefault(Return(true));
-	EXPECT_CALL(*clientServer, ReceiveMessage());
+	ON_CALL(*m_ClientServer, IsClosing()).WillByDefault(Return(true));
+	EXPECT_CALL(*m_ClientServer, ReceiveMessage());
 
-	std::unique_ptr<IServer> s(new Server(receivingSocket, sendingSocket, true));
-	s->ProcessSendingClient(clientServer);
+	m_Server->ProcessSendingClient(m_ClientServer);
 }
 
-TEST(ServerTest, WhenProcessReceivingClientThenMessagesAreSentToClient)
+TEST_F(ServerTest, WhenProcessReceivingClientThenMessagesAreSentToClient)
 {
-	std::shared_ptr<MockITcpSocket> receivingSocket(new NiceMock<MockITcpSocket>());
-	std::shared_ptr<MockITcpSocket> sendingSocket(new NiceMock<MockITcpSocket>());
-	std::shared_ptr<MockIClientServer> clientServer(new NiceMock<MockIClientServer>());
-	ON_CALL(*clientServer, IsClosing()).WillByDefault(Return(true));
-	EXPECT_CALL(*clientServer, SendMessages());
+	ON_CALL(*m_ClientServer, IsClosing()).WillByDefault(Return(true));
+	EXPECT_CALL(*m_ClientServer, SendMessages());
 
-	std::unique_ptr<IServer> s(new Server(receivingSocket, sendingSocket, true));
-	s->ProcessReceivingClient(clientServer);
+	m_Server->ProcessReceivingClient(m_ClientServer);
 }
 
-TEST(ServerTest, WhenProcessReceivingClientAndClientIsClosingThenClientIsShutdown)
+TEST_F(ServerTest, WhenProcessReceivingClientAndClientIsClosingThenClientIsShutdown)
 {
-	std::shared_ptr<MockITcpSocket> receivingSocket(new NiceMock<MockITcpSocket>());
-	std::shared_ptr<MockITcpSocket> sendingSocket(new NiceMock<MockITcpSocket>());
-	std::shared_ptr<MockIClientServer> clientServer(new NiceMock<MockIClientServer>());
-	ON_CALL(*clientServer, IsClosing()).WillByDefault(Return(true));
-	EXPECT_CALL(*clientServer, Shutdown());
+	ON_CALL(*m_ClientServer, IsClosing()).WillByDefault(Return(true));
+	EXPECT_CALL(*m_ClientServer, Shutdown());
 
-	std::unique_ptr<IServer> s(new Server(receivingSocket, sendingSocket, true));
-	s->ProcessReceivingClient(clientServer);
+	m_Server->ProcessReceivingClient(m_ClientServer);
 }
 
-TEST(ServerTest, WhenProcessReceivingClientAndClientIsClosingThenClientIsClose)
+TEST_F(ServerTest, WhenProcessReceivingClientAndClientIsClosingThenClientIsClose)
 {
-	std::shared_ptr<MockITcpSocket> receivingSocket(new NiceMock<MockITcpSocket>());
-	std::shared_ptr<MockITcpSocket> sendingSocket(new NiceMock<MockITcpSocket>());
-	std::shared_ptr<MockIClientServer> clientServer(new NiceMock<MockIClientServer>());
-	ON_CALL(*clientServer, IsClosing()).WillByDefault(Return(true));
-	EXPECT_CALL(*clientServer, Close());
+	ON_CALL(*m_ClientServer, IsClosing()).WillByDefault(Return(true));
+	EXPECT_CALL(*m_ClientServer, Close());
 
-	std::unique_ptr<IServer> s(new Server(receivingSocket, sendingSocket, true));
-	s->ProcessReceivingClient(clientServer);
+	m_Server->ProcessReceivingClient(m_ClientServer);
 }
 
-TEST(ServerTest, WhenProcessSendingClientAndClientIsClosingThenClientIsShutdown)
+TEST_F(ServerTest, WhenProcessSendingClientAndClientIsClosingThenClientIsShutdown)
 {
-	std::shared_ptr<MockITcpSocket> receivingSocket(new NiceMock<MockITcpSocket>());
-	std::shared_ptr<MockITcpSocket> sendingSocket(new NiceMock<MockITcpSocket>());
-	std::shared_ptr<MockIClientServer> clientServer(new NiceMock<MockIClientServer>());
-	ON_CALL(*clientServer, IsClosing()).WillByDefault(Return(true));
-	EXPECT_CALL(*clientServer, Shutdown());
+	ON_CALL(*m_ClientServer, IsClosing()).WillByDefault(Return(true));
+	EXPECT_CALL(*m_ClientServer, Shutdown());
 
-	std::unique_ptr<IServer> s(new Server(receivingSocket, sendingSocket, true));
-	s->ProcessSendingClient(clientServer);
+	m_Server->ProcessSendingClient(m_ClientServer);
 }
 
-TEST(ServerTest, WhenProcessSendingClientAndClientIsClosingThenClientIsClose)
+TEST_F(ServerTest, WhenProcessSendingClientAndClientIsClosingThenClientIsClose)
 {
-	std::shared_ptr<MockITcpSocket> receivingSocket(new NiceMock<MockITcpSocket>());
-	std::shared_ptr<MockITcpSocket> sendingSocket(new NiceMock<MockITcpSocket>());
-	std::shared_ptr<MockIClientServer> clientServer(new NiceMock<MockIClientServer>());
-	ON_CALL(*clientServer, IsClosing()).WillByDefault(Return(true));
-	EXPECT_CALL(*clientServer, Close());
+	ON_CALL(*m_ClientServer, IsClosing()).WillByDefault(Return(true));
+	EXPECT_CALL(*m_ClientServer, Close());
 
-	std::unique_ptr<IServer> s(new Server(receivingSocket, sendingSocket, true));
-	s->ProcessSendingClient(clientServer);
+	m_Server->ProcessSendingClient(m_ClientServer);
 }
 
-TEST(ServerTest, WhenRunThenReceivingSocketBindingIsDone)
+TEST_F(ServerTest, WhenRunThenReceivingSocketBindingIsDone)
 {
-	std::shared_ptr<MockITcpSocket> receivingSocket(new NiceMock<MockITcpSocket>());
-	std::shared_ptr<MockITcpSocket> sendingSocket(new NiceMock<MockITcpSocket>());
-	ON_CALL(*receivingSocket, Accept()).WillByDefault(Return(nullptr));
-	EXPECT_CALL(*receivingSocket, Bind());
+	ON_CALL(*m_ReceivingSocket, Accept()).WillByDefault(Return(nullptr));
+	EXPECT_CALL(*m_ReceivingSocket, Bind());
 
-	std::unique_ptr<IServer> s(new Server(receivingSocket, sendingSocket, true));
-	s->Run();
+	m_Server->Run();
 }
 
-TEST(ServerTest, WhenRunThenSendingSocketBindingIsDone)
+TEST_F(ServerTest, WhenRunThenSendingSocketBindingIsDone)
 {
-	std::shared_ptr<MockITcpSocket> receivingSocket(new NiceMock<MockITcpSocket>());
-	std::shared_ptr<MockITcpSocket> sendingSocket(new NiceMock<MockITcpSocket>());
-	ON_CALL(*sendingSocket, Accept()).WillByDefault(Return(nullptr));
-	EXPECT_CALL(*sendingSocket, Bind());
+	ON_CALL(*m_SendingSocket, Accept()).WillByDefault(Return(nullptr));
+	EXPECT_CALL(*m_SendingSocket, Bind());
 
-	std::unique_ptr<IServer> s(new Server(receivingSocket, sendingSocket, true));
-	s->Run();
+	m_Server->Run();
 }
 
-TEST(ServerTest, WhenRunThenServerCreationIsDoneWithReceivingPort)
+TEST_F(ServerTest, WhenRunThenServerCreationIsDoneWithReceivingPort)
 {
-	std::shared_ptr<MockITcpSocket> receivingSocket(new NiceMock<MockITcpSocket>());
-	std::shared_ptr<MockITcpSocket> sendingSocket(new NiceMock<MockITcpSocket>());
-	ON_CALL(*receivingSocket, Accept()).WillByDefault(Return(nullptr));
-	EXPECT_CALL(*receivingSocket, CreateServer("27015"));
+	ON_CALL(*m_ReceivingSocket, Accept()).WillByDefault(Return(nullptr));
+	EXPECT_CALL(*m_ReceivingSocket, CreateServer("27015"));
 
-	std::unique_ptr<IServer> s(new Server(receivingSocket, sendingSocket, true));
-	s->Run();
+	m_Server->Run();
 }
 
-TEST(ServerTest, WhenRunThenServerCreationIsDoneWithSendingPort)
+TEST_F(ServerTest, WhenRunThenServerCreationIsDoneWithSendingPort)
 {
-	std::shared_ptr<MockITcpSocket> receivingSocket(new NiceMock<MockITcpSocket>());
-	std::shared_ptr<MockITcpSocket> sendingSocket(new NiceMock<MockITcpSocket>());
-	ON_CALL(*sendingSocket, Accept()).WillByDefault(Return(nullptr));
-	EXPECT_CALL(*sendingSocket, CreateServer("27016"));
+	ON_CALL(*m_SendingSocket, Accept()).WillByDefault(Return(nullptr));
+	EXPECT_CALL(*m_SendingSocket, CreateServer("27016"));
 
-	std::unique_ptr<IServer> s(new Server(receivingSocket, sendingSocket, true));
-	s->Run();
+	m_Server->Run();
 }
 
-TEST(ServerTest, WhenRunThenReceivingSocketInitializationIsDone)
+TEST_F(ServerTest, WhenRunThenReceivingSocketInitializationIsDone)
 {
-	std::shared_ptr<MockITcpSocket> receivingSocket(new NiceMock<MockITcpSocket>());
-	std::shared_ptr<MockITcpSocket> sendingSocket(new NiceMock<MockITcpSocket>());
-	ON_CALL(*receivingSocket, Accept()).WillByDefault(Return(nullptr));
-	EXPECT_CALL(*receivingSocket, Initialize());
+	ON_CALL(*m_ReceivingSocket, Accept()).WillByDefault(Return(nullptr));
+	EXPECT_CALL(*m_ReceivingSocket, Initialize());
 
-	std::unique_ptr<IServer> s(new Server(receivingSocket, sendingSocket, true));
-	s->Run();
+	m_Server->Run();
 }
 
-TEST(ServerTest, WhenRunThenSendingSocketInitializationIsDone)
+TEST_F(ServerTest, WhenRunThenSendingSocketInitializationIsDone)
 {
-	std::shared_ptr<MockITcpSocket> receivingSocket(new NiceMock<MockITcpSocket>());
-	std::shared_ptr<MockITcpSocket> sendingSocket(new NiceMock<MockITcpSocket>());
-	ON_CALL(*sendingSocket, Accept()).WillByDefault(Return(nullptr));
-	EXPECT_CALL(*sendingSocket, Initialize());
+	ON_CALL(*m_SendingSocket, Accept()).WillByDefault(Return(nullptr));
+	EXPECT_CALL(*m_SendingSocket, Initialize());
 
-	std::unique_ptr<IServer> s(new Server(receivingSocket, sendingSocket, true));
-	s->Run();
+	m_Server->Run();
 }
 
-TEST(ServerTest, WhenRunAndIsClosingThenReceivingSocketIsClosed)
+TEST_F(ServerTest, WhenRunAndIsClosingThenReceivingSocketIsClosed)
 {
-	std::shared_ptr<MockITcpSocket> receivingSocket(new NiceMock<MockITcpSocket>());
-	std::shared_ptr<MockITcpSocket> sendingSocket(new NiceMock<MockITcpSocket>());
-	ON_CALL(*receivingSocket, Accept()).WillByDefault(Return(nullptr));
-	EXPECT_CALL(*receivingSocket, Close());
+	ON_CALL(*m_ReceivingSocket, Accept()).WillByDefault(Return(nullptr));
+	EXPECT_CALL(*m_ReceivingSocket, Close());
 
-	std::unique_ptr<IServer> s(new Server(receivingSocket, sendingSocket, true));
-	s->Run();
+	m_Server->Run();
 }
 
-TEST(ServerTest, WhenRunAndIsClosingThenSendingSocketIsClosed)
+TEST_F(ServerTest, WhenRunAndIsClosingThenSendingSocketIsClosed)
 {
-	std::shared_ptr<MockITcpSocket> receivingSocket(new NiceMock<MockITcpSocket>());
-	std::shared_ptr<MockITcpSocket> sendingSocket(new NiceMock<MockITcpSocket>());
-	ON_CALL(*sendingSocket, Accept()).WillByDefault(Return(nullptr));
-	EXPECT_CALL(*sendingSocket, Close());
+	ON_CALL(*m_SendingSocket, Accept()).WillByDefault(Return(nullptr));
+	EXPECT_CALL(*m_SendingSocket, Close());
 
-	std::unique_ptr<IServer> s(new Server(receivingSocket, sendingSocket, true));
-	s->Run();
+	m_Server->Run();
 }
 
-TEST(ServerTest, WhenRunThenReceivingSocketStartAcceptingConnection)
+TEST_F(ServerTest, WhenRunThenReceivingSocketStartAcceptingConnection)
 {
-	std::shared_ptr<MockITcpSocket> receivingSocket(new NiceMock<MockITcpSocket>());
-	std::shared_ptr<MockITcpSocket> sendingSocket(new NiceMock<MockITcpSocket>());
-	ON_CALL(*receivingSocket, Accept()).WillByDefault(Return(nullptr));
-	EXPECT_CALL(*receivingSocket, Accept());
+	ON_CALL(*m_ReceivingSocket, Accept()).WillByDefault(Return(nullptr));
+	EXPECT_CALL(*m_ReceivingSocket, Accept());
 
-	std::unique_ptr<IServer> s(new Server(receivingSocket, sendingSocket, true));
-	s->Run();
+	m_Server->Run();
 }
 
-TEST(ServerTest, WhenRunThenSendingSocketStartAcceptingConnection)
+TEST_F(ServerTest, WhenRunThenSendingSocketStartAcceptingConnection)
 {
-	std::shared_ptr<MockITcpSocket> receivingSocket(new NiceMock<MockITcpSocket>());
-	std::shared_ptr<MockITcpSocket> sendingSocket(new NiceMock<MockITcpSocket>());
-	ON_CALL(*sendingSocket, Accept()).WillByDefault(Return(nullptr));
-	EXPECT_CALL(*sendingSocket, Accept());
+	ON_CALL(*m_SendingSocket, Accept()).WillByDefault(Return(nullptr));
+	EXPECT_CALL(*m_SendingSocket, Accept());
 
-	std::unique_ptr<IServer> s(new Server(receivingSocket, sendingSocket, true));
-	s->Run();
+	m_Server->Run();
 }
 
-TEST(ServerTest, WhenRunThenReceivingSocketStartListening)
+TEST_F(ServerTest, WhenRunThenReceivingSocketStartListening)
 {
-	std::shared_ptr<MockITcpSocket> receivingSocket(new NiceMock<MockITcpSocket>());
-	std::shared_ptr<MockITcpSocket> sendingSocket(new NiceMock<MockITcpSocket>());
-	ON_CALL(*receivingSocket, Accept()).WillByDefault(Return(nullptr));
-	EXPECT_CALL(*receivingSocket, Listen());
+	ON_CALL(*m_ReceivingSocket, Accept()).WillByDefault(Return(nullptr));
+	EXPECT_CALL(*m_ReceivingSocket, Listen());
 
-	std::unique_ptr<IServer> s(new Server(receivingSocket, sendingSocket, true));
-	s->Run();
+	m_Server->Run();
 }
 
-TEST(ServerTest, WhenRunThenSendingSocketStartListening)
+TEST_F(ServerTest, WhenRunThenSendingSocketStartListening)
 {
-	std::shared_ptr<MockITcpSocket> receivingSocket(new NiceMock<MockITcpSocket>());
-	std::shared_ptr<MockITcpSocket> sendingSocket(new NiceMock<MockITcpSocket>());
-	ON_CALL(*sendingSocket, Accept()).WillByDefault(Return(nullptr));
-	EXPECT_CALL(*sendingSocket, Listen());
+	ON_CALL(*m_SendingSocket, Accept()).WillByDefault(Return(nullptr));
+	EXPECT_CALL(*m_SendingSocket, Listen());
 
-	std::unique_ptr<IServer> s(new Server(receivingSocket, sendingSocket, true));
-	s->Run();
+	m_Server->Run();
 }
