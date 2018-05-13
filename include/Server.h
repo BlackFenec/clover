@@ -31,8 +31,7 @@ public :
 
 	virtual void Close() 
 	{
-		this->m_ReceivingSocket->Close();
-		this->m_SendingSocket->Close();
+		this->m_IsClosing = true;	
 	}
 
 	virtual void ProcessReceivingClient(std::shared_ptr<IClientServer> client)
@@ -60,7 +59,7 @@ public :
 		client->Close();
 	}
 
-	void ListenSendingSockets()
+	virtual void ListenSendingSockets()
 	{
 		this->m_SendingSocket->Initialize();
 		this->m_SendingSocket->CreateServer(k_ServerSendPort);
@@ -68,7 +67,7 @@ public :
 		this->m_SendingSocket->Listen();
 		do
 		{
-			std::shared_ptr<SOCKET> client = nullptr;//this->m_SendingSocket->Accept();
+			std::shared_ptr<SOCKET> client = nullptr;// this->m_SendingSocket->Accept();
 			if (client != nullptr)
 			{
 				std::shared_ptr<IClientServer> newClient(new ClientServer(client));
@@ -81,6 +80,7 @@ public :
 			(*it->first).SetClosingState(true);
 			(*it->second).join();
 		}
+		this->m_SendingSocket->Close();
 	}
 
 	virtual void Run() 
@@ -106,7 +106,7 @@ public :
 			(*it->second).join();
 		}
 
-		this->Close();
+		this->m_ReceivingSocket->Close();
 	}
 };
 

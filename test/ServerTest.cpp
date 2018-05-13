@@ -45,13 +45,6 @@ protected:
 	}
 };
 
-TEST_F(ServerTest, WhenCloseThenSocketIsClose)
-{
-	EXPECT_CALL(*m_ReceivingSocket, Close());
-	EXPECT_CALL(*m_SendingSocket, Close());
-	m_Server->Close();
-}
-
 TEST_F(ServerTest, WhenProcessSendingClientThenClientMessageIsReceived)
 {
 	ON_CALL(*m_ClientServer, IsClosing()).WillByDefault(Return(true));
@@ -113,7 +106,7 @@ TEST_F(ServerTest, WhenRunThenSendingSocketBindingIsDone)
 	ON_CALL(*m_SendingSocket, Accept()).WillByDefault(Return(nullptr));
 	EXPECT_CALL(*m_SendingSocket, Bind());
 
-	m_Server->Run();
+	m_Server->ListenSendingSockets();
 }
 
 TEST_F(ServerTest, WhenRunThenServerCreationIsDoneWithReceivingPort)
@@ -129,7 +122,7 @@ TEST_F(ServerTest, WhenRunThenServerCreationIsDoneWithSendingPort)
 	ON_CALL(*m_SendingSocket, Accept()).WillByDefault(Return(nullptr));
 	EXPECT_CALL(*m_SendingSocket, CreateServer("27016"));
 
-	m_Server->Run();
+	m_Server->ListenSendingSockets();
 }
 
 TEST_F(ServerTest, WhenRunThenReceivingSocketInitializationIsDone)
@@ -145,7 +138,7 @@ TEST_F(ServerTest, WhenRunThenSendingSocketInitializationIsDone)
 	ON_CALL(*m_SendingSocket, Accept()).WillByDefault(Return(nullptr));
 	EXPECT_CALL(*m_SendingSocket, Initialize());
 
-	m_Server->Run();
+	m_Server->ListenSendingSockets();
 }
 
 TEST_F(ServerTest, WhenRunAndIsClosingThenReceivingSocketIsClosed)
@@ -161,7 +154,7 @@ TEST_F(ServerTest, WhenRunAndIsClosingThenSendingSocketIsClosed)
 	ON_CALL(*m_SendingSocket, Accept()).WillByDefault(Return(nullptr));
 	EXPECT_CALL(*m_SendingSocket, Close());
 
-	m_Server->Run();
+	m_Server->ListenSendingSockets();
 }
 
 TEST_F(ServerTest, WhenRunThenReceivingSocketStartAcceptingConnection)
@@ -177,7 +170,7 @@ TEST_F(ServerTest, WhenRunThenSendingSocketStartAcceptingConnection)
 	ON_CALL(*m_SendingSocket, Accept()).WillByDefault(Return(nullptr));
 	EXPECT_CALL(*m_SendingSocket, Accept());
 
-	m_Server->Run();
+	m_Server->ListenSendingSockets();
 }
 
 TEST_F(ServerTest, WhenRunThenReceivingSocketStartListening)
@@ -193,5 +186,5 @@ TEST_F(ServerTest, WhenRunThenSendingSocketStartListening)
 	ON_CALL(*m_SendingSocket, Accept()).WillByDefault(Return(nullptr));
 	EXPECT_CALL(*m_SendingSocket, Listen());
 
-	m_Server->Run();
+	m_Server->ListenSendingSockets();
 }
