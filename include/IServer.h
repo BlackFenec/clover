@@ -17,6 +17,7 @@ public:
 	virtual ~IServer() {};
 
 	virtual void Close() = 0;
+	virtual void ListenReceivingSockets() = 0;
 	virtual void ListenSendingSockets() = 0;
 	virtual void ProcessReceivingClient(std::shared_ptr<IClientServer> client) = 0;
 	virtual void ProcessSendingClient(std::shared_ptr<IClientServer> client) = 0;
