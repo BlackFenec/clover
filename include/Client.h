@@ -46,8 +46,7 @@ public:
 		while (!client->IsClosing())
 		{
 			std::string response = client->ReceiveMessage();
-			*this->m_Output << response << std::endl;
-			printf("going to send");		
+			*this->m_Output << std::endl << "Server : " << response << std::endl;
 			std::this_thread::sleep_for(std::chrono::seconds(1));
 		}
 		client->Shutdown();

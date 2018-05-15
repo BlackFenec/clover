@@ -85,7 +85,7 @@ private:
 			{
 				response += std::string(receivedBuffer, result);
 			}
-		} while (result > 0);
+		} while (result > 0 && result == k_DefaultBufferLength);
 
 		return response;
 	}
@@ -93,7 +93,6 @@ private:
 	static void Send(std::string message, std::shared_ptr<SOCKET> socket)
 	{
 		char * receivedBuffer = new char[k_DefaultBufferLength];
-
 		int result = send(*socket, message.c_str(), (int)strlen(message.c_str()), 0);
 		if (result == SOCKET_ERROR)
 		{

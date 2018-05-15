@@ -54,6 +54,7 @@ public:
 			m_UseSocket.lock();
 			TcpSocket::SendTo(m_Messages.front(), this->m_Socket);
 			m_UseSocket.unlock();
+			m_Messages.pop();
 		}
 		m_UseMessages.unlock();
 	}
