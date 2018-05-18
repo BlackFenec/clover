@@ -92,6 +92,14 @@ public :
 		} while (!client->IsClosing());
 		client->Shutdown();
 		client->Close();
+		for (std::map<std::shared_ptr<IClientServer>, std::thread*>::iterator it = this->m_ReceivingClients.begin(); it != this->m_ReceivingClients.end(); ++it)
+		{
+			if ((it->first) == client)
+			{
+				m_ReceivingClients.erase(it);
+				break;
+			}
+		}
 	}
 
 	virtual void ProcessSendingClient(std::shared_ptr<IClientServer> client)
@@ -106,6 +114,14 @@ public :
 		} while (!client->IsClosing());
 		client->Shutdown();
 		client->Close();
+		for (std::map<std::shared_ptr<IClientServer>, std::thread*>::iterator it = this->m_SendingClients.begin(); it != this->m_SendingClients.end(); ++it)
+		{
+			if ((it->first) == client)
+			{
+				m_SendingClients.erase(it);
+				break;
+			}
+		}
 	}
 
 	virtual void Run()
