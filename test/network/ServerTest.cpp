@@ -2,7 +2,7 @@
 #include "MockIClientServer.h"
 #include "MockIServer.h"
 #include "MockITcpSocket.h"
-#include "../include/Server.h"
+#include "../../src/network/Server.h"
 #include <memory>
 
 using ::testing::AtLeast;

@@ -1,7 +1,7 @@
 #ifndef MOCKICLIENTSERVER_H_
 #define MOCKICLIENTSERVER_H_
 #include "gmock/gmock.h"
-#include "../include/IClientServer.h"
+#include "../../src/network/IClientServer.h"
 
 class MockIClientServer : public IClientServer
 {

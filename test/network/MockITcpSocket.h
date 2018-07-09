@@ -2,7 +2,7 @@
 #define MOCKITCPSOCKET_H_
 
 #include "gmock/gmock.h"
-#include "../include/ITcpSocket.h"
+#include "../../src/network/ITcpSocket.h"
 
 class MockITcpSocket : public ITcpSocket
 {

@@ -1,7 +1,7 @@
 #ifndef MOCKISERVER_H_
 #define MOCKISERVER_H_
 #include "gmock/gmock.h"
-#include "../include/IServer.h"
+#include "../../src/network/IServer.h"
 
 class MockIServer : public IServer 
 {
