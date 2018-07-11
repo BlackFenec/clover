@@ -23,12 +23,6 @@ public :
 	}
 
 	virtual ~Entity();
-
-	UUID GetUuid()
-	{
-		return m_Uuid;
-	}
-
 };
 
 #endif // !ENTITY_H_

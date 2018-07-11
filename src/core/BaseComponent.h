@@ -6,7 +6,7 @@ class BaseEntity;
 class BaseComponent {
 
 public :
-	BaseEntity owner;
+	BaseEntity* owner;
 
 	BaseComponent() {};
 	virtual ~BaseComponent() {};
