@@ -1,9 +1,15 @@
 #include "EntityManager.h"
 
-EntityManager* EntityManager::Instance()
+EntityManager EntityManager::m_EntityManager;
+
+EntityManager::EntityManager()
 {
-	static EntityManager instance;
-	return &instance;
+
+}
+
+EntityManager::~EntityManager()
+{
+
 }
 
 Entity* EntityManager::CreateEntity(int x, int y)

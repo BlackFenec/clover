@@ -10,17 +10,7 @@ private :
 	int m_PositionY;
 
 public :
-	Entity()
-	{
-		this->m_PositionX = 0;
-		this->m_PositionY = 0;
-	}
-
-	Entity(int x, int y)
-	{
-		this->m_PositionX = x;
-		this->m_PositionY = y;
-	}
+	Entity(int x, int y);
 
 	virtual ~Entity();
 };

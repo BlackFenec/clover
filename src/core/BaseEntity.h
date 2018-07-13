@@ -10,23 +10,14 @@ class BaseEntity
 private:
 
 	std::list<BaseComponent> m_Components;
-	UUID* m_Uuid;
+	UUID m_Uuid;
 
 public:
 
-	BaseEntity()
-	{
-		this->m_Components = std::list<BaseComponent>();
-		UuidCreate(m_Uuid);
-	};
-
+	BaseEntity();
 	virtual ~BaseEntity();
 
-	UUID* GetUuid()
-	{
-		return m_Uuid;
-	}
-
+	UUID* GetUuid();
 };
 
 #endif
