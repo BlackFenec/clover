@@ -2,15 +2,16 @@
 #define ENTITY_H_
 
 #include "BaseEntity.h"
+#include "..\math\Vector2D.h"
 
 class Entity : public BaseEntity
 {
 private :
-	int m_PositionX;
-	int m_PositionY;
+	Vector2D m_Position;
 
 public :
-	Entity(int x, int y);
+	Entity();
+	Entity(Vector2D position);
 
 	virtual ~Entity();
 };

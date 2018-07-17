@@ -14,7 +14,7 @@ EntityManager::~EntityManager()
 
 Entity* EntityManager::CreateEntity(int x, int y)
 {
-	Entity* entity = new Entity(x, y);
+	Entity* entity = new Entity(Vector2D(x,y));
 	m_Entities.insert(std::pair<UUID*,Entity*>(entity->GetUuid(), entity));
 	return entity;
 }
