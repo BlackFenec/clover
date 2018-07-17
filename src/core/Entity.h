@@ -2,7 +2,7 @@
 #define ENTITY_H_
 
 #include "BaseEntity.h"
-#include "..\math\Vector2D.h"
+#include "..\physic\Vector2D.h"
 
 class Entity : public BaseEntity
 {
