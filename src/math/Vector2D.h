@@ -12,10 +12,12 @@ public :
 	Vector2D(double x, double y);
 	virtual ~Vector2D();
 
-	Vector2D operator+(const Vector2D &lhs, const Vector2D &rhs);
-	Vector2D operator-(const Vector2D &lhs, const Vector2D &rhs);
-	Vector2D operator*(const Vector2D &lhs, double rhs);
-	Vector2D operator/(const Vector2D &lhs, double rhs);
+	Vector2D operator+(const Vector2D &v);
+	Vector2D operator-(const Vector2D &v);
+	Vector2D operator*(const double &factor);
+	Vector2D operator/(const double &divider);
+
+	double DotProduct(const Vector2D &v);
 
 	double Length();
 	double Length(const Vector2D &v);

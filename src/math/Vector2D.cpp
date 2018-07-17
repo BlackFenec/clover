@@ -10,29 +10,29 @@ Vector2D::Vector2D(double x, double y) : x(x), y(y)
 Vector2D::~Vector2D()
 {}
 
-Vector2D Vector2D::operator+(const Vector2D &lhs, const Vector2D &rhs)
+Vector2D Vector2D::operator+(const Vector2D &v)
 {
-	return Vector2D(lhs.x + rhs.x, lhs.y + rhs.y);
+	return Vector2D(this->x + v.x, this->y + v.y);
 }
 
-Vector2D Vector2D::operator-(const Vector2D &lhs, const Vector2D &rhs)
+Vector2D Vector2D::operator-(const Vector2D &v)
 {
-	return Vector2D(lhs.x - rhs.x, lhs.y - rhs.y);
+	return Vector2D(this->x + - v.x, this->y - v.y);
 }
 
-Vector2D Vector2D::operator*(const Vector2D &lhs, double rhs)
+Vector2D Vector2D::operator*(const double &rhs)
 {
-	return Vector2D(lhs.x * rhs, lhs.y * rhs);
+	return Vector2D(this->x * rhs, this->y * rhs);
 }
 
-Vector2D Vector2D::operator/(const Vector2D &lhs, double rhs)
+Vector2D Vector2D::operator/(const double &rhs)
 {
-	return Vector2D(lhs.x / rhs, lhs.y / rhs);
+	return Vector2D(this->x / rhs, this->y / rhs);
 }
 
 double Vector2D::Length()
 {
-	return sqrt(pow(lhs.x,2) + pow(lhs.y,2));
+	return sqrt(pow(this->x,2) + pow(this->y,2));
 }
 
 double Vector2D::Length(const Vector2D & v)
@@ -43,8 +43,8 @@ double Vector2D::Length(const Vector2D & v)
 void Vector2D::Normalize()
 {
 	double length = this->Length();
-	this.x /= length;
-	this.y /= length;
+	this->x /= length;
+	this->y /= length;
 }
 
 Vector2D Vector2D::Normalize(const Vector2D &v)
@@ -55,4 +55,9 @@ Vector2D Vector2D::Normalize(const Vector2D &v)
 	normalizedVector.y /= length;
 
 	return normalizedVector;
+}
+
+double Vector2D::DotProduct(const Vector2D &v)
+{
+	return this->x * v.x + this->y * v.y;
 }
