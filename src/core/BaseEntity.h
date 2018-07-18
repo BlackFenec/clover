@@ -15,6 +15,7 @@ private:
 public:
 
 	BaseEntity();
+	BaseEntity(std::list<BaseComponent> components);
 	virtual ~BaseEntity();
 
 	UUID* GetUuid();

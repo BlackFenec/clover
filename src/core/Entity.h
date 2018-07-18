@@ -6,12 +6,10 @@
 
 class Entity : public BaseEntity
 {
-private :
-	Vector2D m_Position;
 
 public :
 	Entity();
-	Entity(Vector2D position);
+	Entity(std::list<BaseComponent> components);
 
 	virtual ~Entity();
 };

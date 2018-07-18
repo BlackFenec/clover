@@ -16,6 +16,6 @@ public :
 	virtual ~EntityManager();
 	static EntityManager* GetInstance() { return &m_EntityManager; };
 
-	Entity* CreateEntity(int x, int y);
+	Entity* CreateEntity(std::list<BaseComponent> components);
 };
 #endif // !ENTITYMANAGER_H_

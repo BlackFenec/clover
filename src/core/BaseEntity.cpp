@@ -6,6 +6,16 @@ BaseEntity::BaseEntity()
 	UuidCreate(&m_Uuid);
 }
 
+BaseEntity::BaseEntity(std::list<BaseComponent> components)
+{
+	this->m_Components = components;
+	for (std::list<BaseComponent>::iterator it = this->m_Components.begin(); it != this->m_Components.end(); ++it)
+	{
+		it->owner = this;
+	}
+	UuidCreate(&m_Uuid);
+}
+
 BaseEntity::~BaseEntity()
 {
 
