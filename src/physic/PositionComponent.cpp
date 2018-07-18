@@ -14,3 +14,8 @@ PositionComponent::~PositionComponent()
 {
 
 }
+
+Vector2D PositionComponent::GetPosition()
+{
+	return m_Position;
+}

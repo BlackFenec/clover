@@ -12,7 +12,9 @@ private:
 public :
 	PositionComponent();
 	PositionComponent(double x, double y);
-	~PositionComponent();
+	virtual ~PositionComponent();
+
+	Vector2D GetPosition();
 };
 
 #endif

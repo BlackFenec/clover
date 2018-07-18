@@ -6,9 +6,9 @@
 class ISystem {
 public :
 
-	ISystem();
+	ISystem() {};
 	virtual ~ISystem() {};
 
-	virtual void Tick(std::list<BaseEntity> entities) = 0;
+	virtual void Tick(std::list<BaseEntity*> entities) = 0;
 };
 #endif
