@@ -1,7 +1,7 @@
 #ifndef ENTITY_H_
 #define ENTITY_H_
 
-#include "BaseEntity.h"
+#include "..\core\BaseEntity.h"
 #include "..\physic\Vector2D.h"
 
 class Entity : public BaseEntity

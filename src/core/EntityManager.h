@@ -1,7 +1,7 @@
 #ifndef ENTITYMANAGER_H_
 #define ENTITYMANAGER_H_
 
-#include "Entity.h"
+#include "..\entity\Entity.h"
 #include "Rpc.h"
 #include <map>
 
@@ -9,7 +9,7 @@ class EntityManager
 {
 private :
 	static EntityManager m_EntityManager;
-	std::map<UUID*, Entity*> m_Entities;
+	std::map<UUID*, BaseEntity*> m_Entities;
 
 public :
 	EntityManager();
