@@ -18,7 +18,8 @@ BaseEntity::BaseEntity(std::list<BaseComponent*> components)
 
 BaseEntity::~BaseEntity()
 {
-
+	for (std::list<BaseComponent*>::reverse_iterator it = this->m_Components.rbegin(); it != this->m_Components.rend(); ++it)
+		delete (*it);
 }
 
 std::list<BaseComponent*> BaseEntity::GetComponents()

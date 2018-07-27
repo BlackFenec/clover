@@ -10,9 +10,9 @@ class EntityManager
 private :
 	static EntityManager m_EntityManager;
 	std::map<UUID*, BaseEntity*> m_Entities;
+	EntityManager();
 
 public :
-	EntityManager();
 	virtual ~EntityManager();
 	static EntityManager* GetInstance() { return &m_EntityManager; };
 
