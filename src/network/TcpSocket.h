@@ -41,21 +41,23 @@ private:
 	static void Shutdown(std::shared_ptr<SOCKET> socket);
 
 public :
+	TcpSocket() {}
+	virtual ~TcpSocket() {}
 
-	virtual std::shared_ptr<SOCKET> Accept();
-	virtual void Bind();
-	virtual void Close();
+	std::shared_ptr<SOCKET> Accept();
+	void Bind();
+	void Close();
 	static void Close(std::shared_ptr<SOCKET> socket);
-	virtual std::shared_ptr<SOCKET> ConnectToServer();
-	virtual void CreateClient(std::string serverAddress, std::string serverPort);
-	virtual void CreateServer(std::string port);
-	virtual void Initialize();
-	virtual void Listen();
-	virtual std::string Receive();
+	std::shared_ptr<SOCKET> ConnectToServer();
+	void CreateClient(std::string serverAddress, std::string serverPort);
+	void CreateServer(std::string port);
+	void Initialize();
+	void Listen();
+	std::string Receive();
 	static std::string ReceiveFrom(std::shared_ptr<SOCKET> client);
-	virtual void Send(std::string message);
+	void Send(std::string message);
 	static void SendTo(std::string message, std::shared_ptr<SOCKET> client);
-	virtual void Shutdown();
+	void Shutdown();
 	static void ShutdownSocket(std::shared_ptr<SOCKET> socket);
 };
 

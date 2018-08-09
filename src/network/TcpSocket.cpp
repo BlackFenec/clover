@@ -1,10 +1,46 @@
 #include "TcpSocket.h"
 
+std::shared_ptr<SOCKET> TcpSocket::Accept()
+{
+	std::shared_ptr<SOCKET> m_ClientSocket(new SOCKET());
+	*m_ClientSocket = INVALID_SOCKET;
+
+	while (*m_ClientSocket == INVALID_SOCKET)
+	{
+		std::this_thread::sleep_for(std::chrono::seconds(1));
+		*m_ClientSocket = accept(*m_TcpSocket, NULL, NULL);
+	}
+
+	return m_ClientSocket;
+}
+
+void TcpSocket::Bind()
+{
+	if (SOCKET_ERROR == bind(*m_TcpSocket, m_Result->ai_addr, (int)m_Result->ai_addrlen))
+	{
+		freeaddrinfo(m_Result);
+		this->Close();
+	}
+	freeaddrinfo(m_Result);
+}
+
 void TcpSocket::Cleanup()
 {
 #ifdef _WIN32
 	WSACleanup();
 #endif
+}
+
+void TcpSocket::Close()
+{
+	CloseSocket(m_TcpSocket);
+	Cleanup();
+}
+
+void TcpSocket::Close(std::shared_ptr<SOCKET> socket)
+{
+	CloseSocket(socket);
+	Cleanup();
 }
 
 void TcpSocket::CloseSocket(std::shared_ptr<SOCKET> socket)
@@ -75,42 +111,6 @@ void TcpSocket::Shutdown(std::shared_ptr<SOCKET> socket)
 #else
 	shutdown(*socket, SHUT_RDWR);
 #endif
-}
-
-std::shared_ptr<SOCKET> TcpSocket::Accept()
-{
-	std::shared_ptr<SOCKET> m_ClientSocket(new SOCKET());
-	*m_ClientSocket = INVALID_SOCKET;
-
-	while (*m_ClientSocket == INVALID_SOCKET)
-	{
-		std::this_thread::sleep_for(std::chrono::seconds(1));
-		*m_ClientSocket = accept(*m_TcpSocket, NULL, NULL);
-	}
-
-	return m_ClientSocket;
-}
-
-void TcpSocket::Bind()
-{
-	if (SOCKET_ERROR == bind(*m_TcpSocket, m_Result->ai_addr, (int)m_Result->ai_addrlen))
-	{
-		freeaddrinfo(m_Result);
-		this->Close();
-	}
-	freeaddrinfo(m_Result);
-}
-
-void TcpSocket::Close()
-{
-	CloseSocket(m_TcpSocket);
-	Cleanup();
-}
-
-void TcpSocket::Close(std::shared_ptr<SOCKET> socket)
-{
-	CloseSocket(socket);
-	Cleanup();
 }
 
 std::shared_ptr<SOCKET> TcpSocket::ConnectToServer()
