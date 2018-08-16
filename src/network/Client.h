@@ -24,11 +24,11 @@ public:
 	Client(std::shared_ptr<ITcpSocket> s, std::shared_ptr<std::ostream> output);
 	virtual ~Client();
 
-	virtual std::shared_ptr<IClientServer> GetClientServer();
-	virtual void ProcessClient(std::shared_ptr<IClientServer> client);
-	virtual void Send(std::string message);
-	virtual void SetClientServer(std::shared_ptr<IClientServer> client);
-	virtual void Start();
+	std::shared_ptr<IClientServer> GetClientServer();
+	void ProcessClient(std::shared_ptr<IClientServer> client);
+	void Send(std::string message);
+	void SetClientServer(std::shared_ptr<IClientServer> client);
+	void Start();
 };
 
 #endif

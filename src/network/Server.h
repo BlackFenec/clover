@@ -21,12 +21,12 @@ public :
 	Server(std::shared_ptr<ITcpSocket> receivingSocket, std::shared_ptr<ITcpSocket> sendingSocket);
 	Server(std::shared_ptr<ITcpSocket> receivingSocket, std::shared_ptr<ITcpSocket> sendingSocket, bool isClosing);
 	virtual ~Server();
-	virtual void Close();
-	virtual void ListenReceivingSockets();
-	virtual void ListenSendingSockets();
-	virtual void ProcessReceivingClient(std::shared_ptr<IClientServer> client);
-	virtual void ProcessSendingClient(std::shared_ptr<IClientServer> client);
-	virtual void Run();
+	void Close();
+	void ListenReceivingSockets();
+	void ListenSendingSockets();
+	void ProcessReceivingClient(std::shared_ptr<IClientServer> client);
+	void ProcessSendingClient(std::shared_ptr<IClientServer> client);
+	void Run();
 };
 
 #endif // !SERVER_H_

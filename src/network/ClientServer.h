@@ -14,13 +14,14 @@ public:
 
 	ClientServer(std::shared_ptr<SOCKET> s);
 	virtual ~ClientServer();
-	virtual void Close();
-	virtual bool IsClosing();
-	virtual void QueueMessage(std::string message);
-	virtual std::string ReceiveMessage();
-	virtual void SendMessages();
-	virtual void SetClosingState(bool isClosing);
-	virtual void Shutdown();
+
+	void Close();
+	bool IsClosing();
+	void QueueMessage(std::string message);
+	std::string ReceiveMessage();
+	void SendMessages();
+	void SetClosingState(bool isClosing);
+	void Shutdown();
 };
 
 #endif // !CLIENTSERVER_H_
