@@ -14,7 +14,10 @@ Server::Server(std::shared_ptr<ITcpSocket> receivingSocket, std::shared_ptr<ITcp
 
 Server::~Server()
 {
-
+	for (std::map<std::shared_ptr<IClientServer>, std::thread*>::iterator it = m_ReceivingClients.begin(); it != m_ReceivingClients.end(); ++it)
+		delete it->second;
+	for (std::map<std::shared_ptr<IClientServer>, std::thread*>::iterator it = m_SendingClients.begin(); it != m_SendingClients.end(); ++it)
+		delete it->second;
 }
 
 void Server::Close()

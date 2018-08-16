@@ -42,7 +42,10 @@ private:
 
 public :
 	TcpSocket() {}
-	virtual ~TcpSocket() {}
+	virtual ~TcpSocket() 
+	{
+		delete m_Result;
+	}
 
 	std::shared_ptr<SOCKET> Accept();
 	void Bind();

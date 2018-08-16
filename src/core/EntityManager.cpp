@@ -10,7 +10,11 @@ EntityManager::EntityManager()
 
 EntityManager::~EntityManager()
 {
-
+	for (std::map<UUID*, BaseEntity*>::iterator it = m_Entities.begin(); it != m_Entities.end(); ++it)
+	{
+		delete it->first;
+		delete it->second;
+	}
 }
 
 Entity* EntityManager::CreateEntity(std::list<BaseComponent*> components)

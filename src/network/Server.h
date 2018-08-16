@@ -13,8 +13,8 @@ class Server : public IServer
 private:
 	const std::string k_ServerReceivingPort = "27015";
 	const std::string k_ServerSendPort = "27016";
-	std::map<std::shared_ptr<IClientServer>, std::thread*> m_SendingClients;
 	std::map<std::shared_ptr<IClientServer>, std::thread*> m_ReceivingClients;
+	std::map<std::shared_ptr<IClientServer>, std::thread*> m_SendingClients;
 
 public :
 	

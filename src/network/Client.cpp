@@ -8,7 +8,7 @@ Client::Client(std::shared_ptr<ITcpSocket> s, std::shared_ptr<std::ostream> outp
 
 Client::~Client()
 {
-
+	delete m_SocketProcessing;
 }
 
 std::shared_ptr<IClientServer> Client::GetClientServer()
