@@ -19,3 +19,8 @@ Vector2D PositionComponent::GetPosition()
 {
 	return m_Position;
 }
+
+void PositionComponent::Add(Vector2D v)
+{
+	this->m_Position = this->m_Position + v;
+}

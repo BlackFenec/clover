@@ -21,10 +21,9 @@ void PhysicSystem::Tick(std::list<BaseEntity*> entities)
 		{
 			if (PositionComponent* p = dynamic_cast<PositionComponent*>(*ct))
 			{
-				//TODO : Implement real movement logic
-				std::cout << "Entity " << (*it)->GetUuid() << " with vector of length " << p->GetPosition().Length() << std::endl;
+				p->Add(Vector2D(1, 1));
+				std::cout << "Entity " << (*it)->GetUuid() << " at " << p->GetPosition() << std::endl;
 			}
-
 		}
 	}
 }

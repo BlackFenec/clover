@@ -15,6 +15,7 @@ public :
 	virtual ~PositionComponent();
 
 	Vector2D GetPosition();
+	void Add(Vector2D v);
 };
 
 #endif
