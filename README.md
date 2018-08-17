@@ -6,5 +6,6 @@ Learning by creating a basic network prototype.
 - [x] Make project compatible with Linux (already working on Windows)
 - [x] Multiple clients communicating with a server that broadcast the message like in a general chat
 - [x] Basic entity with position
-- [ ] Entity movement
+- [x] Entity movement mock in physic system
 - [ ] Entity communication (serialization)
+- [ ] Add network entities to system and engine
