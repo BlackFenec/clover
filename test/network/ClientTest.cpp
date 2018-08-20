@@ -8,6 +8,7 @@
 using ::testing::AtLeast;
 using ::testing::NiceMock;
 using ::testing::Return;
+using ::testing::Mock;
 
 class ClientTest : public ::testing::Test 
 {
@@ -24,11 +25,8 @@ protected:
 
 	virtual void SetUp()
 	{
-		std::shared_ptr<MockIClientServer> clientServer(new NiceMock<MockIClientServer>());
-		m_ClientServer = clientServer;
-
-		std::shared_ptr<MockITcpSocket> socket(new NiceMock<MockITcpSocket>());
-		m_Socket = socket;
+		m_ClientServer = std::shared_ptr<MockIClientServer>(new NiceMock<MockIClientServer>());
+		m_Socket = std::shared_ptr<MockITcpSocket>(new NiceMock<MockITcpSocket>());
 
 		std::shared_ptr<std::ostream> output(&std::cout, [](void*) {});
 		m_Output = output;

@@ -14,7 +14,8 @@ public :
 	PositionComponent(double x, double y);
 	virtual ~PositionComponent();
 
-	Vector2D GetPosition();
+	bool operator==(const PositionComponent &v) const;
+	Vector2D GetPosition() const;
 	void Add(Vector2D v);
 };
 
