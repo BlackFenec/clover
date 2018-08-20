@@ -30,6 +30,11 @@ Vector2D Vector2D::operator/(const double &rhs)
 	return Vector2D(this->x / rhs, this->y / rhs);
 }
 
+bool Vector2D::operator==(const Vector2D &v) const
+{
+	return this->x == v.x && this->y == v.y;
+}
+
 double Vector2D::Length()
 {
 	return sqrt(pow(this->x,2) + pow(this->y,2));

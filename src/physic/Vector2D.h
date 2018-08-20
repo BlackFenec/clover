@@ -18,6 +18,7 @@ public :
 	Vector2D operator-(const Vector2D &v);
 	Vector2D operator*(const double &factor);
 	Vector2D operator/(const double &divider); 
+	bool operator==(const Vector2D &v) const;
 	friend std::ostream& operator<<(std::ostream& os, const Vector2D& v)
 	{
 		os << "X: " << v.x;

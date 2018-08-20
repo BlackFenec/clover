@@ -1,10 +1,6 @@
 #include "gtest/gtest.h"
 #include "..\..\src\physic\Vector2D.h"
 
-using ::testing::AtLeast;
-using ::testing::NiceMock;
-using ::testing::Return;
-
 class Vector2DTest : public ::testing::Test
 {
 protected:
@@ -35,7 +31,7 @@ TEST_F(Vector2DTest, WhenSubtractingTwoVectorsThenCoordinatesOfSecondVectorAreSu
 {
 	Vector2D first(10, 10), second(4, 3), expected(6, 7);
 
-	ASSERT_EQ(expected, first + second);
+	ASSERT_EQ(expected, first - second);
 }
 
 TEST_F(Vector2DTest, WhenMultiplyingVectorThenVectorCoordinatesAreMultiplied)
@@ -72,32 +68,32 @@ TEST_F(Vector2DTest, WhenDotProductWithPerpendicularVectorThenResultIsZero)
 
 TEST_F(Vector2DTest, WhenNormalizeThenVectorCoordinatesAreDividedByItsLength)
 {
-	/*Vector2D v(4, 3);
-	double expected = 0;
+	Vector2D v(4, 3), expected(0.8, 0.6);
 
-	ASSERT_EQ(expected, first.DotProduct(second));*/
+	ASSERT_EQ(expected, v.Normalize(v));
 }
 
 TEST_F(Vector2DTest, WhenNormalizeWithVectorThenVectorCoordinatesAreDividedByItsLength)
 {
-	/*Vector2D v(4, 3);
-	double expected = 0;
+	Vector2D v(4, 3), expected(0.8,0.6);
 
-	ASSERT_EQ(expected, first.DotProduct(second));*/
+	v.Normalize();
+
+	ASSERT_EQ(expected,v);
 }
 
 TEST_F(Vector2DTest, WhenLengthThenSquareRootOfBothCoordinatesPowerAddedIsDone)
 {
-	/*Vector2D v(4, 3);
-	double expected = 0;
+	Vector2D v(4, 3);
+	double expected = 5;
 
-	ASSERT_EQ(expected, first.DotProduct(second));*/
+	ASSERT_EQ(expected, v.Length());
 }
 
 TEST_F(Vector2DTest, WhenLengthWithVectorThenSquareRootOfBothCoordinatesPowerAddedIsDone)
 {
-	/*Vector2D v(4, 3);
-	double expected = 0;
+	Vector2D v(4, 3);
+	double expected = 5;
 
-	ASSERT_EQ(expected, first.DotProduct(second));*/
+	ASSERT_EQ(expected, v.Length(v));
 }
