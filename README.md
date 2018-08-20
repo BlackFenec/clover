@@ -1,5 +1,5 @@
 # Clover
-The main purpose of Clover is to learn by creating. My first objective with Clover was to create a basic client-server model with sockets. Now that it's done, new objectives have been set like more complex communication and creating a really simple basic engine with entities that are moving.
+The main purpose of Clover is to learn by creating. My first objective with Clover was to create a basic client-server model with sockets. Also, I wanted to learn about cmake and google test. Now that it's done, new objectives have been set like more complex communication and creating a really simple basic engine with entities that are moving.
 ## To Do
 - [x] A client communicating with a server that echo back
 - [x] Multiple clients communicating with a server that echo back
@@ -9,3 +9,4 @@ The main purpose of Clover is to learn by creating. My first objective with Clov
 - [x] Entity movement mock in physic system
 - [ ] Entity communication (serialization)
 - [ ] Add network entities to system and engine
+- [ ] Input system
