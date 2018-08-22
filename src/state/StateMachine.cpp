@@ -9,7 +9,7 @@ StateMachine<entityType>::StateMachine(entityType* entity) : m_Owner(entity), m_
 template <class entityType>
 StateMachine<entityType>::~StateMachine()
 {
-	delete m_State;
+	delete m_CurrentState;
 }
 
 template <class entityType>

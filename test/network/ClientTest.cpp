@@ -36,10 +36,10 @@ protected:
 
 	virtual void TearDown()
 	{
-		m_Client = nullptr;
-		m_ClientServer = nullptr;
-		m_Socket = nullptr;
-		m_Output = nullptr;
+		m_Client.release();
+		m_ClientServer.reset();
+		m_Output.reset();
+		m_Socket.reset();
 	}
 };
 

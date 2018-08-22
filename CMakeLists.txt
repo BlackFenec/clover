@@ -31,7 +31,7 @@ if (BUILD_TESTS)
 	else()
 		target_include_directories(gmock_main SYSTEM BEFORE INTERFACE "${gtest_SOURCE_DIR}/include" "${gmock_SOURCE_DIR}/include")
 	endif()
-	# TODO : Fix tests building
+	
 	add_executable(ctest ${TEST_SRC_FILES})
 	
 	target_link_libraries(ctest gmock_main)
