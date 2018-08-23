@@ -9,6 +9,7 @@ if (MSVC AND (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 19.11))
   message("Add flag to disable warings from gtest -  _SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING")
 endif()
 
+SET(CMAKE_REQUIRED_LIBRARIES "rpcrt4")
 set(COMMON_INCLUDES ${PROJECT_SOURCE_DIR}/src)
 include_directories(${COMMON_INCLUDES})
 file(GLOB SRC_FILES ${PROJECT_SOURCE_DIR}/src/*/*.cpp)
