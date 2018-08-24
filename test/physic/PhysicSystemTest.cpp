@@ -1,8 +1,6 @@
 #include "gtest/gtest.h"
-#include "../../src/physic/PhysicSystem.h"
-#include "../core/MockBaseEntity.h"
+#include "..\..\src\physic\PhysicSystem.h"
 
-using ::testing::NiceMock;
 
 class PhysicSystemTest : public ::testing::Test
 {
@@ -25,15 +23,15 @@ protected:
 	}
 };
 
-TEST_F(PhysicSystemTest, WhenTickThenComponentsOfEachEntityAreGet)
+TEST_F(PhysicSystemTest, WhenTickThenEachEntityAdvance)
 {
-	NiceMock<MockBaseEntity> * e = new NiceMock<MockBaseEntity>();
+	PositionComponent * p = new PositionComponent(2, 2);
+	BaseEntity * e = new BaseEntity(std::list<BaseComponent*>() = { p });
 	
-	EXPECT_CALL(*e, GetComponents());
 	std::list<BaseEntity*> entities;
 	entities.push_back(e);
 
 	system->Tick(entities);
 
-	delete e;
+	ASSERT_EQ(Vector2D(3, 3), p->GetPosition());
 }

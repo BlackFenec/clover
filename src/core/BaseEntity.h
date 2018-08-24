@@ -18,8 +18,8 @@ public:
 	BaseEntity(std::list<BaseComponent*> components);
 	virtual ~BaseEntity();
 
-	virtual std::list<BaseComponent*> GetComponents();
-	virtual UUID* GetUuid();
+	std::list<BaseComponent*> GetComponents();
+	UUID* GetUuid();
 };
 
 #endif

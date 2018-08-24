@@ -3,7 +3,7 @@
 BaseEntity::BaseEntity()
 {
 	this->m_Components = std::list<BaseComponent*>();
-	UuidCreate(&m_Uuid);
+	//UuidCreate(&m_Uuid);
 }
 
 BaseEntity::BaseEntity(std::list<BaseComponent*> components)
@@ -13,7 +13,7 @@ BaseEntity::BaseEntity(std::list<BaseComponent*> components)
 	{
 		(*it)->owner = this;
 	}
-	UuidCreate(&m_Uuid);
+	//UuidCreate(&m_Uuid);
 }
 
 BaseEntity::~BaseEntity()

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.2)
-
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 set(PROJECT_NAME clover)
 project(${PROJECT_NAME})
 
@@ -9,7 +9,6 @@ if (MSVC AND (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 19.11))
   message("Add flag to disable warings from gtest -  _SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING")
 endif()
 
-SET(CMAKE_REQUIRED_LIBRARIES "rpcrt4")
 set(COMMON_INCLUDES ${PROJECT_SOURCE_DIR}/src)
 include_directories(${COMMON_INCLUDES})
 file(GLOB SRC_FILES ${PROJECT_SOURCE_DIR}/src/*/*.cpp)
@@ -18,7 +17,6 @@ file(GLOB TEST_SRC_FILES ${PROJECT_SOURCE_DIR}/test/*/*.cpp)
 set(CMAKE_CXX_STANDARD 11)
 
 add_library(clover_lib ${SRC_FILES})
-
 option(BUILD_TESTS "Build all tests." OFF)
 
 if (BUILD_TESTS)
