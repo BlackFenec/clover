@@ -43,3 +43,8 @@ void Engine::Stop()
 	//TODO : implement system stopping when necessary
 	m_State = stopped;
 }
+
+EngineState Engine::CurrentState()
+{
+	return m_State;
+}

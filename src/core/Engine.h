@@ -17,6 +17,7 @@ public :
 
 	void Start();
 	void Stop();
+	EngineState CurrentState();
 };
 
 #endif // !ENGINE_H_
