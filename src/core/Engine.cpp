@@ -17,7 +17,7 @@ Engine::~Engine()
 		this->Stop();
 		//TODO : Fix potential infinite loop if engine is stuck in stopping
 	}
-	for (std::list<ISystem*>::iterator it = m_Systems.begin() ; it != m_Systems.end(); ++it)
+	for (std::vector<ISystem*>::iterator it = m_Systems.begin() ; it != m_Systems.end(); ++it)
 	{
 		delete *it;
 	}
@@ -29,8 +29,8 @@ void Engine::Start()
 	while (m_State != stopping && m_State != stopped)
 	{
 		//TODO : Some risk of concurrency with entities getting change between update.
-		std::list<BaseEntity*> entities = EntityManager::GetInstance()->GetEntities();
-		for (std::list<ISystem*>::iterator it = m_Systems.begin(); it != m_Systems.end(); ++it)
+		std::vector<BaseEntity*> entities = EntityManager::GetInstance()->GetEntities();
+		for (std::vector<ISystem*>::iterator it = m_Systems.begin(); it != m_Systems.end(); ++it)
 		{
 			(*it)->Tick(entities);
 		}

@@ -9,6 +9,6 @@ public :
 	ISystem() {};
 	virtual ~ISystem() {};
 
-	virtual void Tick(std::list<BaseEntity*> entities) = 0;
+	virtual void Tick(std::vector<BaseEntity*> entities) = 0;
 };
 #endif

@@ -9,7 +9,7 @@ class Entity : public BaseEntity
 
 public :
 	Entity();
-	Entity(std::list<BaseComponent*> components);
+	Entity(std::vector<BaseComponent*> components);
 
 	virtual ~Entity();
 };

@@ -3,20 +3,20 @@
 
 #include "..\entity\Entity.h"
 #include "Rpc.h"
-#include <map>
+#include <vector>
 
 class EntityManager
 {
 private :
 	static EntityManager m_EntityManager;
-	std::map<UUID*, BaseEntity*> m_Entities;
+	std::vector<BaseEntity*> m_Entities;
 	EntityManager();
 
 public :
 	virtual ~EntityManager();
 	static EntityManager* GetInstance() { return &m_EntityManager; };
 
-	Entity* CreateEntity(std::list<BaseComponent*> components);
-	std::list<BaseEntity*> GetEntities();
+	Entity* CreateEntity(std::vector<BaseComponent*> components);
+	std::vector<BaseEntity*> GetEntities();
 };
 #endif // !ENTITYMANAGER_H_

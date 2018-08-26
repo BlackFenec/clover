@@ -11,7 +11,7 @@ public :
 	PhysicSystem();
 	virtual ~PhysicSystem();
 
-	void Tick(std::list<BaseEntity*> entities);
+	void Tick(std::vector<BaseEntity*> entities);
 };
 
 #endif

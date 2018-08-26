@@ -26,9 +26,9 @@ protected:
 TEST_F(PhysicSystemTest, WhenTickThenEachEntityAdvance)
 {
 	PositionComponent * p = new PositionComponent(2, 2);
-	BaseEntity * e = new BaseEntity(std::list<BaseComponent*>() = { p });
+	BaseEntity * e = new BaseEntity(std::vector<BaseComponent*>() = { p });
 	
-	std::list<BaseEntity*> entities;
+	std::vector<BaseEntity*> entities;
 	entities.push_back(e);
 
 	system->Tick(entities);

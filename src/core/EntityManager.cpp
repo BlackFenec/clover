@@ -10,27 +10,20 @@ EntityManager::EntityManager()
 
 EntityManager::~EntityManager()
 {
-	for (std::map<UUID*, BaseEntity*>::iterator it = m_Entities.begin(); it != m_Entities.end(); ++it)
+	for (std::vector<BaseEntity*>::iterator it = m_Entities.begin(); it != m_Entities.end(); ++it)
 	{
-		delete it->first;
-		delete it->second;
+		delete *it;
 	}
 }
 
-Entity* EntityManager::CreateEntity(std::list<BaseComponent*> components)
+Entity* EntityManager::CreateEntity(std::vector<BaseComponent*> components)
 {
 	Entity* entity = new Entity(components);
-	m_Entities.insert(std::pair<UUID*,Entity*>(entity->GetUuid(), entity));
+	m_Entities.push_back(entity);
 	return entity;
 }
 
-std::list<BaseEntity*> EntityManager::GetEntities()
+std::vector<BaseEntity*> EntityManager::GetEntities()
 {
-	std::list<BaseEntity*> entities;
-	for (std::map<UUID*, BaseEntity*>::iterator it = m_Entities.begin(); it != m_Entities.end(); ++it)
-	{
-		entities.push_back(it->second);
-	}
-
-	return entities;
+	return m_Entities;
 }

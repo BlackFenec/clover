@@ -3,12 +3,11 @@
 
 #include "EngineState.h"
 #include "ISystem.h"
-#include <list>
 
 class Engine
 {
 private:
-	std::list<ISystem*> m_Systems;
+	std::vector<ISystem*> m_Systems;
 	EngineState m_State;
 
 public :

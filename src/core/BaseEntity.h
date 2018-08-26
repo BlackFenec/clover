@@ -3,23 +3,23 @@
 
 #include "BaseComponent.h"
 #include "Rpc.h"
-#include <list>
+#include <vector>
 
 class BaseEntity
 {
 private:
 
-	std::list<BaseComponent*> m_Components;
-	UUID m_Uuid;
+	std::vector<BaseComponent*> m_Components;
+	GUID m_Guid;
 
 public:
 
 	BaseEntity();
-	BaseEntity(std::list<BaseComponent*> components);
+	BaseEntity(std::vector<BaseComponent*> components);
 	virtual ~BaseEntity();
 
-	std::list<BaseComponent*> GetComponents();
-	UUID* GetUuid();
+	std::vector<BaseComponent*> GetComponents();
+	GUID GetGuid();
 };
 
 #endif

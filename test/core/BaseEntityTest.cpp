@@ -27,7 +27,7 @@ protected:
 TEST_F(BaseEntityTest, WhenGetComponentsThenEntityComponentsAreReturned)
 {
 	PositionComponent * p = new PositionComponent(2, 2);
-	BaseEntity * e = new BaseEntity(std::list<BaseComponent*>() = { p });
+	BaseEntity * e = new BaseEntity(std::vector<BaseComponent*>() = { p });
 
 	ASSERT_EQ(p, e->GetComponents().front());
 }
