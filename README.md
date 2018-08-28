@@ -7,7 +7,7 @@ The main purpose of Clover is to learn by creating. My first objective with Clov
 - [x] Multiple clients communicating with a server that broadcast the message like in a general chat
 - [x] Basic entity with position
 - [x] Entity movement mock in physic system
-- [ ] Basic message for networking communication
-- [ ] Entity communication (serialization)
+- [x] Basic message for networking communication
 - [ ] Add network entities to system and engine
 - [ ] Input system
+- [ ] Entity communication (serialization)
