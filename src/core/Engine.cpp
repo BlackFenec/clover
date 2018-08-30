@@ -7,6 +7,7 @@ Engine::Engine()
 {
 	m_State = notInitialized;
 	m_Systems.push_back(new PhysicSystem());
+	m_Window = new Pane();
 	m_State = stopped;
 }
 
@@ -17,6 +18,9 @@ Engine::~Engine()
 		this->Stop();
 		//TODO : Fix potential infinite loop if engine is stuck in stopping
 	}
+
+	delete m_Window;
+
 	for (std::vector<ISystem*>::iterator it = m_Systems.begin() ; it != m_Systems.end(); ++it)
 	{
 		delete *it;

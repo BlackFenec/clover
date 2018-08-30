@@ -3,12 +3,14 @@
 
 #include "EngineState.h"
 #include "ISystem.h"
+#include "..\ui\Pane.h"
 
 class Engine
 {
 private:
 	std::vector<ISystem*> m_Systems;
 	EngineState m_State;
+	Pane * m_Window;
 
 public :
 	Engine();
