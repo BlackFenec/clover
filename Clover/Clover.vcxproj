@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>15.0</VCProjectVersion>
+    <ProjectGuid>{FACACE55-3BA0-41A2-A18D-8AD8F0D66DB5}</ProjectGuid>
+    <RootNamespace>Clover</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="src\core\BaseComponent.h" />
+    <ClInclude Include="src\core\BaseEntity.h" />
+    <ClInclude Include="src\core\Engine.h" />
+    <ClInclude Include="src\core\EngineState.h" />
+    <ClInclude Include="src\core\EntityManager.h" />
+    <ClInclude Include="src\core\ISystem.h" />
+    <ClInclude Include="src\entity\Entity.h" />
+    <ClInclude Include="src\messaging\Message.h" />
+    <ClInclude Include="src\messaging\MessageContent.h" />
+    <ClInclude Include="src\messaging\MessageType.h" />
+    <ClInclude Include="src\messaging\NewPositionContent.h" />
+    <ClInclude Include="src\messaging\TalkingContent.h" />
+    <ClInclude Include="src\network\Client.h" />
+    <ClInclude Include="src\network\ClientServer.h" />
+    <ClInclude Include="src\network\IClient.h" />
+    <ClInclude Include="src\network\IClientServer.h" />
+    <ClInclude Include="src\network\IServer.h" />
+    <ClInclude Include="src\network\ITcpSocket.h" />
+    <ClInclude Include="src\network\Server.h" />
+    <ClInclude Include="src\network\TcpSocket.h" />
+    <ClInclude Include="src\physic\PhysicSystem.h" />
+    <ClInclude Include="src\physic\PositionComponent.h" />
+    <ClInclude Include="src\physic\Vector2D.h" />
+    <ClInclude Include="src\state\State.h" />
+    <ClInclude Include="src\state\StateMachine.h" />
+    <ClInclude Include="src\ui\Pane.h" />
+    <ClInclude Include="test\network\MockIClient.h" />
+    <ClInclude Include="test\network\MockIClientServer.h" />
+    <ClInclude Include="test\network\MockIServer.h" />
+    <ClInclude Include="test\network\MockITcpSocket.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\core\BaseEntity.cpp" />
+    <ClCompile Include="src\core\Engine.cpp" />
+    <ClCompile Include="src\core\EntityManager.cpp" />
+    <ClCompile Include="src\entity\Entity.cpp" />
+    <ClCompile Include="src\messaging\Message.cpp" />
+    <ClCompile Include="src\messaging\MessageContent.cpp" />
+    <ClCompile Include="src\messaging\NewPositionContent.cpp" />
+    <ClCompile Include="src\messaging\TalkingContent.cpp" />
+    <ClCompile Include="src\network\Client.cpp" />
+    <ClCompile Include="src\network\ClientServer.cpp" />
+    <ClCompile Include="src\network\Server.cpp" />
+    <ClCompile Include="src\network\TcpSocket.cpp" />
+    <ClCompile Include="src\physic\PhysicSystem.cpp" />
+    <ClCompile Include="src\physic\PositionComponent.cpp" />
+    <ClCompile Include="src\physic\Vector2D.cpp" />
+    <ClCompile Include="src\state\State.cpp" />
+    <ClCompile Include="src\state\StateMachine.cpp" />
+    <ClCompile Include="src\ui\Pane.cpp" />
+    <ClCompile Include="test\core\BaseEntityTest.cpp" />
+    <ClCompile Include="test\core\EngineTest.cpp" />
+    <ClCompile Include="test\core\EntityManagerTest.cpp" />
+    <ClCompile Include="test\integration\Main.cpp" />
+    <ClCompile Include="test\messaging\MessageTest.cpp" />
+    <ClCompile Include="test\messaging\NewPositionContentTest.cpp" />
+    <ClCompile Include="test\messaging\TalkingContentTest.cpp" />
+    <ClCompile Include="test\network\ClientTest.cpp" />
+    <ClCompile Include="test\network\ServerTest.cpp" />
+    <ClCompile Include="test\physic\PhysicSystemTest.cpp" />
+    <ClCompile Include="test\physic\PositionComponentTest.cpp" />
+    <ClCompile Include="test\physic\Vector2DTest.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
