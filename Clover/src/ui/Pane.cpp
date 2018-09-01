@@ -1,7 +1,5 @@
 #include "Pane.h"
 
-#include <thread>
-
 Pane::Pane()
 {
 	WNDCLASSEX windowClass;
@@ -65,6 +63,10 @@ LRESULT CALLBACK Pane::WindowCallBack(HWND handle, UINT message, WPARAM wParam, 
 		PatBlt(deviceContext, x, y, paint.rcPaint.right - x, paint.rcPaint.bottom - y, WHITENESS);
 		EndPaint(handle, &paint);
 		break;
+	/*case WM_DESTROY:
+		break;
+	case WM_CLOSE:
+		break;*/
 	}
 	return DefWindowProc(handle, message, wParam, lParam);
 }

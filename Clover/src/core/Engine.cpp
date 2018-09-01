@@ -20,6 +20,7 @@ Engine::~Engine()
 	}
 
 	delete m_Window;
+	delete m_SystemsUpdateThread;
 
 	for (std::vector<ISystem*>::iterator it = m_Systems.begin() ; it != m_Systems.end(); ++it)
 	{
@@ -29,9 +30,25 @@ Engine::~Engine()
 
 void Engine::Start()
 {
-	m_State = started;
+	m_State = started;	
+	m_SystemsUpdateThread = new std::thread(&Engine::UpdateSystems, this);
 	m_Window->Show();
-	//TODO : Implement thread for entities update
+}
+
+void Engine::Stop()
+{
+	m_State = stopping;
+	m_SystemsUpdateThread->join();
+	m_State = stopped;
+}
+
+EngineState Engine::CurrentState()
+{
+	return m_State;
+}
+
+void Engine::UpdateSystems()
+{
 	while (m_State != stopping && m_State != stopped)
 	{
 		//TODO : Some risk of concurrency with entities getting change between update.
@@ -41,16 +58,4 @@ void Engine::Start()
 			(*it)->Tick(entities);
 		}
 	}
-}
-
-void Engine::Stop()
-{
-	m_State = stopping;
-	//TODO : implement system stopping when necessary
-	m_State = stopped;
-}
-
-EngineState Engine::CurrentState()
-{
-	return m_State;
 }
