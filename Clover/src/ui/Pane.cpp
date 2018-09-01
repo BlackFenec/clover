@@ -1,5 +1,7 @@
 #include "Pane.h"
 
+#include <thread>
+
 Pane::Pane()
 {
 	WNDCLASSEX windowClass;
@@ -23,7 +25,7 @@ Pane::Pane()
 	}
 
 	m_Handle = CreateWindowEx(0, windowClass.lpszClassName, "Clover engine", 
-		WS_OVERLAPPED | WS_VISIBLE | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
+		WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
 		CW_USEDEFAULT, 0, 0, GetModuleHandle(NULL), 0);
 
 	if (!m_Handle)
@@ -31,20 +33,26 @@ Pane::Pane()
 		MessageBox(NULL, "CreateWindowEx failed", "Error", 0);
 		return;
 	}
-
-	//TODO : I need a thread
-	MSG message;
-	while(GetMessage(&message, NULL, 0, 0) > 0)
-    {
-        TranslateMessage(&message);
-        DispatchMessage(&message);
-    }
 }
 
 Pane::~Pane()
 {
 
 }
+
+void Pane::Show()
+{
+	if(!ShowWindowAsync(m_Handle, SW_SHOWDEFAULT))
+		MessageBox(NULL, "Show window async failed", "Error", 0);
+
+	MSG message;
+	while (GetMessage(&message, NULL, 0, 0) > 0)
+	{
+		TranslateMessage(&message);
+		DispatchMessage(&message);
+	}
+}
+
 LRESULT CALLBACK Pane::WindowCallBack(HWND handle, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch (message)

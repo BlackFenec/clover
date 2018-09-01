@@ -30,6 +30,8 @@ Engine::~Engine()
 void Engine::Start()
 {
 	m_State = started;
+	m_Window->Show();
+	//TODO : Implement thread for entities update
 	while (m_State != stopping && m_State != stopped)
 	{
 		//TODO : Some risk of concurrency with entities getting change between update.
