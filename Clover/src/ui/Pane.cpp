@@ -23,7 +23,7 @@ Pane::Pane()
 	}
 
 	m_Handle = CreateWindowEx(0, windowClass.lpszClassName, "Clover engine", 
-		WS_OVERLAPPED | WS_VISIBLE | WS_CAPTION | WS_SYSMENU, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
+		WS_OVERLAPPED | WS_VISIBLE | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
 		CW_USEDEFAULT, 0, 0, GetModuleHandle(NULL), 0);
 
 	if (!m_Handle)
@@ -47,5 +47,16 @@ Pane::~Pane()
 }
 LRESULT CALLBACK Pane::WindowCallBack(HWND handle, UINT message, WPARAM wParam, LPARAM lParam)
 {
+	switch (message)
+	{
+	case WM_PAINT:
+		PAINTSTRUCT paint;
+		HDC deviceContext = BeginPaint(handle, &paint);
+		int x = paint.rcPaint.left;
+		int y = paint.rcPaint.top;
+		PatBlt(deviceContext, x, y, paint.rcPaint.right - x, paint.rcPaint.bottom - y, WHITENESS);
+		EndPaint(handle, &paint);
+		break;
+	}
 	return DefWindowProc(handle, message, wParam, lParam);
 }
