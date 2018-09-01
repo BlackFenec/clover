@@ -1,4 +1,4 @@
-#include "gtest/gtest.h"
+#include "gtest\gtest.h"
 #include "..\..\src\core\BaseEntity.h"
 #include "..\..\src\physic\PositionComponent.h"
 
@@ -6,7 +6,7 @@
 class BaseEntityTest : public ::testing::Test
 {
 protected:
-
+	
 	BaseEntity * entity;
 
 	BaseEntityTest() {}

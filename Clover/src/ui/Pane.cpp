@@ -13,22 +13,22 @@ Pane::Pane()
 	windowClass.hCursor = LoadCursor(NULL, IDC_ARROW);
 	windowClass.hbrBackground = NULL;
 	windowClass.lpszMenuName = NULL;
-	windowClass.lpszClassName = L"CloverEngineWindowClass";
+	windowClass.lpszClassName = "CloverEngineWindowClass";
 	windowClass.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
 
 	if (!RegisterClassEx(&windowClass))
 	{
-		MessageBox(NULL, L"Register class failed", L"Error", 0);
+		MessageBox(NULL, "Register class failed", "Error", 0);
 		return;
 	}
 
-	m_Handle = CreateWindowEx(NULL, windowClass.lpszClassName, L"Clover engine", 
+	m_Handle = CreateWindowEx(0, windowClass.lpszClassName, "Clover engine", 
 		WS_OVERLAPPED | WS_VISIBLE | WS_CAPTION | WS_SYSMENU, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
-		CW_USEDEFAULT, NULL, NULL, NULL, NULL);   
+		CW_USEDEFAULT, 0, 0, GetModuleHandle(NULL), 0);
 
 	if (!m_Handle)
 	{
-		MessageBox(NULL, L"CreateWindowEx failed", L"Error", 0);
+		MessageBox(NULL, "CreateWindowEx failed", "Error", 0);
 		return;
 	}
 

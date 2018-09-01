@@ -84,6 +84,8 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>D:\Users\Cindy\Documents\Programmation\2018\clover\libraries\gtest-1.8.0\googletest\include;D:\Users\Cindy\Documents\Programmation\2018\clover\libraries\gtest-1.8.0\googlemock\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>-D_SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -141,10 +143,6 @@
     <ClInclude Include="src\state\State.h" />
     <ClInclude Include="src\state\StateMachine.h" />
     <ClInclude Include="src\ui\Pane.h" />
-    <ClInclude Include="test\network\MockIClient.h" />
-    <ClInclude Include="test\network\MockIClientServer.h" />
-    <ClInclude Include="test\network\MockIServer.h" />
-    <ClInclude Include="test\network\MockITcpSocket.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\core\BaseEntity.cpp" />
@@ -165,18 +163,7 @@
     <ClCompile Include="src\state\State.cpp" />
     <ClCompile Include="src\state\StateMachine.cpp" />
     <ClCompile Include="src\ui\Pane.cpp" />
-    <ClCompile Include="test\core\BaseEntityTest.cpp" />
-    <ClCompile Include="test\core\EngineTest.cpp" />
-    <ClCompile Include="test\core\EntityManagerTest.cpp" />
     <ClCompile Include="test\integration\Main.cpp" />
-    <ClCompile Include="test\messaging\MessageTest.cpp" />
-    <ClCompile Include="test\messaging\NewPositionContentTest.cpp" />
-    <ClCompile Include="test\messaging\TalkingContentTest.cpp" />
-    <ClCompile Include="test\network\ClientTest.cpp" />
-    <ClCompile Include="test\network\ServerTest.cpp" />
-    <ClCompile Include="test\physic\PhysicSystemTest.cpp" />
-    <ClCompile Include="test\physic\PositionComponentTest.cpp" />
-    <ClCompile Include="test\physic\Vector2DTest.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

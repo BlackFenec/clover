@@ -3,12 +3,6 @@
 
 #include <windows.h>
 
-//#ifdef UNICODE
-//typedef LPWSTR LPTSTR;
-//#else
-//typedef LPSTR LPTSTR;
-//#endif
-
 class Pane
 {
 private :
