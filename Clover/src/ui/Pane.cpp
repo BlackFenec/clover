@@ -55,18 +55,26 @@ LRESULT CALLBACK Pane::WindowCallBack(HWND handle, UINT message, WPARAM wParam, 
 {
 	switch (message)
 	{
-	case WM_PAINT:
-		PAINTSTRUCT paint;
-		HDC deviceContext = BeginPaint(handle, &paint);
-		int x = paint.rcPaint.left;
-		int y = paint.rcPaint.top;
-		PatBlt(deviceContext, x, y, paint.rcPaint.right - x, paint.rcPaint.bottom - y, WHITENESS);
-		EndPaint(handle, &paint);
-		break;
-	/*case WM_DESTROY:
-		break;
-	case WM_CLOSE:
-		break;*/
+		case WM_PAINT:
+		{
+			PAINTSTRUCT paint;
+			HDC deviceContext = BeginPaint(handle, &paint);
+			int x = paint.rcPaint.left;
+			int y = paint.rcPaint.top;
+			PatBlt(deviceContext, x, y, paint.rcPaint.right - x, paint.rcPaint.bottom - y, WHITENESS);
+			EndPaint(handle, &paint);
+			break;
+		}
+		case WM_DESTROY:
+		{
+			OutputDebugString("WM_DESTROY");
+			break;
+		}
+		case WM_CLOSE:
+		{
+			OutputDebugString("WM_CLOSE");
+			break;
+		}
 	}
 	return DefWindowProc(handle, message, wParam, lParam);
 }
