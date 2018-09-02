@@ -1,4 +1,5 @@
 #include "Pane.h"
+#include "..\core\Engine.h"
 
 Pane::Pane()
 {
@@ -44,7 +45,7 @@ void Pane::Show()
 		MessageBox(NULL, "Show window async failed", "Error", 0);
 
 	MSG message;
-	while (GetMessage(&message, NULL, 0, 0) > 0)
+	while (GetMessage(&message, NULL, 0, 0) > 0 && Engine::GetInstance()->CurrentState() == EngineState::started)
 	{
 		TranslateMessage(&message);
 		DispatchMessage(&message);
@@ -67,12 +68,12 @@ LRESULT CALLBACK Pane::WindowCallBack(HWND handle, UINT message, WPARAM wParam, 
 		}
 		case WM_DESTROY:
 		{
-			OutputDebugString("WM_DESTROY");
+			PostQuitMessage(0);
 			break;
 		}
 		case WM_CLOSE:
 		{
-			OutputDebugString("WM_CLOSE");
+			Engine::GetInstance()->Stop();
 			break;
 		}
 	}

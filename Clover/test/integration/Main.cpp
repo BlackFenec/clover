@@ -2,7 +2,6 @@
 
 int WinMain(HINSTANCE instance, HINSTANCE previousInstance, LPSTR cmdLine, int cmdShow)
 {
-	Engine* e = new Engine();
-	e->Start();
+	Engine::GetInstance()->Start();
 	return 0;
 }

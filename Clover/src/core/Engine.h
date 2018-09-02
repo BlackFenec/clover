@@ -9,19 +9,21 @@
 class Engine
 {
 private:
-	std::vector<ISystem*> m_Systems;
+	static Engine m_Engine;
 	EngineState m_State;
-	Pane * m_Window;
+	std::vector<ISystem*> m_Systems;
 	std::thread * m_SystemsUpdateThread;
+	Pane * m_Window;
 
 	void UpdateSystems();
 public :
 	Engine();
 	virtual ~Engine();
 
+	EngineState CurrentState();
+	static Engine* GetInstance() { return &m_Engine; }
 	void Start();
 	void Stop();
-	EngineState CurrentState();
 };
 
 #endif // !ENGINE_H_

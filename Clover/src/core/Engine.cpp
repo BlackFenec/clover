@@ -3,6 +3,8 @@
 #include "BaseEntity.h"
 #include "EntityManager.h"
 
+Engine Engine::m_Engine;
+
 Engine::Engine()
 {
 	m_State = notInitialized;
@@ -16,7 +18,6 @@ Engine::~Engine()
 	if (m_State != stopped)
 	{
 		this->Stop();
-		//TODO : Fix potential infinite loop if engine is stuck in stopping
 	}
 
 	delete m_Window;
@@ -26,6 +27,11 @@ Engine::~Engine()
 	{
 		delete *it;
 	}
+}
+
+EngineState Engine::CurrentState()
+{
+	return m_State;
 }
 
 void Engine::Start()
@@ -42,16 +48,10 @@ void Engine::Stop()
 	m_State = stopped;
 }
 
-EngineState Engine::CurrentState()
-{
-	return m_State;
-}
-
 void Engine::UpdateSystems()
 {
 	while (m_State != stopping && m_State != stopped)
 	{
-		//TODO : Some risk of concurrency with entities getting change between update.
 		std::vector<BaseEntity*> entities = EntityManager::GetInstance()->GetEntities();
 		for (std::vector<ISystem*>::iterator it = m_Systems.begin(); it != m_Systems.end(); ++it)
 		{
