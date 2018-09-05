@@ -44,23 +44,20 @@ Pane::~Pane()
 
 }
 
-void Pane::RenderBackground()
+void Pane::RenderBackground(int xOffset, int yOffset)
 {
 	int pitch = m_BitmapWidth * 4;
 	uint8_t * row = (uint8_t *)m_Memory;
 	for (int y = 0; y < m_BitmapHeight; ++y)
 	{
-		uint8_t* pixel = (uint8_t *)row;
+		uint32_t* pixel = (uint32_t *)row;
 		for (int x = 0; x < m_BitmapWidth; ++x)
 		{
-			*pixel = (uint8_t)x;
-			++pixel;
-			*pixel = (uint8_t)y;
-			++pixel;
-			*pixel = 127;
-			++pixel;
-			*pixel = 0;
-			++pixel;
+			uint8_t blue = (x + xOffset);
+			uint8_t green = (y + yOffset);
+			uint8_t red = 127;
+			
+			*pixel++ = ((red << 16) | (green << 8) | blue);
 		}
 
 		row += pitch;
@@ -85,7 +82,6 @@ void Pane::ResizeSection(int width, int height)
 
 	m_Memory = VirtualAlloc(NULL, width*height*4, MEM_COMMIT, PAGE_READWRITE);
 
-	RenderBackground();
 }
 
 void Pane::Show()
@@ -93,11 +89,27 @@ void Pane::Show()
 	if(!ShowWindowAsync(m_Handle, SW_SHOWDEFAULT))
 		MessageBox(NULL, "Show window async failed", "Error", NULL);
 
-	MSG message;
-	while (GetMessage(&message, NULL, NULL, NULL) && Engine::GetInstance()->CurrentState() == EngineState::started)
+	int xOffset = 0;
+	int yOffset = 0;
+	while (Engine::GetInstance()->CurrentState() == EngineState::started)
 	{
-		TranslateMessage(&message);
-		DispatchMessage(&message);
+		MSG message;
+		while(PeekMessage(&message, 0,0,0,PM_REMOVE))
+		{
+			if (message.message == WM_QUIT)
+				Engine::GetInstance()->Stop();
+			TranslateMessage(&message);
+			DispatchMessage(&message);
+		}
+
+		RenderBackground(xOffset,yOffset);
+		RECT clientRect;
+		GetClientRect(m_Handle, &clientRect);
+		HDC deviceContext = GetDC(m_Handle);
+		UpdatePane(deviceContext, &clientRect, 0, 0, clientRect.right - clientRect.left, clientRect.bottom - clientRect.top);
+		ReleaseDC(m_Handle, deviceContext);
+
+		++xOffset;
 	}
 }
 
