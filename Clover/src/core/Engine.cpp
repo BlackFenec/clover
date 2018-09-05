@@ -43,6 +43,7 @@ void Engine::Start()
 
 void Engine::Stop()
 {
+	if (m_State == stopping || m_State == stopped) return;
 	m_State = stopping;
 	m_SystemsUpdateThread->join();
 	m_State = stopped;
