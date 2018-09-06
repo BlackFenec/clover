@@ -10,7 +10,7 @@ Pane::Pane()
 {
 	WNDCLASSEX windowClass;
 	windowClass.cbSize = sizeof(WNDCLASSEX);
-	windowClass.style = CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
+	windowClass.style = CS_HREDRAW | CS_VREDRAW;
 	windowClass.lpfnWndProc = WindowCallBack;
 	windowClass.cbClsExtra = NULL;
 	windowClass.cbWndExtra = NULL;
@@ -29,7 +29,7 @@ Pane::Pane()
 	}
 
 	m_Handle = CreateWindowEx(0, windowClass.lpszClassName, "Clover engine", 
-		WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
+		WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
 		CW_USEDEFAULT, NULL, NULL, GetModuleHandle(NULL), NULL);
 
 	if (!m_Handle)
@@ -46,22 +46,34 @@ Pane::~Pane()
 
 void Pane::RenderBackground(int xOffset, int yOffset)
 {
+	static uint8_t red = 0;
+	static bool inc = true;
 	int pitch = m_BitmapWidth * 4;
 	uint8_t * row = (uint8_t *)m_Memory;
+	uint32_t* pixel = (uint32_t *)row;
 	for (int y = 0; y < m_BitmapHeight; ++y)
 	{
-		uint32_t* pixel = (uint32_t *)row;
+		if (y == 100)
+			int t = 0;
 		for (int x = 0; x < m_BitmapWidth; ++x)
 		{
-			uint8_t blue = (x + xOffset);
-			uint8_t green = (y + yOffset);
-			uint8_t red = 127;
+			uint8_t blue = (y/(double)m_BitmapHeight*255) + yOffset - 127;
+			uint8_t green = 127 + yOffset;
 			
 			*pixel++ = ((red << 16) | (green << 8) | blue);
 		}
 
 		row += pitch;
 	}
+	if (red == 255 && inc)
+		inc = false;
+	else if(red == 0 && !inc)
+		inc = true;
+
+	if (inc)
+		++red;
+	else
+		--red;
 }
 
 void Pane::ResizeSection(int width, int height)
@@ -106,17 +118,16 @@ void Pane::Show()
 		RECT clientRect;
 		GetClientRect(m_Handle, &clientRect);
 		HDC deviceContext = GetDC(m_Handle);
-		UpdatePane(deviceContext, &clientRect, 0, 0, clientRect.right - clientRect.left, clientRect.bottom - clientRect.top);
+		UpdatePane(deviceContext, clientRect, 0, 0, clientRect.right - clientRect.left, clientRect.bottom - clientRect.top);
 		ReleaseDC(m_Handle, deviceContext);
 
 		++xOffset;
 	}
 }
 
-void Pane::UpdatePane(HDC deviceContext, RECT* paneRect, int x, int y, int width, int height)
+void Pane::UpdatePane(HDC deviceContext, RECT paneRect, int x, int y, int width, int height)
 {
-
-	StretchDIBits(deviceContext, 0, 0, m_BitmapWidth, m_BitmapHeight, 0, 0, paneRect->right - paneRect->left, paneRect->bottom - paneRect->top, m_Memory, &m_Info, DIB_RGB_COLORS, SRCCOPY);
+	StretchDIBits(deviceContext, 0, 0, m_BitmapWidth, m_BitmapHeight, 0, 0, width, height, m_Memory, &m_Info, DIB_RGB_COLORS, SRCCOPY);
 }
 
 LRESULT CALLBACK Pane::WindowCallBack(HWND handle, UINT message, WPARAM wParam, LPARAM lParam)
@@ -138,7 +149,7 @@ LRESULT CALLBACK Pane::WindowCallBack(HWND handle, UINT message, WPARAM wParam, 
 			HDC deviceContext = BeginPaint(handle, &paint);
 			int x = paint.rcPaint.left;
 			int y = paint.rcPaint.top;
-			UpdatePane(deviceContext, &clientRect,x, y, paint.rcPaint.right - x, paint.rcPaint.bottom - y);
+			UpdatePane(deviceContext, clientRect,x, y, paint.rcPaint.right - x, paint.rcPaint.bottom - y);
 			EndPaint(handle, &paint);
 			break;
 		}

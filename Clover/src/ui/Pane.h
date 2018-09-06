@@ -15,7 +15,7 @@ private :
 
 	static void RenderBackground(int xOffset, int yOffset);
 	static void ResizeSection(int width, int height);
-	static void UpdatePane(HDC deviceContext, RECT* paneRect, int x, int y, int width, int height);
+	static void UpdatePane(HDC deviceContext, RECT paneRect, int x, int y, int width, int height);
 	static LRESULT CALLBACK WindowCallBack(HWND handle, UINT message, WPARAM wParam, LPARAM lParam);
 
 public :
