@@ -47,14 +47,13 @@ Pane::~Pane()
 void Pane::RenderBackground(int xOffset, int yOffset)
 {
 	static uint8_t red = 0;
-	static bool inc = true;
+	static int op = 1;
+
 	int pitch = m_BitmapWidth * 4;
 	uint8_t * row = (uint8_t *)m_Memory;
 	uint32_t* pixel = (uint32_t *)row;
 	for (int y = 0; y < m_BitmapHeight; ++y)
 	{
-		if (y == 100)
-			int t = 0;
 		for (int x = 0; x < m_BitmapWidth; ++x)
 		{
 			uint8_t blue = (y/(double)m_BitmapHeight*255) + yOffset - 127;
@@ -65,15 +64,9 @@ void Pane::RenderBackground(int xOffset, int yOffset)
 
 		row += pitch;
 	}
-	if (red == 255 && inc)
-		inc = false;
-	else if(red == 0 && !inc)
-		inc = true;
-
-	if (inc)
-		++red;
-	else
-		--red;
+	if ((red == 255 && op == 1) || (red == 0 && op == -1))
+		op = -op;
+	red += op;
 }
 
 void Pane::ResizeSection(int width, int height)
@@ -84,7 +77,6 @@ void Pane::ResizeSection(int width, int height)
 	m_BitmapHeight = height;
 	m_BitmapWidth = width;
 
-	m_Info;
 	m_Info.bmiHeader.biSize = sizeof(m_Info.bmiHeader);
 	m_Info.bmiHeader.biWidth = m_BitmapWidth;
 	m_Info.bmiHeader.biHeight = -m_BitmapHeight;
@@ -149,7 +141,7 @@ LRESULT CALLBACK Pane::WindowCallBack(HWND handle, UINT message, WPARAM wParam, 
 			HDC deviceContext = BeginPaint(handle, &paint);
 			int x = paint.rcPaint.left;
 			int y = paint.rcPaint.top;
-			UpdatePane(deviceContext, clientRect,x, y, paint.rcPaint.right - x, paint.rcPaint.bottom - y);
+			UpdatePane(deviceContext, clientRect, x, y, paint.rcPaint.right - x, paint.rcPaint.bottom - y);
 			EndPaint(handle, &paint);
 			break;
 		}
