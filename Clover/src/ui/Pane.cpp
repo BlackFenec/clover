@@ -1,14 +1,13 @@
 #include "Pane.h"
 #include "..\core\Engine.h"
 
-int Pane::m_BitmapHeight;
-int Pane::m_BitmapWidth;
-BITMAPINFO Pane::m_Info;
-void* Pane::m_Memory;
+PaneBuffer Pane::m_Buffer;
 
 Pane::Pane()
 {
 	WNDCLASSEX windowClass;
+	m_Buffer.BitmapInfo(new BITMAPINFO());
+	ResizeSection(&m_Buffer, 1920, 1080);
 	windowClass.cbSize = sizeof(WNDCLASSEX);
 	windowClass.style = CS_HREDRAW | CS_VREDRAW;
 	windowClass.lpfnWndProc = WindowCallBack;
@@ -44,22 +43,29 @@ Pane::~Pane()
 
 }
 
-void Pane::RenderBackground(int xOffset, int yOffset)
+void Pane::RenderBackground(PaneBuffer* buffer, int xOffset, int yOffset)
 {
 	static uint8_t red = 0;
 	static int op = 1;
 
-	int pitch = m_BitmapWidth * 4;
-	uint8_t * row = (uint8_t *)m_Memory;
+	int pitch = buffer->Width() * buffer->BytesPerPixel();
+	uint8_t * row = (uint8_t *)buffer->Memory();
 	uint32_t* pixel = (uint32_t *)row;
-	for (int y = 0; y < m_BitmapHeight; ++y)
+	for (int y = 0; y < buffer->Height(); ++y)
 	{
-		for (int x = 0; x < m_BitmapWidth; ++x)
-		{
-			uint8_t blue = (y/(double)m_BitmapHeight*255) + yOffset - 127;
-			uint8_t green = 127 + yOffset;
-			
-			*pixel++ = ((red << 16) | (green << 8) | blue);
+		for (int x = 0; x < buffer->Width(); ++x)
+		{	
+			if (x >= buffer->Width() / (double)20 * 10 && x <= buffer->Width() / (double)20 * 11 && y >= buffer->Height() / (double)8 * 3 && y <= buffer->Height() / (double)8 * 4)
+			{
+				*pixel++ = ((255-red << 16) | (0 << 8) | 0);
+			}
+			else
+			{
+				uint8_t blue = (y / (double)buffer->Height() * 255) + yOffset - 127;
+				uint8_t green = 127 + yOffset;
+
+				*pixel++ = ((red << 16) | (green << 8) | blue);
+			}
 		}
 
 		row += pitch;
@@ -69,22 +75,22 @@ void Pane::RenderBackground(int xOffset, int yOffset)
 	red += op;
 }
 
-void Pane::ResizeSection(int width, int height)
+void Pane::ResizeSection(PaneBuffer* buffer,int width, int height)
 {
-	if (m_Memory)
-		VirtualFree(m_Memory, 0, MEM_RELEASE);
+	if (buffer->Memory())
+		VirtualFree(buffer->Memory(), 0, MEM_RELEASE);
 
-	m_BitmapHeight = height;
-	m_BitmapWidth = width;
+	buffer->Height(height);
+	buffer->Width(width);
+	buffer->BytesPerPixel(4);
+	buffer->BitmapInfo()->bmiHeader.biSize = sizeof(buffer->BitmapInfo()->bmiHeader);
+	buffer->BitmapInfo()->bmiHeader.biWidth = buffer->Width();
+	buffer->BitmapInfo()->bmiHeader.biHeight = -buffer->Height();
+	buffer->BitmapInfo()->bmiHeader.biPlanes = 1;
+	buffer->BitmapInfo()->bmiHeader.biBitCount = 32;
+	buffer->BitmapInfo()->bmiHeader.biCompression = BI_RGB;
 
-	m_Info.bmiHeader.biSize = sizeof(m_Info.bmiHeader);
-	m_Info.bmiHeader.biWidth = m_BitmapWidth;
-	m_Info.bmiHeader.biHeight = -m_BitmapHeight;
-	m_Info.bmiHeader.biPlanes = 1;
-	m_Info.bmiHeader.biBitCount = 32;
-	m_Info.bmiHeader.biCompression = BI_RGB;
-
-	m_Memory = VirtualAlloc(NULL, width*height*4, MEM_COMMIT, PAGE_READWRITE);
+	buffer->Memory(VirtualAlloc(NULL, buffer->Width() * buffer->Height() * buffer->BytesPerPixel(), MEM_COMMIT, PAGE_READWRITE));
 
 }
 
@@ -105,43 +111,38 @@ void Pane::Show()
 			TranslateMessage(&message);
 			DispatchMessage(&message);
 		}
-
-		RenderBackground(xOffset,yOffset);
+		
+		RenderBackground(&m_Buffer,xOffset,yOffset);
 		RECT clientRect;
+		//TODO CDA : Refactor
 		GetClientRect(m_Handle, &clientRect);
 		HDC deviceContext = GetDC(m_Handle);
-		UpdatePane(deviceContext, clientRect, 0, 0, clientRect.right - clientRect.left, clientRect.bottom - clientRect.top);
+		DisplayPaneBuffer(deviceContext, clientRect, &m_Buffer,0, 0, clientRect.right - clientRect.left, clientRect.bottom - clientRect.top);
 		ReleaseDC(m_Handle, deviceContext);
 
 		++xOffset;
 	}
 }
 
-void Pane::UpdatePane(HDC deviceContext, RECT paneRect, int x, int y, int width, int height)
+void Pane::DisplayPaneBuffer(HDC deviceContext, RECT paneRect, PaneBuffer* buffer,int x, int y, int width, int height)
 {
-	StretchDIBits(deviceContext, 0, 0, m_BitmapWidth, m_BitmapHeight, 0, 0, width, height, m_Memory, &m_Info, DIB_RGB_COLORS, SRCCOPY);
+	StretchDIBits(deviceContext, 0, 0, width, height, 0, 0, buffer->Width(), buffer->Height(), buffer->Memory(), buffer->BitmapInfo(), DIB_RGB_COLORS, SRCCOPY);
 }
 
 LRESULT CALLBACK Pane::WindowCallBack(HWND handle, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch (message)
 	{
-		case WM_SIZE:
-		{
-			RECT clientRect;
-			GetClientRect(handle, &clientRect);
-			ResizeSection(clientRect.right - clientRect.left, clientRect.bottom - clientRect.top);
-			break;
-		}
 		case WM_PAINT:
 		{
 			RECT clientRect;
+			//TODO CDA : Refactor
 			GetClientRect(handle, &clientRect);
 			PAINTSTRUCT paint;
 			HDC deviceContext = BeginPaint(handle, &paint);
 			int x = paint.rcPaint.left;
 			int y = paint.rcPaint.top;
-			UpdatePane(deviceContext, clientRect, x, y, paint.rcPaint.right - x, paint.rcPaint.bottom - y);
+			DisplayPaneBuffer(deviceContext, clientRect, &m_Buffer, x, y, paint.rcPaint.right - x, paint.rcPaint.bottom - y);
 			EndPaint(handle, &paint);
 			break;
 		}

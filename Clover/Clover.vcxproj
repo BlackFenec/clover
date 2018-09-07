@@ -162,6 +162,8 @@
     <ClCompile Include="src\physic\Vector2D.cpp" />
     <ClCompile Include="src\state\State.cpp" />
     <ClCompile Include="src\state\StateMachine.cpp" />
+    <ClCompile Include="src\ui\PaneBuffer.cpp" />
+    <ClCompile Include="src\ui\PaneBuffer.h" />
     <ClCompile Include="src\ui\Pane.cpp" />
     <ClCompile Include="test\integration\Main.cpp" />
   </ItemGroup>

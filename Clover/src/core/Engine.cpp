@@ -10,7 +10,7 @@ Engine::Engine()
 	m_State = notInitialized;
 	m_Systems.push_back(new PhysicSystem());
 	m_Window = new Pane();
-	m_State = stopped;
+	m_State = started;
 }
 
 Engine::~Engine()
