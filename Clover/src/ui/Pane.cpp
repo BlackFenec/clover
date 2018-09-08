@@ -111,7 +111,7 @@ void Pane::Show()
 			TranslateMessage(&message);
 			DispatchMessage(&message);
 		}
-
+		//TODO : Add to new class for input management
 		for (DWORD i = 0; i < XUSER_MAX_COUNT; ++i)
 		{
 			XINPUT_STATE state;
@@ -173,7 +173,7 @@ void Pane::DisplayPaneBuffer(HDC deviceContext, int width, int height)
 LRESULT Pane::PaneCallBack(HWND handle, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch (message)
-	{
+	{//TODO : Add to new class for input management
 		case WM_KEYUP:
 		{
 			uint32_t keyCode = wParam;
