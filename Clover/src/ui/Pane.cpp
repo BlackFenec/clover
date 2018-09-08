@@ -6,8 +6,6 @@ Pane Pane::m_Pane;
 Pane::Pane()
 {
 	WNDCLASSEX windowClass;
-	//m_Buffer = PaneBuffer();
-	m_Buffer.BitmapInfo(new BITMAPINFO());
 	ResizeSection(&m_Buffer, 1920, 1080);
 	windowClass.cbSize = sizeof(WNDCLASSEX);
 	windowClass.style = CS_HREDRAW | CS_VREDRAW;
@@ -115,17 +113,16 @@ void Pane::Show()
 		
 		RenderBackground(&m_Buffer,xOffset,yOffset);
 		RECT clientRect;
-		//TODO CDA : Refactor
 		GetClientRect(m_Handle, &clientRect);
 		HDC deviceContext = GetDC(m_Handle);
-		DisplayPaneBuffer(deviceContext, clientRect, &m_Buffer,0, 0, clientRect.right - clientRect.left, clientRect.bottom - clientRect.top);
+		DisplayPaneBuffer(deviceContext, &m_Buffer,0, 0, clientRect.right - clientRect.left, clientRect.bottom - clientRect.top);
 		ReleaseDC(m_Handle, deviceContext);
 
 		++xOffset;
 	}
 }
 
-void Pane::DisplayPaneBuffer(HDC deviceContext, RECT paneRect, PaneBuffer* buffer,int x, int y, int width, int height)
+void Pane::DisplayPaneBuffer(HDC deviceContext, PaneBuffer* buffer,int x, int y, int width, int height)
 {
 	StretchDIBits(deviceContext, 0, 0, width, height, 0, 0, buffer->Width(), buffer->Height(), buffer->Memory(), buffer->BitmapInfo(), DIB_RGB_COLORS, SRCCOPY);
 }
@@ -136,14 +133,9 @@ LRESULT CALLBACK Pane::WindowCallBack(HWND handle, UINT message, WPARAM wParam, 
 	{
 		case WM_PAINT:
 		{
-			RECT clientRect;
-			//TODO CDA : Refactor
-			GetClientRect(handle, &clientRect);
 			PAINTSTRUCT paint;
 			HDC deviceContext = BeginPaint(handle, &paint);
-			int x = paint.rcPaint.left;
-			int y = paint.rcPaint.top;
-			DisplayPaneBuffer(deviceContext, clientRect, PaneBuffer::GetInstance(), x, y, paint.rcPaint.right - x, paint.rcPaint.bottom - y);
+			DisplayPaneBuffer(deviceContext, PaneBuffer::GetInstance(), paint.rcPaint.left, paint.rcPaint.top, paint.rcPaint.right - paint.rcPaint.left, paint.rcPaint.bottom - paint.rcPaint.top);
 			EndPaint(handle, &paint);
 			break;
 		}
