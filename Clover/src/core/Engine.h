@@ -13,6 +13,7 @@ private:
 	EngineState m_State;
 	std::vector<ISystem*> m_Systems;
 	std::thread * m_SystemsUpdateThread;
+	Pane* m_Pane;
 
 	void UpdateSystems();
 public :

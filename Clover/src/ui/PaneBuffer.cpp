@@ -1,7 +1,5 @@
 #include "PaneBuffer.h"
 
-PaneBuffer PaneBuffer::m_PaneBuffer;
-
 PaneBuffer::PaneBuffer()
 {
 	m_BitmapInfo = new BITMAPINFO();
@@ -9,6 +7,7 @@ PaneBuffer::PaneBuffer()
 
 PaneBuffer::~PaneBuffer()
 {
+	delete m_BitmapInfo;
 	delete m_Memory;
 }
 

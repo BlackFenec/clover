@@ -77,6 +77,9 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
+    <Link>
+      <Profile>true</Profile>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -87,6 +90,9 @@
       <AdditionalIncludeDirectories>D:\Users\Cindy\Documents\Programmation\2018\clover\libraries\gtest-1.8.0\googletest\include;D:\Users\Cindy\Documents\Programmation\2018\clover\libraries\gtest-1.8.0\googlemock\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>-D_SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
+    <Link>
+      <Profile>true</Profile>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
