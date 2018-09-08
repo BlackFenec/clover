@@ -17,7 +17,6 @@ private :
 	LRESULT PaneCallBack(HWND handle, UINT message, WPARAM wParam, LPARAM lParam);
 	
 	static LRESULT CALLBACK WindowCallBack(HWND handle, UINT message, WPARAM wParam, LPARAM lParam);
-
 public :
 	Pane();
 	virtual ~Pane();
