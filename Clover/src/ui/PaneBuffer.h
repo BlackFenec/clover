@@ -10,6 +10,7 @@ private :
 	BITMAPINFO* m_BitmapInfo;
 	void* m_Memory;
 	int m_Width;
+	static PaneBuffer m_PaneBuffer;
 
 public:
 	PaneBuffer();
@@ -21,6 +22,7 @@ public:
 	void Height(int height);
 	BITMAPINFO* BitmapInfo();
 	void BitmapInfo(BITMAPINFO* bitmapInfo);
+	static PaneBuffer* GetInstance() { return &m_PaneBuffer; }
 	void* Memory();
 	void Memory(void* memory);
 	int Width();

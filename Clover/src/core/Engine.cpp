@@ -9,7 +9,6 @@ Engine::Engine()
 {
 	m_State = notInitialized;
 	m_Systems.push_back(new PhysicSystem());
-	m_Window = new Pane();
 	m_State = started;
 }
 
@@ -20,7 +19,6 @@ Engine::~Engine()
 		this->Stop();
 	}
 
-	delete m_Window;
 	delete m_SystemsUpdateThread;
 
 	for (std::vector<ISystem*>::iterator it = m_Systems.begin() ; it != m_Systems.end(); ++it)
@@ -38,7 +36,7 @@ void Engine::Start()
 {
 	m_State = started;	
 	m_SystemsUpdateThread = new std::thread(&Engine::UpdateSystems, this);
-	m_Window->Show();
+	Pane::GetInstance()->Show();
 }
 
 void Engine::Stop()

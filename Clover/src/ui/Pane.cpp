@@ -1,11 +1,12 @@
 #include "Pane.h"
 #include "..\core\Engine.h"
 
-PaneBuffer Pane::m_Buffer;
+Pane Pane::m_Pane;
 
 Pane::Pane()
 {
 	WNDCLASSEX windowClass;
+	//m_Buffer = PaneBuffer();
 	m_Buffer.BitmapInfo(new BITMAPINFO());
 	ResizeSection(&m_Buffer, 1920, 1080);
 	windowClass.cbSize = sizeof(WNDCLASSEX);
@@ -142,7 +143,7 @@ LRESULT CALLBACK Pane::WindowCallBack(HWND handle, UINT message, WPARAM wParam, 
 			HDC deviceContext = BeginPaint(handle, &paint);
 			int x = paint.rcPaint.left;
 			int y = paint.rcPaint.top;
-			DisplayPaneBuffer(deviceContext, clientRect, &m_Buffer, x, y, paint.rcPaint.right - x, paint.rcPaint.bottom - y);
+			DisplayPaneBuffer(deviceContext, clientRect, PaneBuffer::GetInstance(), x, y, paint.rcPaint.right - x, paint.rcPaint.bottom - y);
 			EndPaint(handle, &paint);
 			break;
 		}

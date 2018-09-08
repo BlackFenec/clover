@@ -10,9 +10,10 @@ private :
 	/*static int m_BitmapWidth;
 	static int m_BitmapHeight;*/
 	HWND m_Handle;
-	static PaneBuffer m_Buffer;
+	PaneBuffer m_Buffer;
 	/*static BITMAPINFO m_Info;
 	static void* m_Memory;*/
+	static Pane m_Pane;
 
 	static void RenderBackground(PaneBuffer* buffer, int xOffset, int yOffset);
 	static void ResizeSection(PaneBuffer* buffer, int width, int height);
@@ -23,6 +24,7 @@ public :
 	Pane();
 	virtual ~Pane();
 
+	static Pane* GetInstance() { return &m_Pane; }
 	void Show();
 };
 
