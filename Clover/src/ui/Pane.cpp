@@ -1,6 +1,9 @@
 #include "Pane.h"
 #include "..\core\Engine.h"
 #include <Xinput.h>
+#include <dsound.h>
+
+LPDIRECTSOUNDBUFFER m_SecondaryBuffer;
 
 Pane::Pane()
 {
@@ -42,6 +45,50 @@ Pane::~Pane()
 
 }
 
+void Pane::InitSound(INT32 bufferSize, INT32 samplesPerSecond)
+{
+	LPDIRECTSOUND directSound;
+	WAVEFORMATEX format = {};
+	format.wFormatTag = WAVE_FORMAT_PCM;
+	format.nChannels = 2;
+	format.nSamplesPerSec = samplesPerSecond;
+	format.wBitsPerSample = 16;
+	format.nBlockAlign = (format.nChannels* format.wBitsPerSample) / 8;
+	format.nAvgBytesPerSec = format.nSamplesPerSec * format.nBlockAlign;
+	format.cbSize = 0;
+
+	if (SUCCEEDED(DirectSoundCreate(0, &directSound, 0)))
+	{
+		if(SUCCEEDED(directSound->SetCooperativeLevel(m_Handle, DSSCL_PRIORITY)))
+		{
+			DSBUFFERDESC bufferDescription = {};
+			bufferDescription.dwSize = sizeof(bufferDescription);
+			bufferDescription.dwFlags = DSBCAPS_PRIMARYBUFFER;
+
+			LPDIRECTSOUNDBUFFER primaryBuffer;
+			if (SUCCEEDED(directSound->CreateSoundBuffer(&bufferDescription, &primaryBuffer, 0)))
+			{
+				if (SUCCEEDED(primaryBuffer->SetFormat(&format)))
+				{
+					
+				};
+			}
+
+			DSBUFFERDESC secondaryBufferDescription = {};
+			secondaryBufferDescription.dwSize = sizeof(secondaryBufferDescription);
+			secondaryBufferDescription.dwFlags = 0;
+			secondaryBufferDescription.dwBufferBytes = bufferSize;
+			secondaryBufferDescription.lpwfxFormat = &format;
+			m_SecondaryBuffer;
+			if (SUCCEEDED(directSound->CreateSoundBuffer(&secondaryBufferDescription, &m_SecondaryBuffer, 0)))
+			{
+				
+			}
+		}
+	}
+
+}
+
 void Pane::RenderBackground(int xOffset, int yOffset)
 {
 	static uint8_t red = 0;
@@ -58,14 +105,14 @@ void Pane::RenderBackground(int xOffset, int yOffset)
 		{	
 			if (x >= width / (double)20 * 10 && x <= width / (double)20 * 11 && y >= height / (double)8 * 3 && y <= height / (double)8 * 4)
 			{
-				*pixel++ = ((255-red << 16) | (0 << 8) | 0);
+				*pixel++ = (255-red << 16) | (0 << 8) | 0;
 			}
 			else
 			{
 				uint8_t blue = (y / (double)height * 255) + yOffset - 127;
 				uint8_t green = 127 + yOffset;
 
-				*pixel++ = ((red << 16) | (green << 8) | blue);
+				*pixel++ = (red << 16) | (green << 8) | blue;
 			}
 		}
 
@@ -99,8 +146,23 @@ void Pane::Show()
 	if(!ShowWindowAsync(m_Handle, SW_SHOWDEFAULT))
 		MessageBox(NULL, "Show window async failed", "Error", NULL);
 
+
 	int xOffset = 0;
 	int yOffset = 0;
+
+	int samplesPerSecond = 48000;
+	int toneHz = 256;
+	int toneVolume = 3000;
+	UINT32 runningSampleIndex = 0;
+	int squareWavePeriod = samplesPerSecond / toneHz;
+	int halfSquareWavePeriod = squareWavePeriod / 2;
+	int bytesPerSample = sizeof(INT16) * 2;
+	int SecondaryBufferSize = samplesPerSecond * bytesPerSample;
+	//int squareWaveCounter = 0;
+
+	InitSound(samplesPerSecond, SecondaryBufferSize);
+	m_SecondaryBuffer->Play(0, 0, DSBPLAY_LOOPING);
+
 	while (Engine::GetInstance()->CurrentState() == EngineState::started)
 	{
 		MSG message;
@@ -155,6 +217,54 @@ void Pane::Show()
 		}
 		
 		RenderBackground(xOffset,yOffset);
+
+		//TODO : Refactor
+		DWORD playCursor;
+		DWORD writeCursor;
+		if (SUCCEEDED(m_SecondaryBuffer->GetCurrentPosition(&playCursor,&writeCursor)))
+		{
+			DWORD byteToLock = runningSampleIndex * bytesPerSample % SecondaryBufferSize;
+			DWORD BytesToWrite;
+			if (byteToLock > playCursor)
+			{
+				BytesToWrite = (SecondaryBufferSize - byteToLock);
+				BytesToWrite += playCursor;
+			}
+			else
+			{
+				BytesToWrite = playCursor - byteToLock;
+			}
+
+			VOID* region1;
+			DWORD region1Size;
+			VOID* region2;
+			DWORD region2Size;
+
+			if (SUCCEEDED(m_SecondaryBuffer->Lock(byteToLock, BytesToWrite, &region1, &region1Size, &region2, &region2Size, 0)))
+			{
+
+				DWORD region1SampleCount = region1Size / bytesPerSample;
+					INT16* sampleout = (INT16*)region1;
+					for (DWORD sampleIndex = 0; sampleIndex < region1SampleCount; ++sampleIndex)
+					{
+						INT16 SampleValue = ((runningSampleIndex++ / halfSquareWavePeriod) % 2) ? toneVolume : -toneVolume;
+							*sampleout++ = SampleValue;
+							*sampleout++ = SampleValue;
+					}
+
+				DWORD region2SampleCount = region2Size / bytesPerSample;
+				sampleout = (INT16*)region2;
+				for (DWORD sampleIndex = 0; sampleIndex < region2SampleCount; ++sampleIndex)
+				{
+					INT16 SampleValue = ((runningSampleIndex++ / halfSquareWavePeriod) % 2) ? toneVolume : -toneVolume;
+					*sampleout++ = SampleValue;
+					*sampleout++ = SampleValue;
+				}
+
+				m_SecondaryBuffer->Unlock(region1, region1Size, region2, region2Size);
+			}
+		}
+
 		RECT clientRect;
 		GetClientRect(m_Handle, &clientRect);
 		HDC deviceContext = GetDC(m_Handle);
