@@ -218,7 +218,7 @@ void Pane::Show()
 	soundOutput.bytesPerSample = sizeof(INT16) * 2;
 	soundOutput.SecondaryBufferSize = soundOutput.samplesPerSecond * soundOutput.bytesPerSample;
 	//SoundIsPlaying = false;
-	InitSound(soundOutput.samplesPerSecond, soundOutput.SecondaryBufferSize);
+	InitSound(soundOutput.SecondaryBufferSize, soundOutput.samplesPerSecond);
 	FillSoundBuffer(&soundOutput, 0, soundOutput.SecondaryBufferSize);
 	m_SecondaryBuffer->Play(0, 0, DSBPLAY_LOOPING);
 
@@ -282,7 +282,7 @@ void Pane::Show()
 		DWORD writeCursor;
 		if (SUCCEEDED(m_SecondaryBuffer->GetCurrentPosition(&playCursor,&writeCursor)))
 		{
-			DWORD byteToLock = soundOutput.runningSampleIndex * soundOutput.bytesPerSample % soundOutput.SecondaryBufferSize;
+			DWORD byteToLock = ((soundOutput.runningSampleIndex * soundOutput.bytesPerSample) % soundOutput.SecondaryBufferSize);
 			DWORD BytesToWrite;
 			if (byteToLock == playCursor)
 			{
