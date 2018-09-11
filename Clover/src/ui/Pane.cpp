@@ -3,7 +3,15 @@
 #include <Xinput.h>
 #include <dsound.h>
 
+#define Pi32 3.14159265359f
+
+
+
+
 LPDIRECTSOUNDBUFFER m_SecondaryBuffer;
+//SoundOutput soundOutput;
+bool SoundIsPlaying;
+
 
 Pane::Pane()
 {
@@ -141,6 +149,46 @@ void Pane::ResizeSection(int width, int height)
 	m_Buffer->Memory(VirtualAlloc(NULL, m_Buffer->Width() * m_Buffer->Height() * m_Buffer->BytesPerPixel(), MEM_COMMIT, PAGE_READWRITE));
 }
 
+
+void Pane::FillSoundBuffer(SoundOutput* output, DWORD ByteToLock, DWORD BytesToWrite)
+{
+	VOID* region1;
+	DWORD region1Size;
+	VOID* region2;
+	DWORD region2Size;
+
+	if (!SoundIsPlaying && SUCCEEDED(m_SecondaryBuffer->Lock(ByteToLock, BytesToWrite, &region1, &region1Size, &region2, &region2Size, 0)))
+	{
+
+		DWORD region1SampleCount = region1Size / output->bytesPerSample;
+		INT16* sampleout = (INT16*)region1;
+		for (DWORD sampleIndex = 0; sampleIndex < region1SampleCount; ++sampleIndex)
+		{
+
+			float t = 2.0f*Pi32*(float)output->runningSampleIndex / (float)output->wavePeriod;
+			float sineValue = sinf(t);
+			INT16 SampleValue = (INT16)(sineValue * output->toneVolume);
+			*sampleout++ = SampleValue;
+			*sampleout++ = SampleValue;
+			++output->runningSampleIndex;
+		}
+
+		DWORD region2SampleCount = region2Size / output->bytesPerSample;
+		sampleout = (INT16*)region2;
+		for (DWORD sampleIndex = 0; sampleIndex < region2SampleCount; ++sampleIndex)
+		{
+			float t = 2.0f*Pi32*(float)output->runningSampleIndex / (float)output->wavePeriod;
+			float sineValue = sinf(t);
+			INT16 SampleValue = (INT16)(sineValue * output->toneVolume);
+			*sampleout++ = SampleValue;
+			*sampleout++ = SampleValue;
+			++output->runningSampleIndex;
+		}
+
+		m_SecondaryBuffer->Unlock(region1, region1Size, region2, region2Size);
+	}
+}
+
 void Pane::Show()
 {
 	if(!ShowWindowAsync(m_Handle, SW_SHOWDEFAULT))
@@ -150,17 +198,28 @@ void Pane::Show()
 	int xOffset = 0;
 	int yOffset = 0;
 
-	int samplesPerSecond = 48000;
-	int toneHz = 256;
-	int toneVolume = 3000;
-	UINT32 runningSampleIndex = 0;
-	int squareWavePeriod = samplesPerSecond / toneHz;
-	int halfSquareWavePeriod = squareWavePeriod / 2;
-	int bytesPerSample = sizeof(INT16) * 2;
-	int SecondaryBufferSize = samplesPerSecond * bytesPerSample;
-	//int squareWaveCounter = 0;
-
-	InitSound(samplesPerSecond, SecondaryBufferSize);
+	//int samplesPerSecond = 48000;
+	//int toneHz = 256;
+	//int toneVolume = 3000;
+	//UINT32 runningSampleIndex = 0;
+	//int wavePeriod = samplesPerSecond / toneHz;
+	////int halfSquareWavePeriod = squareWavePeriod / 2;
+	//int bytesPerSample = sizeof(INT16) * 2;
+	//int SecondaryBufferSize = samplesPerSecond * bytesPerSample;
+	////int squareWaveCounter = 0;
+	
+	SoundOutput soundOutput = {};
+	soundOutput.samplesPerSecond = 48000;
+	soundOutput.toneHz = 256;
+	soundOutput.toneVolume = 3000;
+	soundOutput.runningSampleIndex = 0;
+	soundOutput.wavePeriod = soundOutput.samplesPerSecond / soundOutput.toneHz;
+	//int halfSquareWavePeriod = squareWavePeriod / 2;
+	soundOutput.bytesPerSample = sizeof(INT16) * 2;
+	soundOutput.SecondaryBufferSize = soundOutput.samplesPerSecond * soundOutput.bytesPerSample;
+	//SoundIsPlaying = false;
+	InitSound(soundOutput.samplesPerSecond, soundOutput.SecondaryBufferSize);
+	FillSoundBuffer(&soundOutput, 0, soundOutput.SecondaryBufferSize);
 	m_SecondaryBuffer->Play(0, 0, DSBPLAY_LOOPING);
 
 	while (Engine::GetInstance()->CurrentState() == EngineState::started)
@@ -223,46 +282,22 @@ void Pane::Show()
 		DWORD writeCursor;
 		if (SUCCEEDED(m_SecondaryBuffer->GetCurrentPosition(&playCursor,&writeCursor)))
 		{
-			DWORD byteToLock = runningSampleIndex * bytesPerSample % SecondaryBufferSize;
+			DWORD byteToLock = soundOutput.runningSampleIndex * soundOutput.bytesPerSample % soundOutput.SecondaryBufferSize;
 			DWORD BytesToWrite;
-			if (byteToLock > playCursor)
+			if (byteToLock == playCursor)
 			{
-				BytesToWrite = (SecondaryBufferSize - byteToLock);
+				BytesToWrite = 0;
+			}
+			else if (byteToLock > playCursor)
+			{
+				BytesToWrite = (soundOutput.SecondaryBufferSize - byteToLock);
 				BytesToWrite += playCursor;
 			}
 			else
 			{
 				BytesToWrite = playCursor - byteToLock;
 			}
-
-			VOID* region1;
-			DWORD region1Size;
-			VOID* region2;
-			DWORD region2Size;
-
-			if (SUCCEEDED(m_SecondaryBuffer->Lock(byteToLock, BytesToWrite, &region1, &region1Size, &region2, &region2Size, 0)))
-			{
-
-				DWORD region1SampleCount = region1Size / bytesPerSample;
-					INT16* sampleout = (INT16*)region1;
-					for (DWORD sampleIndex = 0; sampleIndex < region1SampleCount; ++sampleIndex)
-					{
-						INT16 SampleValue = ((runningSampleIndex++ / halfSquareWavePeriod) % 2) ? toneVolume : -toneVolume;
-							*sampleout++ = SampleValue;
-							*sampleout++ = SampleValue;
-					}
-
-				DWORD region2SampleCount = region2Size / bytesPerSample;
-				sampleout = (INT16*)region2;
-				for (DWORD sampleIndex = 0; sampleIndex < region2SampleCount; ++sampleIndex)
-				{
-					INT16 SampleValue = ((runningSampleIndex++ / halfSquareWavePeriod) % 2) ? toneVolume : -toneVolume;
-					*sampleout++ = SampleValue;
-					*sampleout++ = SampleValue;
-				}
-
-				m_SecondaryBuffer->Unlock(region1, region1Size, region2, region2Size);
-			}
+			FillSoundBuffer(&soundOutput, byteToLock, BytesToWrite);
 		}
 
 		RECT clientRect;
