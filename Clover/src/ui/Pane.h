@@ -15,17 +15,11 @@ struct SoundOutput
 	int SecondaryBufferSize;
 };
 
-
 class Pane
 {
 private :
-
-
-
-
 	HWND m_Handle;
 	PaneBuffer* m_Buffer;
-	//static Pane m_Pane;
 
 	void DisplayPaneBuffer(HDC deviceContext, int width, int height);
 	void InitSound(INT32 bufferSize, INT32 samplesPerSecond);

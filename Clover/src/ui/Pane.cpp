@@ -5,13 +5,7 @@
 
 #define Pi32 3.14159265359f
 
-
-
-
 LPDIRECTSOUNDBUFFER m_SecondaryBuffer;
-//SoundOutput soundOutput;
-bool SoundIsPlaying;
-
 
 Pane::Pane()
 {
@@ -157,7 +151,7 @@ void Pane::FillSoundBuffer(SoundOutput* output, DWORD ByteToLock, DWORD BytesToW
 	VOID* region2;
 	DWORD region2Size;
 
-	if (!SoundIsPlaying && SUCCEEDED(m_SecondaryBuffer->Lock(ByteToLock, BytesToWrite, &region1, &region1Size, &region2, &region2Size, 0)))
+	if (SUCCEEDED(m_SecondaryBuffer->Lock(ByteToLock, BytesToWrite, &region1, &region1Size, &region2, &region2Size, 0)))
 	{
 
 		DWORD region1SampleCount = region1Size / output->bytesPerSample;
@@ -197,16 +191,6 @@ void Pane::Show()
 
 	int xOffset = 0;
 	int yOffset = 0;
-
-	//int samplesPerSecond = 48000;
-	//int toneHz = 256;
-	//int toneVolume = 3000;
-	//UINT32 runningSampleIndex = 0;
-	//int wavePeriod = samplesPerSecond / toneHz;
-	////int halfSquareWavePeriod = squareWavePeriod / 2;
-	//int bytesPerSample = sizeof(INT16) * 2;
-	//int SecondaryBufferSize = samplesPerSecond * bytesPerSample;
-	////int squareWaveCounter = 0;
 	
 	SoundOutput soundOutput = {};
 	soundOutput.samplesPerSecond = 48000;
@@ -214,10 +198,9 @@ void Pane::Show()
 	soundOutput.toneVolume = 3000;
 	soundOutput.runningSampleIndex = 0;
 	soundOutput.wavePeriod = soundOutput.samplesPerSecond / soundOutput.toneHz;
-	//int halfSquareWavePeriod = squareWavePeriod / 2;
 	soundOutput.bytesPerSample = sizeof(INT16) * 2;
 	soundOutput.SecondaryBufferSize = soundOutput.samplesPerSecond * soundOutput.bytesPerSample;
-	//SoundIsPlaying = false;
+
 	InitSound(soundOutput.SecondaryBufferSize, soundOutput.samplesPerSecond);
 	FillSoundBuffer(&soundOutput, 0, soundOutput.SecondaryBufferSize);
 	m_SecondaryBuffer->Play(0, 0, DSBPLAY_LOOPING);
