@@ -1,25 +1,19 @@
 #ifndef PANE_H_
 #define PANE_H_
 
-#include <windows.h>
 #include "PaneBuffer.h"
+#include "..\audio\SoundOuput.h"
+#include <windows.h>
+#include <Xinput.h>
 
-struct SoundOutput
-{
-	int samplesPerSecond;
-	int toneHz;
-	int toneVolume;
-	UINT32 runningSampleIndex;
-	int wavePeriod;
-	int bytesPerSample;
-	int SecondaryBufferSize;
-};
+
 
 class Pane
 {
 private :
 	HWND m_Handle;
 	PaneBuffer* m_Buffer;
+	SoundOutput* m_SoundOutput;
 
 	void DisplayPaneBuffer(HDC deviceContext, int width, int height);
 	void InitSound(INT32 bufferSize, INT32 samplesPerSecond);

@@ -1,11 +1,7 @@
 #include "Pane.h"
 #include "..\core\Engine.h"
-#include <Xinput.h>
-#include <dsound.h>
 
-#define Pi32 3.14159265359f
 
-LPDIRECTSOUNDBUFFER m_SecondaryBuffer;
 
 Pane::Pane()
 {
@@ -49,7 +45,7 @@ Pane::~Pane()
 
 void Pane::InitSound(INT32 bufferSize, INT32 samplesPerSecond)
 {
-	LPDIRECTSOUND directSound;
+	/*LPDIRECTSOUND directSound;
 	WAVEFORMATEX format = {};
 	format.wFormatTag = WAVE_FORMAT_PCM;
 	format.nChannels = 2;
@@ -73,7 +69,7 @@ void Pane::InitSound(INT32 bufferSize, INT32 samplesPerSecond)
 				if (SUCCEEDED(primaryBuffer->SetFormat(&format)))
 				{
 					
-				};
+				}
 			}
 
 			DSBUFFERDESC secondaryBufferDescription = {};
@@ -87,7 +83,7 @@ void Pane::InitSound(INT32 bufferSize, INT32 samplesPerSecond)
 				
 			}
 		}
-	}
+	}*/
 
 }
 
@@ -146,7 +142,7 @@ void Pane::ResizeSection(int width, int height)
 
 void Pane::FillSoundBuffer(SoundOutput* output, DWORD ByteToLock, DWORD BytesToWrite)
 {
-	VOID* region1;
+	/*VOID* region1;
 	DWORD region1Size;
 	VOID* region2;
 	DWORD region2Size;
@@ -159,7 +155,7 @@ void Pane::FillSoundBuffer(SoundOutput* output, DWORD ByteToLock, DWORD BytesToW
 		for (DWORD sampleIndex = 0; sampleIndex < region1SampleCount; ++sampleIndex)
 		{
 
-			float t = 2.0f*Pi32*(float)output->runningSampleIndex / (float)output->wavePeriod;
+			float t = 2.0f*Pi*(float)output->runningSampleIndex / (float)output->wavePeriod;
 			float sineValue = sinf(t);
 			INT16 SampleValue = (INT16)(sineValue * output->toneVolume);
 			*sampleout++ = SampleValue;
@@ -171,7 +167,7 @@ void Pane::FillSoundBuffer(SoundOutput* output, DWORD ByteToLock, DWORD BytesToW
 		sampleout = (INT16*)region2;
 		for (DWORD sampleIndex = 0; sampleIndex < region2SampleCount; ++sampleIndex)
 		{
-			float t = 2.0f*Pi32*(float)output->runningSampleIndex / (float)output->wavePeriod;
+			float t = 2.0f*Pi*(float)output->runningSampleIndex / (float)output->wavePeriod;
 			float sineValue = sinf(t);
 			INT16 SampleValue = (INT16)(sineValue * output->toneVolume);
 			*sampleout++ = SampleValue;
@@ -180,7 +176,7 @@ void Pane::FillSoundBuffer(SoundOutput* output, DWORD ByteToLock, DWORD BytesToW
 		}
 
 		m_SecondaryBuffer->Unlock(region1, region1Size, region2, region2Size);
-	}
+	}*/
 }
 
 void Pane::Show()
@@ -192,18 +188,14 @@ void Pane::Show()
 	int xOffset = 0;
 	int yOffset = 0;
 	
-	SoundOutput soundOutput = {};
-	soundOutput.samplesPerSecond = 48000;
+	/*soundOutput.samplesPerSecond = 48000;
 	soundOutput.toneHz = 256;
-	soundOutput.toneVolume = 3000;
-	soundOutput.runningSampleIndex = 0;
-	soundOutput.wavePeriod = soundOutput.samplesPerSecond / soundOutput.toneHz;
-	soundOutput.bytesPerSample = sizeof(INT16) * 2;
-	soundOutput.SecondaryBufferSize = soundOutput.samplesPerSecond * soundOutput.bytesPerSample;
-
-	InitSound(soundOutput.SecondaryBufferSize, soundOutput.samplesPerSecond);
-	FillSoundBuffer(&soundOutput, 0, soundOutput.SecondaryBufferSize);
-	m_SecondaryBuffer->Play(0, 0, DSBPLAY_LOOPING);
+	soundOutput.toneVolume = 3000;*/
+	
+	m_SoundOutput->InitSound(m_Handle);
+	/*InitSound(soundOutput.SecondaryBufferSize, soundOutput.samplesPerSecond);
+	FillSoundBuffer(&soundOutput, 0, soundOutput.SecondaryBufferSize);*/
+	m_SoundOutput->Play();
 
 	while (Engine::GetInstance()->CurrentState() == EngineState::started)
 	{
@@ -261,7 +253,7 @@ void Pane::Show()
 		RenderBackground(xOffset,yOffset);
 
 		//TODO : Refactor
-		DWORD playCursor;
+		/*DWORD playCursor;
 		DWORD writeCursor;
 		if (SUCCEEDED(m_SecondaryBuffer->GetCurrentPosition(&playCursor,&writeCursor)))
 		{
@@ -281,7 +273,8 @@ void Pane::Show()
 				BytesToWrite = playCursor - byteToLock;
 			}
 			FillSoundBuffer(&soundOutput, byteToLock, BytesToWrite);
-		}
+		}*/
+		m_SoundOutput->UpdateSoundBuffer();
 
 		RECT clientRect;
 		GetClientRect(m_Handle, &clientRect);
