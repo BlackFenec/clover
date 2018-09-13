@@ -1,11 +1,11 @@
 #include "Pane.h"
 #include "..\core\Engine.h"
 
-
-
 Pane::Pane()
 {
 	m_Buffer = new PaneBuffer();
+	m_SoundOutput = new SoundOutput(48000,256,3000);
+
 	WNDCLASSEX windowClass;
 	ResizeSection(1920, 1080);
 	windowClass.cbSize = sizeof(WNDCLASSEX);
@@ -40,50 +40,6 @@ Pane::Pane()
 
 Pane::~Pane()
 {
-
-}
-
-void Pane::InitSound(INT32 bufferSize, INT32 samplesPerSecond)
-{
-	/*LPDIRECTSOUND directSound;
-	WAVEFORMATEX format = {};
-	format.wFormatTag = WAVE_FORMAT_PCM;
-	format.nChannels = 2;
-	format.nSamplesPerSec = samplesPerSecond;
-	format.wBitsPerSample = 16;
-	format.nBlockAlign = (format.nChannels* format.wBitsPerSample) / 8;
-	format.nAvgBytesPerSec = format.nSamplesPerSec * format.nBlockAlign;
-	format.cbSize = 0;
-
-	if (SUCCEEDED(DirectSoundCreate(0, &directSound, 0)))
-	{
-		if(SUCCEEDED(directSound->SetCooperativeLevel(m_Handle, DSSCL_PRIORITY)))
-		{
-			DSBUFFERDESC bufferDescription = {};
-			bufferDescription.dwSize = sizeof(bufferDescription);
-			bufferDescription.dwFlags = DSBCAPS_PRIMARYBUFFER;
-
-			LPDIRECTSOUNDBUFFER primaryBuffer;
-			if (SUCCEEDED(directSound->CreateSoundBuffer(&bufferDescription, &primaryBuffer, 0)))
-			{
-				if (SUCCEEDED(primaryBuffer->SetFormat(&format)))
-				{
-					
-				}
-			}
-
-			DSBUFFERDESC secondaryBufferDescription = {};
-			secondaryBufferDescription.dwSize = sizeof(secondaryBufferDescription);
-			secondaryBufferDescription.dwFlags = 0;
-			secondaryBufferDescription.dwBufferBytes = bufferSize;
-			secondaryBufferDescription.lpwfxFormat = &format;
-			m_SecondaryBuffer;
-			if (SUCCEEDED(directSound->CreateSoundBuffer(&secondaryBufferDescription, &m_SecondaryBuffer, 0)))
-			{
-				
-			}
-		}
-	}*/
 
 }
 
@@ -139,62 +95,15 @@ void Pane::ResizeSection(int width, int height)
 	m_Buffer->Memory(VirtualAlloc(NULL, m_Buffer->Width() * m_Buffer->Height() * m_Buffer->BytesPerPixel(), MEM_COMMIT, PAGE_READWRITE));
 }
 
-
-void Pane::FillSoundBuffer(SoundOutput* output, DWORD ByteToLock, DWORD BytesToWrite)
-{
-	/*VOID* region1;
-	DWORD region1Size;
-	VOID* region2;
-	DWORD region2Size;
-
-	if (SUCCEEDED(m_SecondaryBuffer->Lock(ByteToLock, BytesToWrite, &region1, &region1Size, &region2, &region2Size, 0)))
-	{
-
-		DWORD region1SampleCount = region1Size / output->bytesPerSample;
-		INT16* sampleout = (INT16*)region1;
-		for (DWORD sampleIndex = 0; sampleIndex < region1SampleCount; ++sampleIndex)
-		{
-
-			float t = 2.0f*Pi*(float)output->runningSampleIndex / (float)output->wavePeriod;
-			float sineValue = sinf(t);
-			INT16 SampleValue = (INT16)(sineValue * output->toneVolume);
-			*sampleout++ = SampleValue;
-			*sampleout++ = SampleValue;
-			++output->runningSampleIndex;
-		}
-
-		DWORD region2SampleCount = region2Size / output->bytesPerSample;
-		sampleout = (INT16*)region2;
-		for (DWORD sampleIndex = 0; sampleIndex < region2SampleCount; ++sampleIndex)
-		{
-			float t = 2.0f*Pi*(float)output->runningSampleIndex / (float)output->wavePeriod;
-			float sineValue = sinf(t);
-			INT16 SampleValue = (INT16)(sineValue * output->toneVolume);
-			*sampleout++ = SampleValue;
-			*sampleout++ = SampleValue;
-			++output->runningSampleIndex;
-		}
-
-		m_SecondaryBuffer->Unlock(region1, region1Size, region2, region2Size);
-	}*/
-}
-
 void Pane::Show()
 {
 	if(!ShowWindowAsync(m_Handle, SW_SHOWDEFAULT))
 		MessageBox(NULL, "Show window async failed", "Error", NULL);
 
-
 	int xOffset = 0;
 	int yOffset = 0;
 	
-	/*soundOutput.samplesPerSecond = 48000;
-	soundOutput.toneHz = 256;
-	soundOutput.toneVolume = 3000;*/
-	
 	m_SoundOutput->InitSound(m_Handle);
-	/*InitSound(soundOutput.SecondaryBufferSize, soundOutput.samplesPerSecond);
-	FillSoundBuffer(&soundOutput, 0, soundOutput.SecondaryBufferSize);*/
 	m_SoundOutput->Play();
 
 	while (Engine::GetInstance()->CurrentState() == EngineState::started)
@@ -252,28 +161,6 @@ void Pane::Show()
 		
 		RenderBackground(xOffset,yOffset);
 
-		//TODO : Refactor
-		/*DWORD playCursor;
-		DWORD writeCursor;
-		if (SUCCEEDED(m_SecondaryBuffer->GetCurrentPosition(&playCursor,&writeCursor)))
-		{
-			DWORD byteToLock = ((soundOutput.runningSampleIndex * soundOutput.bytesPerSample) % soundOutput.SecondaryBufferSize);
-			DWORD BytesToWrite;
-			if (byteToLock == playCursor)
-			{
-				BytesToWrite = 0;
-			}
-			else if (byteToLock > playCursor)
-			{
-				BytesToWrite = (soundOutput.SecondaryBufferSize - byteToLock);
-				BytesToWrite += playCursor;
-			}
-			else
-			{
-				BytesToWrite = playCursor - byteToLock;
-			}
-			FillSoundBuffer(&soundOutput, byteToLock, BytesToWrite);
-		}*/
 		m_SoundOutput->UpdateSoundBuffer();
 
 		RECT clientRect;

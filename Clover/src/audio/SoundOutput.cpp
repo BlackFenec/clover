@@ -58,19 +58,17 @@ void SoundOutput::InitSound(HWND handle)
 			{
 				if (SUCCEEDED(primaryBuffer->SetFormat(&format)))
 				{
-					//TODO : Create secondary only if primary succeeded
+					DSBUFFERDESC secondaryBufferDescription = {};
+					secondaryBufferDescription.dwSize = sizeof(secondaryBufferDescription);
+					secondaryBufferDescription.dwFlags = 0;
+					secondaryBufferDescription.dwBufferBytes = m_SecondaryBufferSize;
+					secondaryBufferDescription.lpwfxFormat = &format;
+					if (SUCCEEDED(directSound->CreateSoundBuffer(&secondaryBufferDescription, &m_SecondaryBuffer, 0)))
+					{
+						this->FillSoundBuffer(0, this->GetSecondaryBufferSize());
+					}
 				}
-			}
-
-			DSBUFFERDESC secondaryBufferDescription = {};
-			secondaryBufferDescription.dwSize = sizeof(secondaryBufferDescription);
-			secondaryBufferDescription.dwFlags = 0;
-			secondaryBufferDescription.dwBufferBytes = m_SecondaryBufferSize;
-			secondaryBufferDescription.lpwfxFormat = &format;
-			if (SUCCEEDED(directSound->CreateSoundBuffer(&secondaryBufferDescription, &m_SecondaryBuffer, 0)))
-			{
-				this->FillSoundBuffer(0, this->GetSecondaryBufferSize());
-			}
+			}			
 		}
 	}
 }
