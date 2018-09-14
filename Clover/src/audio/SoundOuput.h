@@ -3,7 +3,6 @@
 
 #include <dsound.h>
 #include <math.h>
-#include <stdint.h>
 
 #define Pi 3.14159265359f
 
@@ -11,14 +10,13 @@ class SoundOutput
 {
 private:
 	int m_BytesPerSample;
-	uint32_t m_RunningSampleIndex;
+	UINT32 m_RunningSampleIndex;
 	int m_SamplesPerSecond;
 	LPDIRECTSOUNDBUFFER m_SecondaryBuffer;
 	int m_SecondaryBufferSize;
 	int m_ToneHertz;
 	int m_ToneVolume;
 	int m_WavePeriod;
-
 
 	void FillSoundBuffer(DWORD ByteToLock, DWORD BytesToWrite);
 

@@ -1,5 +1,6 @@
 #include "Pane.h"
 #include "..\core\Engine.h"
+#include "..\io\InputManager.h"
 
 Pane::Pane()
 {
@@ -45,14 +46,14 @@ Pane::~Pane()
 
 void Pane::RenderBackground(int xOffset, int yOffset)
 {
-	static uint8_t red = 0;
+	static UINT8 red = 0;
 	static int op = 1;
 
 	int width = m_Buffer->Width();
 	int height = m_Buffer->Height();
 	int pitch = width * m_Buffer->BytesPerPixel();
-	uint8_t * row = (uint8_t *)m_Buffer->Memory();
-	uint32_t* pixel = (uint32_t *)row;
+	UINT8 * row = (UINT8 *)m_Buffer->Memory();
+	UINT32* pixel = (UINT32 *)row;
 	for (int y = 0; y < height; ++y)
 	{
 		for (int x = 0; x < width; ++x)
@@ -63,8 +64,8 @@ void Pane::RenderBackground(int xOffset, int yOffset)
 			}
 			else
 			{
-				uint8_t blue = (y / (double)height * 255) + yOffset - 127;
-				uint8_t green = 127 + yOffset;
+				UINT8 blue = (y / (double)height * 255) + yOffset - 127;
+				UINT8 green = 127 + yOffset;
 
 				*pixel++ = (red << 16) | (green << 8) | blue;
 			}
@@ -116,51 +117,8 @@ void Pane::Show()
 			TranslateMessage(&message);
 			DispatchMessage(&message);
 		}
-		//TODO : Add to new class for input management
-		for (DWORD i = 0; i < XUSER_MAX_COUNT; ++i)
-		{
-			XINPUT_STATE state;
-			if (XInputGetState(i, &state) == ERROR_SUCCESS)
-			{
-				XINPUT_GAMEPAD* pad = &state.Gamepad;
-
-				bool up = (pad->wButtons & XINPUT_GAMEPAD_DPAD_UP);
-				bool down = (pad->wButtons & XINPUT_GAMEPAD_DPAD_DOWN);
-				bool left = (pad->wButtons & XINPUT_GAMEPAD_DPAD_LEFT);
-				bool right = (pad->wButtons & XINPUT_GAMEPAD_DPAD_RIGHT);
-				bool start = (pad->wButtons & XINPUT_GAMEPAD_START);
-				bool back = (pad->wButtons & XINPUT_GAMEPAD_BACK);
-				bool leftShoulder = (pad->wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER);
-				bool rightShoulder = (pad->wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER);
-				bool leftThumb = (pad->wButtons & XINPUT_GAMEPAD_LEFT_THUMB);
-				bool rightThumb = (pad->wButtons & XINPUT_GAMEPAD_RIGHT_THUMB);
-				bool buttonA = (pad->wButtons & XINPUT_GAMEPAD_A);
-				bool buttonB = (pad->wButtons & XINPUT_GAMEPAD_B);
-				bool buttonX = (pad->wButtons & XINPUT_GAMEPAD_X);
-				bool buttonY = (pad->wButtons & XINPUT_GAMEPAD_Y);
-
-				if (buttonA) yOffset += 2;
-				if (buttonB) yOffset -= 2;
-
-				XINPUT_VIBRATION vibration;
-				vibration.wLeftMotorSpeed = 0;
-				vibration.wRightMotorSpeed = 0;
-				if (leftShoulder) vibration.wLeftMotorSpeed = 30000;
-				if (rightShoulder) vibration.wRightMotorSpeed = 30000;
-
-				XInputSetState(i, &vibration);
-
-				uint8_t leftTrigger = pad->bLeftTrigger;
-				uint8_t rightTrigger = pad->bRightTrigger;
-				uint16_t leftThumbX = pad->sThumbLX;
-				uint16_t leftThumbY = pad->sThumbLY;
-				uint16_t rightThumbX = pad->sThumbRX;
-				uint16_t rightThumbY = pad->sThumbRY;
-			}
-		}
-		
+		InputManager::GetInstance()->GamepadInput(&yOffset);	
 		RenderBackground(xOffset,yOffset);
-
 		m_SoundOutput->UpdateSoundBuffer();
 
 		RECT clientRect;
@@ -181,22 +139,10 @@ void Pane::DisplayPaneBuffer(HDC deviceContext, int width, int height)
 LRESULT Pane::PaneCallBack(HWND handle, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch (message)
-	{//TODO : Add to new class for input management
+	{
 		case WM_KEYUP:
 		{
-			uint32_t keyCode = wParam;
-			if (keyCode == 'W')
-				OutputDebugString("W");
-			else if (keyCode == 'A')
-				OutputDebugString("A");
-			else if (keyCode == 'S')
-				OutputDebugString("S");
-			else if (keyCode == 'D')
-				OutputDebugString("D");
-			else if (keyCode == VK_SPACE)
-				OutputDebugString("space");
-			else if (keyCode == VK_ESCAPE)
-				Engine::GetInstance()->Stop();
+			InputManager::GetInstance()->KeyboardInput((UINT32)wParam);
 		}
 		case WM_PAINT:
 		{

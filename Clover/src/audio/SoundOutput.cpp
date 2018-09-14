@@ -4,7 +4,7 @@ SoundOutput::SoundOutput(int samplesPerSecond, int toneHertz, int toneVolume) : 
 {
 	m_RunningSampleIndex = 0;
 	m_WavePeriod = m_SamplesPerSecond / m_ToneHertz;
-	m_BytesPerSample = sizeof(uint16_t) * 2;
+	m_BytesPerSample = sizeof(UINT16) * 2;
 	m_SecondaryBufferSize = m_SamplesPerSecond * m_BytesPerSample;
 }
 

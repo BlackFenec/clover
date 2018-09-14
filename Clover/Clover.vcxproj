@@ -132,6 +132,7 @@
     <ClInclude Include="src\core\EntityManager.h" />
     <ClInclude Include="src\core\ISystem.h" />
     <ClInclude Include="src\entity\Entity.h" />
+    <ClInclude Include="src\io\InputManager.h" />
     <ClInclude Include="src\messaging\Message.h" />
     <ClInclude Include="src\messaging\MessageContent.h" />
     <ClInclude Include="src\messaging\MessageType.h" />
@@ -158,6 +159,7 @@
     <ClCompile Include="src\core\Engine.cpp" />
     <ClCompile Include="src\core\EntityManager.cpp" />
     <ClCompile Include="src\entity\Entity.cpp" />
+    <ClCompile Include="src\io\InputManager.cpp" />
     <ClCompile Include="src\messaging\Message.cpp" />
     <ClCompile Include="src\messaging\MessageContent.cpp" />
     <ClCompile Include="src\messaging\NewPositionContent.cpp" />

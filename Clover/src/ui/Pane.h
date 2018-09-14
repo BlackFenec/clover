@@ -4,7 +4,6 @@
 #include "PaneBuffer.h"
 #include "..\audio\SoundOuput.h"
 #include <windows.h>
-#include <Xinput.h>
 
 class Pane
 {
@@ -21,6 +20,7 @@ private :
 	static LRESULT CALLBACK WindowCallBack(HWND handle, UINT message, WPARAM wParam, LPARAM lParam);
 
 public :
+
 	Pane();
 	virtual ~Pane();
 
