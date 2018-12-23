@@ -6,6 +6,7 @@ Pane::Pane()
 {
 	m_Buffer = new PaneBuffer();
 	m_SoundOutput = new SoundOutput(48000,256,3000);
+	m_Handle = NULL;
 
 	WNDCLASSEX windowClass;
 	ResizeSection(1920, 1080);
@@ -60,11 +61,11 @@ void Pane::RenderBackground(int xOffset, int yOffset)
 		{	
 			if (x >= width / (double)20 * 10 && x <= width / (double)20 * 11 && y >= height / (double)8 * 3 && y <= height / (double)8 * 4)
 			{
-				*pixel++ = (255-red << 16) | (0 << 8) | 0;
+				*pixel++ = ((255-red) << 16) | (0 << 8) | 0;
 			}
 			else
 			{
-				UINT8 blue = (y / (double)height * 255) + yOffset - 127;
+				UINT8 blue = (UINT8)((y / (double)height * 255) + yOffset - 127);
 				UINT8 green = 127 + yOffset;
 
 				*pixel++ = (red << 16) | (green << 8) | blue;

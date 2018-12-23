@@ -3,6 +3,10 @@
 PaneBuffer::PaneBuffer()
 {
 	m_BitmapInfo = new BITMAPINFO();
+	m_BytesPerPixel = 0;
+	m_Height = 0;
+	m_Memory = nullptr;
+	m_Width = 0;
 }
 
 PaneBuffer::~PaneBuffer()

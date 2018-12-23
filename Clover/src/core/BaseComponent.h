@@ -8,7 +8,7 @@ class BaseComponent {
 public :
 	BaseEntity* owner;
 
-	BaseComponent() {};
+	BaseComponent() { owner = nullptr; };
 	virtual ~BaseComponent() {};
 };
 #endif
