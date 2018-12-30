@@ -159,6 +159,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\audio\SoundOutput.cpp" />
+    <ClCompile Include="src\core\BaseComponent.cpp" />
     <ClCompile Include="src\core\BaseEntity.cpp" />
     <ClCompile Include="src\core\Engine.cpp" />
     <ClCompile Include="src\core\EntityManager.cpp" />

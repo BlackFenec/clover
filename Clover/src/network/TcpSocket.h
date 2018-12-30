@@ -41,11 +41,8 @@ private:
 	static void Shutdown(std::shared_ptr<SOCKET> socket);
 
 public :
-	TcpSocket() {}
-	virtual ~TcpSocket() 
-	{
-		delete m_Result;
-	}
+	TcpSocket();
+	virtual ~TcpSocket();
 
 	std::shared_ptr<SOCKET> Accept();
 	void Bind();
