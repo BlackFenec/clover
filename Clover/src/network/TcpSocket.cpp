@@ -1,5 +1,12 @@
 #include "TcpSocket.h"
 
+TcpSocket::TcpSocket(){}
+
+TcpSocket::~TcpSocket()
+{
+	delete m_Result;
+}
+
 std::shared_ptr<SOCKET> TcpSocket::Accept()
 {
 	std::shared_ptr<SOCKET> m_ClientSocket(new SOCKET());

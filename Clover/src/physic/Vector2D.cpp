@@ -35,6 +35,12 @@ bool Vector2D::operator==(const Vector2D &v) const
 	return this->x == v.x && this->y == v.y;
 }
 
+std::ostream& operator<<(std::ostream& os, const Vector2D& v)
+{
+	os << "X: " << v.x << " Y: " << v.y;
+	return os;
+}
+
 double Vector2D::Length()
 {
 	return sqrt(pow(this->x,2) + pow(this->y,2));
