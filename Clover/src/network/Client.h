@@ -11,11 +11,11 @@ class Client : public IClient
 {
 private:
 
+	std::thread * m_SocketProcessing;
 	std::shared_ptr<std::ostream> m_Output;
 	const std::string k_ServerAddress = "localhost";
 	const std::string k_ServerReceivingPort = "27015";
 	const std::string k_ServerSendPort = "27016";
-	std::thread * m_SocketProcessing;
 
 	void SetUpClient();
 

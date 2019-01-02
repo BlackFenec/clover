@@ -8,9 +8,9 @@
 class IClientServer
 {
 protected:
-	bool m_IsClosing;
 	std::queue<std::string> m_Messages;
 	std::shared_ptr<SOCKET> m_Socket;
+	bool m_IsClosing;
 
 public:
 	IClientServer() {};
